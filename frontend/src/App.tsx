@@ -1,4 +1,5 @@
-import { Activity, ArrowRight, CheckCircle2, CircleDot, Database, GitBranch, ShieldCheck } from 'lucide-react'
+import { useState } from 'react'
+import { Activity, ArrowRight, CheckCircle2, CircleDot, Database, ExternalLink, GitBranch, ShieldCheck } from 'lucide-react'
 
 const stages = [
   ['01', 'Check inputs', 'Confirm both protein files and protected sites are usable.'],
@@ -12,6 +13,68 @@ const runs = [
   { id: 'LF-0006', pair: 'Example C + Example D', method: 'Fixed linker', status: 'Example result', score: '61%' },
 ]
 
+const referenceStructures = {
+  sfGFP: {
+    label: 'sfGFP',
+    pdbId: '2B3P',
+    description: 'Experimentally determined superfolder green fluorescent protein structure.',
+  },
+  mCherry: {
+    label: 'mCherry',
+    pdbId: '2H5Q',
+    description: 'Experimentally determined mCherry structure.',
+  },
+} as const
+
+type ReferenceStructure = keyof typeof referenceStructures
+
+function ProteinViewer() {
+  const [selected, setSelected] = useState<ReferenceStructure>('sfGFP')
+  const structure = referenceStructures[selected]
+  const viewerUrl = `https://molstar.org/viewer/?pdb=${structure.pdbId}`
+
+  return (
+    <section className="section viewer-section" id="viewer">
+      <div className="section-heading"><span>02 / Structure viewer</span><h2>Inspect the two reference proteins in the browser</h2></div>
+      <div className="viewer-grid">
+        <div className="viewer-copy">
+          <p>This embedded Mol* view is an inspection tool. It loads an experimental structure from the RCSB Protein Data Bank; it does not run AlphaFold, simulate a fusion, or produce a LinkerForge prediction.</p>
+          <div className="structure-tabs" aria-label="Reference structure">
+            {(Object.keys(referenceStructures) as ReferenceStructure[]).map((key) => (
+              <button
+                aria-pressed={selected === key}
+                className={selected === key ? 'active' : ''}
+                key={key}
+                onClick={() => setSelected(key)}
+                type="button"
+              >
+                {referenceStructures[key].label}
+                <small>PDB {referenceStructures[key].pdbId}</small>
+              </button>
+            ))}
+          </div>
+          <div className="structure-record">
+            <span>Showing</span>
+            <strong>{structure.label} · PDB {structure.pdbId}</strong>
+            <p>{structure.description}</p>
+            <a href={`https://www.rcsb.org/structure/${structure.pdbId}`} target="_blank" rel="noreferrer">Open source record <ExternalLink size={14} /></a>
+          </div>
+        </div>
+        <div className="viewer-frame">
+          <iframe
+            key={structure.pdbId}
+            src={viewerUrl}
+            title={`${structure.label} experimental structure in the RCSB Mol* viewer`}
+            loading="lazy"
+            allowFullScreen
+          />
+          <p>Interactive 3D content is supplied by the RCSB PDB Mol* viewer and requires an internet connection.</p>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function App() {
   return (
     <div className="app-shell">
@@ -22,6 +85,7 @@ function App() {
         </a>
         <nav aria-label="Main navigation">
           <a href="#workflow">Workflow</a>
+          <a href="#viewer">3D viewer</a>
           <a href="#runs">Example runs</a>
           <a href="#provenance">Provenance</a>
         </nav>
@@ -54,9 +118,11 @@ function App() {
           </div>
         </section>
 
+        <ProteinViewer />
+
         <section className="section split" id="runs">
           <div>
-            <div className="section-heading"><span>02 / Shared work</span><h2>Results visible to the whole team</h2></div>
+            <div className="section-heading"><span>03 / Shared work</span><h2>Results visible to the whole team</h2></div>
             <p>Every calculation receives a permanent identifier. Failed calculations remain visible so that the final paper does not hide inconvenient results.</p>
           </div>
           <div className="run-table" role="table" aria-label="Example runs">
@@ -66,7 +132,7 @@ function App() {
         </section>
 
         <section className="section provenance" id="provenance">
-          <div className="section-heading"><span>03 / Provenance</span><h2>Every answer carries its history</h2></div>
+          <div className="section-heading"><span>04 / Provenance</span><h2>Every answer carries its history</h2></div>
           <div className="provenance-grid">
             <article><GitBranch /><div><strong>Code version</strong><p>Exact source-code revision and working configuration.</p></div></article>
             <article><Database /><div><strong>Input identity</strong><p>File fingerprints, data source, cleaning record, and warnings.</p></div></article>

@@ -4,7 +4,7 @@ LinkerForge is a **computational research prototype** for recommending a peptide
 
 This README is the canonical, self-contained project specification. A new team member, coding agent, cloud notebook, or clean laptop should be able to recover the project scope and continue without the original planning conversation.
 
-> **Current state:** the React demonstration interface and CI/CD are implemented. The scientific Python pipeline, dataset, trained model, and cloud jobs below are the MVP specification and must not be represented as already implemented.
+> **Current state:** the React demonstration interface, CI/CD, and an embedded Mol* reference-structure viewer are implemented. The viewer displays experimental PDB entries and is not a prediction service. The scientific Python pipeline, dataset, trained model, and cloud jobs below are the MVP specification and must not be represented as already implemented.
 
 ## One-minute description
 
@@ -407,7 +407,7 @@ LinkerForge/
 ├── README.md
 ├── AGENTS.md
 ├── CONTRIBUTING.md
-├── frontend/                 # existing React demonstration
+├── frontend/                 # React demonstration and experimental-reference Mol* viewer
 ├── schemas/                  # versioned JSON Schema files
 ├── configs/                  # immutable experiment configurations
 ├── src/linkerforge/
