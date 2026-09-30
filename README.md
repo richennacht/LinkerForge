@@ -439,11 +439,11 @@ Large datasets, checkpoints, AlphaFold databases, trajectories, and structures b
 ### Clone
 
 ```bash
-git clone https://github.com/richennacht/project-p-linker.git
-cd project-p-linker
+git clone https://github.com/richennacht/LinkerForge.git
+cd LinkerForge
 ```
 
-The repository branding is LinkerForge. The GitHub slug may later be renamed to `linker-forge`; update this command in the same change.
+The repository name and project branding are both `LinkerForge`.
 
 ### Run the implemented frontend
 
