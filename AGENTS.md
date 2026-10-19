@@ -10,10 +10,20 @@ firewall; never bypass preflight or use public CAID3 scores to select a model.
 
 ## Current state
 
-- The React/Vite frontend exists and uses labelled demonstration data.
+- The React/Vite frontend exists and uses labelled demonstration data. Its
+  two-sequence template workflow exports a complete fusion FASTA and accepts a
+  sequence-matched predicted PDB; it does not produce a trained recommendation.
+- An optional Tauri desktop shell can launch a separately installed local
+  ColabFold command and display its full-fusion PDB. ColabFold/weights are not
+  bundled, and a successful fold on the 6 GB laptop has not been verified.
 - CI and GitHub Pages deployment exist.
-- The scientific Python pipeline, dataset, trained ranker, and cloud jobs are specified but not implemented.
+- Some detector and design-pipeline code exists; the qualified dataset, trained
+  fusion ranker, completed structural funnel, and cloud jobs do not.
 - Do not imply that proposed architecture or example scores are completed results.
+
+Start with `START_HERE.md` to choose the active detector, the untrained design
+pipeline, the frontend, or the desktop shell. Do not treat code-only readiness
+or a synthetic smoke test as biological validation.
 
 ## Frozen decisions
 

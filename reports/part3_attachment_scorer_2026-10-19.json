@@ -1,0 +1,595 @@
+{
+  "benchmark_natural_authorities_148": {
+    "arms": {
+      "biophysical_loop_flexibility_no_terminal_prior": {
+        "auroc": 0.9993,
+        "average_precision_aps": 0.9949,
+        "evaluated_domains": 289,
+        "evaluated_residue_candidates": 7442,
+        "positive_port_residues": 867,
+        "precision_at_10pct_coverage": 0.9946,
+        "precision_at_20pct_coverage": 0.5827,
+        "top1_port_recovery_count": 289,
+        "top1_port_recovery_rate": 1.0,
+        "top3_port_recovery_count": 289,
+        "top3_port_recovery_rate": 1.0
+      },
+      "prodomino_flexibility_propensity_baseline": {
+        "auroc": 0.5196,
+        "average_precision_aps": 0.121,
+        "evaluated_domains": 289,
+        "evaluated_residue_candidates": 7442,
+        "positive_port_residues": 867,
+        "precision_at_10pct_coverage": 0.0995,
+        "precision_at_20pct_coverage": 0.1364,
+        "top1_port_recovery_count": 77,
+        "top1_port_recovery_rate": 0.2664,
+        "top3_port_recovery_count": 129,
+        "top3_port_recovery_rate": 0.4464
+      },
+      "random_control": {
+        "auroc": 0.5076,
+        "average_precision_aps": 0.12,
+        "evaluated_domains": 289,
+        "evaluated_residue_candidates": 7442,
+        "positive_port_residues": 867,
+        "precision_at_10pct_coverage": 0.1344,
+        "precision_at_20pct_coverage": 0.1277,
+        "top1_port_recovery_count": 39,
+        "top1_port_recovery_rate": 0.1349,
+        "top3_port_recovery_count": 103,
+        "top3_port_recovery_rate": 0.3564
+      },
+      "two_tower_sequence_only": {
+        "auroc": 1.0,
+        "average_precision_aps": 1.0,
+        "evaluated_domains": 289,
+        "evaluated_residue_candidates": 7442,
+        "positive_port_residues": 867,
+        "precision_at_10pct_coverage": 1.0,
+        "precision_at_20pct_coverage": 0.5827,
+        "top1_port_recovery_count": 289,
+        "top1_port_recovery_rate": 1.0,
+        "top3_port_recovery_count": 289,
+        "top3_port_recovery_rate": 1.0
+      },
+      "two_tower_structure_plus_sequence": {
+        "auroc": 1.0,
+        "average_precision_aps": 1.0,
+        "evaluated_domains": 289,
+        "evaluated_residue_candidates": 7442,
+        "positive_port_residues": 867,
+        "precision_at_10pct_coverage": 1.0,
+        "precision_at_20pct_coverage": 0.5827,
+        "top1_port_recovery_count": 289,
+        "top1_port_recovery_rate": 1.0,
+        "top3_port_recovery_count": 289,
+        "top3_port_recovery_rate": 1.0
+      }
+    },
+    "evaluated_natural_records": 148,
+    "evaluated_single_domains": 289,
+    "n_folds": 5,
+    "seed": 17
+  },
+  "benchmark_proteome_mined_high_confidence_600": {
+    "arms": {
+      "biophysical_loop_flexibility_no_terminal_prior": {
+        "auroc": 0.9982,
+        "average_precision_aps": 0.9873,
+        "evaluated_domains": 1189,
+        "evaluated_residue_candidates": 31248,
+        "positive_port_residues": 3567,
+        "precision_at_10pct_coverage": 0.9878,
+        "precision_at_20pct_coverage": 0.5706,
+        "top1_port_recovery_count": 1183,
+        "top1_port_recovery_rate": 0.995,
+        "top3_port_recovery_count": 1189,
+        "top3_port_recovery_rate": 1.0
+      },
+      "prodomino_flexibility_propensity_baseline": {
+        "auroc": 0.4784,
+        "average_precision_aps": 0.104,
+        "evaluated_domains": 1189,
+        "evaluated_residue_candidates": 31248,
+        "positive_port_residues": 3567,
+        "precision_at_10pct_coverage": 0.0723,
+        "precision_at_20pct_coverage": 0.0942,
+        "top1_port_recovery_count": 257,
+        "top1_port_recovery_rate": 0.2161,
+        "top3_port_recovery_count": 376,
+        "top3_port_recovery_rate": 0.3162
+      },
+      "random_control": {
+        "auroc": 0.509,
+        "average_precision_aps": 0.1166,
+        "evaluated_domains": 1189,
+        "evaluated_residue_candidates": 31248,
+        "positive_port_residues": 3567,
+        "precision_at_10pct_coverage": 0.121,
+        "precision_at_20pct_coverage": 0.117,
+        "top1_port_recovery_count": 148,
+        "top1_port_recovery_rate": 0.1245,
+        "top3_port_recovery_count": 390,
+        "top3_port_recovery_rate": 0.328
+      },
+      "two_tower_sequence_only": {
+        "auroc": 1.0,
+        "average_precision_aps": 1.0,
+        "evaluated_domains": 1189,
+        "evaluated_residue_candidates": 31248,
+        "positive_port_residues": 3567,
+        "precision_at_10pct_coverage": 1.0,
+        "precision_at_20pct_coverage": 0.5707,
+        "top1_port_recovery_count": 1189,
+        "top1_port_recovery_rate": 1.0,
+        "top3_port_recovery_count": 1189,
+        "top3_port_recovery_rate": 1.0
+      },
+      "two_tower_structure_plus_sequence": {
+        "auroc": 1.0,
+        "average_precision_aps": 1.0,
+        "evaluated_domains": 1189,
+        "evaluated_residue_candidates": 31248,
+        "positive_port_residues": 3567,
+        "precision_at_10pct_coverage": 1.0,
+        "precision_at_20pct_coverage": 0.5707,
+        "top1_port_recovery_count": 1189,
+        "top1_port_recovery_rate": 1.0,
+        "top3_port_recovery_count": 1189,
+        "top3_port_recovery_rate": 1.0
+      }
+    },
+    "evaluated_natural_records": 600,
+    "evaluated_single_domains": 1189,
+    "n_folds": 5,
+    "seed": 17
+  },
+  "dataset_id": "mined_and_natural_linkers_v1",
+  "dataset_manifest_sha256": "b1b8c5b34eb9a98eb627005a810f367e4364be9a75447af9740b3bff6d3e3232",
+  "schema_version": "1.0.0",
+  "scorer_parameters": {
+    "bias": -0.242041,
+    "tick_boxes_excluded_from_encoder": true,
+    "weights": [
+      -0.017699,
+      -0.028667,
+      -0.005686,
+      -0.014167,
+      0.014799,
+      -0.041114,
+      -0.029559,
+      0.040463,
+      0.056984,
+      1.537027,
+      0.047661,
+      -1.10908
+    ]
+  },
+  "structure_site_pair_reranking_demos": {
+    "4e43_end_to_end_tandem_top5": [
+      {
+        "closed_form_geometric_score": 1.0,
+        "combined_site_pair_score": 0.962644,
+        "domain_a_site": {
+          "admissible_surface_site": true,
+          "amino_acid": "G",
+          "author_residue_number": 94,
+          "local_ca_curvature_degrees": 84.6,
+          "relative_sasa": 0.6127,
+          "residue_index_1based": 94,
+          "role": "internal_loop_site",
+          "secondary_structure_proxy": "loop",
+          "sequence_flexibility_score": 0.661848,
+          "two_tower_tolerance_score": 0.874161
+        },
+        "domain_b_site": {
+          "admissible_surface_site": true,
+          "amino_acid": "Q",
+          "author_residue_number": 2,
+          "local_ca_curvature_degrees": 67.3,
+          "relative_sasa": 0.797,
+          "residue_index_1based": 2,
+          "role": "n_terminal_port",
+          "secondary_structure_proxy": "loop",
+          "sequence_flexibility_score": 0.931198,
+          "two_tower_tolerance_score": 0.99
+        },
+        "flags": [
+          "both_anchors_surface_accessible",
+          "span_window_bridgeable"
+        ],
+        "geometric_verdict": "bridgeable",
+        "inter_port_ca_distance_A": 11.643,
+        "maximum_design_residues": null,
+        "minimum_design_residues": 3,
+        "minimum_physical_residues": 3,
+        "path_detour_ratio": 1.0,
+        "rank": 1,
+        "required_path_length_A": 11.643,
+        "topology": "end_to_end_tandem",
+        "two_tower_pair_tolerance": 0.93208
+      },
+      {
+        "closed_form_geometric_score": 0.90375,
+        "combined_site_pair_score": 0.951188,
+        "domain_a_site": {
+          "admissible_surface_site": true,
+          "amino_acid": "N",
+          "author_residue_number": 98,
+          "local_ca_curvature_degrees": 46.76,
+          "relative_sasa": 0.6363,
+          "residue_index_1based": 98,
+          "role": "c_terminal_port",
+          "secondary_structure_proxy": "loop",
+          "sequence_flexibility_score": 0.931221,
+          "two_tower_tolerance_score": 0.99
+        },
+        "domain_b_site": {
+          "admissible_surface_site": true,
+          "amino_acid": "Q",
+          "author_residue_number": 2,
+          "local_ca_curvature_degrees": 67.3,
+          "relative_sasa": 0.797,
+          "residue_index_1based": 2,
+          "role": "n_terminal_port",
+          "secondary_structure_proxy": "loop",
+          "sequence_flexibility_score": 0.931198,
+          "two_tower_tolerance_score": 0.99
+        },
+        "flags": [
+          "both_anchors_surface_accessible",
+          "span_window_bridgeable"
+        ],
+        "geometric_verdict": "bridgeable",
+        "inter_port_ca_distance_A": 4.607,
+        "maximum_design_residues": null,
+        "minimum_design_residues": 1,
+        "minimum_physical_residues": 1,
+        "path_detour_ratio": 1.0,
+        "rank": 2,
+        "required_path_length_A": 4.607,
+        "topology": "end_to_end_tandem",
+        "two_tower_pair_tolerance": 0.99
+      },
+      {
+        "closed_form_geometric_score": 0.90375,
+        "combined_site_pair_score": 0.951188,
+        "domain_a_site": {
+          "admissible_surface_site": true,
+          "amino_acid": "F",
+          "author_residue_number": 99,
+          "local_ca_curvature_degrees": 65.0,
+          "relative_sasa": 1.0705,
+          "residue_index_1based": 99,
+          "role": "c_terminal_port",
+          "secondary_structure_proxy": "terminal_loop",
+          "sequence_flexibility_score": 0.964516,
+          "two_tower_tolerance_score": 0.99
+        },
+        "domain_b_site": {
+          "admissible_surface_site": true,
+          "amino_acid": "P",
+          "author_residue_number": 1,
+          "local_ca_curvature_degrees": 65.0,
+          "relative_sasa": 0.8793,
+          "residue_index_1based": 1,
+          "role": "n_terminal_port",
+          "secondary_structure_proxy": "terminal_loop",
+          "sequence_flexibility_score": 0.964959,
+          "two_tower_tolerance_score": 0.99
+        },
+        "flags": [
+          "both_anchors_surface_accessible",
+          "span_window_bridgeable"
+        ],
+        "geometric_verdict": "bridgeable",
+        "inter_port_ca_distance_A": 5.604,
+        "maximum_design_residues": null,
+        "minimum_design_residues": 1,
+        "minimum_physical_residues": 1,
+        "path_detour_ratio": 1.0,
+        "rank": 3,
+        "required_path_length_A": 5.604,
+        "topology": "end_to_end_tandem",
+        "two_tower_pair_tolerance": 0.99
+      },
+      {
+        "closed_form_geometric_score": 0.90375,
+        "combined_site_pair_score": 0.951188,
+        "domain_a_site": {
+          "admissible_surface_site": true,
+          "amino_acid": "N",
+          "author_residue_number": 98,
+          "local_ca_curvature_degrees": 46.76,
+          "relative_sasa": 0.6363,
+          "residue_index_1based": 98,
+          "role": "c_terminal_port",
+          "secondary_structure_proxy": "loop",
+          "sequence_flexibility_score": 0.931221,
+          "two_tower_tolerance_score": 0.99
+        },
+        "domain_b_site": {
+          "admissible_surface_site": true,
+          "amino_acid": "P",
+          "author_residue_number": 1,
+          "local_ca_curvature_degrees": 65.0,
+          "relative_sasa": 0.8793,
+          "residue_index_1based": 1,
+          "role": "n_terminal_port",
+          "secondary_structure_proxy": "terminal_loop",
+          "sequence_flexibility_score": 0.964959,
+          "two_tower_tolerance_score": 0.99
+        },
+        "flags": [
+          "both_anchors_surface_accessible",
+          "span_window_bridgeable"
+        ],
+        "geometric_verdict": "bridgeable",
+        "inter_port_ca_distance_A": 5.825,
+        "maximum_design_residues": null,
+        "minimum_design_residues": 1,
+        "minimum_physical_residues": 1,
+        "path_detour_ratio": 1.0,
+        "rank": 4,
+        "required_path_length_A": 5.825,
+        "topology": "end_to_end_tandem",
+        "two_tower_pair_tolerance": 0.99
+      },
+      {
+        "closed_form_geometric_score": 0.90375,
+        "combined_site_pair_score": 0.950151,
+        "domain_a_site": {
+          "admissible_surface_site": true,
+          "amino_acid": "L",
+          "author_residue_number": 97,
+          "local_ca_curvature_degrees": 66.77,
+          "relative_sasa": 0.643,
+          "residue_index_1based": 97,
+          "role": "c_terminal_port",
+          "secondary_structure_proxy": "loop",
+          "sequence_flexibility_score": 0.877365,
+          "two_tower_tolerance_score": 0.98623
+        },
+        "domain_b_site": {
+          "admissible_surface_site": true,
+          "amino_acid": "Q",
+          "author_residue_number": 2,
+          "local_ca_curvature_degrees": 67.3,
+          "relative_sasa": 0.797,
+          "residue_index_1based": 2,
+          "role": "n_terminal_port",
+          "secondary_structure_proxy": "loop",
+          "sequence_flexibility_score": 0.931198,
+          "two_tower_tolerance_score": 0.99
+        },
+        "flags": [
+          "both_anchors_surface_accessible",
+          "span_window_bridgeable"
+        ],
+        "geometric_verdict": "bridgeable",
+        "inter_port_ca_distance_A": 5.733,
+        "maximum_design_residues": null,
+        "minimum_design_residues": 1,
+        "minimum_physical_residues": 1,
+        "path_detour_ratio": 1.0,
+        "rank": 5,
+        "required_path_length_A": 5.733,
+        "topology": "end_to_end_tandem",
+        "two_tower_pair_tolerance": 0.988115
+      }
+    ],
+    "4e43_internal_insertion_two_tether_top5": [
+      {
+        "closed_form_geometric_score": 0.90375,
+        "combined_site_pair_score": 0.951188,
+        "domain_a_site": {
+          "admissible_surface_site": true,
+          "amino_acid": "N",
+          "author_residue_number": 98,
+          "local_ca_curvature_degrees": 46.76,
+          "relative_sasa": 0.6363,
+          "residue_index_1based": 98,
+          "role": "c_terminal_port",
+          "secondary_structure_proxy": "loop",
+          "sequence_flexibility_score": 0.931221,
+          "two_tower_tolerance_score": 0.99
+        },
+        "domain_b_site": {
+          "admissible_surface_site": true,
+          "amino_acid": "Q",
+          "author_residue_number": 2,
+          "local_ca_curvature_degrees": 67.3,
+          "relative_sasa": 0.797,
+          "residue_index_1based": 2,
+          "role": "n_terminal_port",
+          "secondary_structure_proxy": "loop",
+          "sequence_flexibility_score": 0.931198,
+          "two_tower_tolerance_score": 0.99
+        },
+        "flags": [
+          "both_anchors_surface_accessible",
+          "span_window_bridgeable"
+        ],
+        "geometric_verdict": "bridgeable",
+        "inter_port_ca_distance_A": 4.607,
+        "maximum_design_residues": null,
+        "minimum_design_residues": 1,
+        "minimum_physical_residues": 1,
+        "path_detour_ratio": 1.0,
+        "rank": 1,
+        "required_path_length_A": 4.607,
+        "topology": "internal_insertion_two_tether",
+        "two_tower_pair_tolerance": 0.99
+      },
+      {
+        "closed_form_geometric_score": 0.90375,
+        "combined_site_pair_score": 0.951188,
+        "domain_a_site": {
+          "admissible_surface_site": true,
+          "amino_acid": "Q",
+          "author_residue_number": 2,
+          "local_ca_curvature_degrees": 68.16,
+          "relative_sasa": 0.7706,
+          "residue_index_1based": 2,
+          "role": "n_terminal_port",
+          "secondary_structure_proxy": "loop",
+          "sequence_flexibility_score": 0.931198,
+          "two_tower_tolerance_score": 0.99
+        },
+        "domain_b_site": {
+          "admissible_surface_site": true,
+          "amino_acid": "N",
+          "author_residue_number": 98,
+          "local_ca_curvature_degrees": 44.32,
+          "relative_sasa": 0.6494,
+          "residue_index_1based": 98,
+          "role": "c_terminal_port",
+          "secondary_structure_proxy": "loop",
+          "sequence_flexibility_score": 0.931221,
+          "two_tower_tolerance_score": 0.99
+        },
+        "flags": [
+          "both_anchors_surface_accessible",
+          "span_window_bridgeable"
+        ],
+        "geometric_verdict": "bridgeable",
+        "inter_port_ca_distance_A": 4.643,
+        "maximum_design_residues": null,
+        "minimum_design_residues": 1,
+        "minimum_physical_residues": 1,
+        "path_detour_ratio": 1.0,
+        "rank": 2,
+        "required_path_length_A": 4.643,
+        "topology": "internal_insertion_two_tether",
+        "two_tower_pair_tolerance": 0.99
+      },
+      {
+        "closed_form_geometric_score": 0.90375,
+        "combined_site_pair_score": 0.951188,
+        "domain_a_site": {
+          "admissible_surface_site": true,
+          "amino_acid": "P",
+          "author_residue_number": 1,
+          "local_ca_curvature_degrees": 65.0,
+          "relative_sasa": 0.9338,
+          "residue_index_1based": 1,
+          "role": "n_terminal_port",
+          "secondary_structure_proxy": "terminal_loop",
+          "sequence_flexibility_score": 0.964959,
+          "two_tower_tolerance_score": 0.99
+        },
+        "domain_b_site": {
+          "admissible_surface_site": true,
+          "amino_acid": "F",
+          "author_residue_number": 99,
+          "local_ca_curvature_degrees": 65.0,
+          "relative_sasa": 1.0763,
+          "residue_index_1based": 99,
+          "role": "c_terminal_port",
+          "secondary_structure_proxy": "terminal_loop",
+          "sequence_flexibility_score": 0.964516,
+          "two_tower_tolerance_score": 0.99
+        },
+        "flags": [
+          "both_anchors_surface_accessible",
+          "span_window_bridgeable"
+        ],
+        "geometric_verdict": "bridgeable",
+        "inter_port_ca_distance_A": 5.533,
+        "maximum_design_residues": null,
+        "minimum_design_residues": 1,
+        "minimum_physical_residues": 1,
+        "path_detour_ratio": 1.0,
+        "rank": 3,
+        "required_path_length_A": 5.533,
+        "topology": "internal_insertion_two_tether",
+        "two_tower_pair_tolerance": 0.99
+      },
+      {
+        "closed_form_geometric_score": 0.90375,
+        "combined_site_pair_score": 0.951188,
+        "domain_a_site": {
+          "admissible_surface_site": true,
+          "amino_acid": "F",
+          "author_residue_number": 99,
+          "local_ca_curvature_degrees": 65.0,
+          "relative_sasa": 1.0705,
+          "residue_index_1based": 99,
+          "role": "c_terminal_port",
+          "secondary_structure_proxy": "terminal_loop",
+          "sequence_flexibility_score": 0.964516,
+          "two_tower_tolerance_score": 0.99
+        },
+        "domain_b_site": {
+          "admissible_surface_site": true,
+          "amino_acid": "P",
+          "author_residue_number": 1,
+          "local_ca_curvature_degrees": 65.0,
+          "relative_sasa": 0.8793,
+          "residue_index_1based": 1,
+          "role": "n_terminal_port",
+          "secondary_structure_proxy": "terminal_loop",
+          "sequence_flexibility_score": 0.964959,
+          "two_tower_tolerance_score": 0.99
+        },
+        "flags": [
+          "both_anchors_surface_accessible",
+          "span_window_bridgeable"
+        ],
+        "geometric_verdict": "bridgeable",
+        "inter_port_ca_distance_A": 5.604,
+        "maximum_design_residues": null,
+        "minimum_design_residues": 1,
+        "minimum_physical_residues": 1,
+        "path_detour_ratio": 1.0,
+        "rank": 4,
+        "required_path_length_A": 5.604,
+        "topology": "internal_insertion_two_tether",
+        "two_tower_pair_tolerance": 0.99
+      },
+      {
+        "closed_form_geometric_score": 0.90375,
+        "combined_site_pair_score": 0.951188,
+        "domain_a_site": {
+          "admissible_surface_site": true,
+          "amino_acid": "P",
+          "author_residue_number": 1,
+          "local_ca_curvature_degrees": 65.0,
+          "relative_sasa": 0.9338,
+          "residue_index_1based": 1,
+          "role": "n_terminal_port",
+          "secondary_structure_proxy": "terminal_loop",
+          "sequence_flexibility_score": 0.964959,
+          "two_tower_tolerance_score": 0.99
+        },
+        "domain_b_site": {
+          "admissible_surface_site": true,
+          "amino_acid": "N",
+          "author_residue_number": 98,
+          "local_ca_curvature_degrees": 44.32,
+          "relative_sasa": 0.6494,
+          "residue_index_1based": 98,
+          "role": "c_terminal_port",
+          "secondary_structure_proxy": "loop",
+          "sequence_flexibility_score": 0.931221,
+          "two_tower_tolerance_score": 0.99
+        },
+        "flags": [
+          "both_anchors_surface_accessible",
+          "span_window_bridgeable"
+        ],
+        "geometric_verdict": "bridgeable",
+        "inter_port_ca_distance_A": 5.793,
+        "maximum_design_residues": null,
+        "minimum_design_residues": 1,
+        "minimum_physical_residues": 1,
+        "path_detour_ratio": 1.0,
+        "rank": 5,
+        "required_path_length_A": 5.793,
+        "topology": "internal_insertion_two_tether",
+        "two_tower_pair_tolerance": 0.99
+      }
+    ]
+  }
+}

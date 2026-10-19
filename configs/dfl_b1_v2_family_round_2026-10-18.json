@@ -1,0 +1,33 @@
+{
+  "schema_version": "2.0.0",
+  "round_id": "dfl-b1-v2-family-disjoint-baselines-2026-10-18",
+  "purpose": "Matched SAM-like and YOLO-1D baselines on preregistered V2 family-disjoint DFL split",
+  "track": "sequence_only_disordered_flexible_linker_detection",
+  "status": "ready_for_v2_family_disjoint_training",
+  "data_manifest": "data/processed/dfl_b1_v2_family_split/manifest.json",
+  "data_manifest_sha256": "cbb0358c096c9c870b1e37528ad0d41fb261a5eda470c0b73c0ba9090c370050",
+  "family_manifest_sha256": "db484272985535f08cf182166503973e77753abd00c7a4df1a197cc9db971dd2",
+  "train_sha256": "b7869002854e8c32b6bc90dfd85d9085af1b01b9de6b01551df02c8e6a808e29",
+  "development_sha256": "69c43779e9079403b74458938afff48b7409a0b9036229a8eae6c49b9a34aede",
+  "auxiliary_sha256": "86efa82e4ddaa6b01e2b79b5557c508ad27d4b4c72f39d21c5342aae82cc99c9",
+  "deprecated_splits_prohibited": [
+    "data/processed/caid3_protected_dfl_v1/manifest.json"
+  ],
+  "architecture": ["samlike", "yolo1d"],
+  "conditions": ["direct", "disorder_transfer"],
+  "seeds": [7, 17, 31],
+  "frozen_encoder": "facebook/esm2_t12_35M_UR50D",
+  "batch_size": {"samlike": 2, "yolo1d": 4},
+  "max_residues_per_window": 510,
+  "auxiliary_semantic_epochs": 3,
+  "dfl_finetune_epochs": 12,
+  "optimizer": "AdamW",
+  "learning_rate": 0.0003,
+  "maximum_architecture_trials": 3,
+  "maximum_gpu_hours": 6,
+  "max_gpu_hours_total": 6,
+  "max_seconds_per_trial": 1800,
+  "development_selection": "masked residue APS on V2 family-disjoint development set (28 proteins, 26 family components)",
+  "model_selection_prohibited": ["TE64", "CAID3", "DP94"],
+  "preregistration_contract": "literature/DFL_FIREWALL_V2_PREREGISTRATION_2026-10-18.md"
+}

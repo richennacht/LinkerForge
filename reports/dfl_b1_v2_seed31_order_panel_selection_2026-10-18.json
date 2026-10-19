@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0.0",
+  "status": "frozen_before_auxiliary",
+  "claim_status": "order_panel_specificity_only_not_mining_precision",
+  "selection_rule": "seed with highest B1 V2 development APS among matched seeds 7, 17, and 31; threshold maximizing known-positive development recall at empirical precision >=0.99 and >=50 TP under label-agnostic all-window scoring",
+  "seed": 31,
+  "threshold": 0.7351981997489929,
+  "checkpoint_sha256": "c0d356c55ed83807353e66b875501c61b17f0b9b83f2910c0f1147f6409fdf6f",
+  "run_manifest_sha256": "62687e1152d1056fbcc746fef3f45985fbdb502e15b2ed07bbcd6ae629cd7b0a",
+  "config_sha256": "0f5c1d775ce1edb886da4b45c5801fac1e209a86e87a04e5cc3d644eadff43e2",
+  "split_manifest_sha256": "d62136ce699294a0c07f0fa01a5350d3571643796cedadaf37d8399824893452",
+  "auxiliary_sha256": "65d755fad4daad71a6bf1823c7b668b56400401bd70ffa6815e4e3daba007f0f",
+  "evaluator_sha256": "0aca1cf5f2eec5e31362728e176ba469bef0dd6645d80c4ee646fbb4f17ea18f",
+  "development_audit_path": "artifacts/dfl-b1-v2-cnn-seed31-2026-10-18/deployment_development_v2.json",
+  "development_audit_sha256": "f8aed0ee037c1050e72e2b628e11dc172c8e72d684f2a2cc5d598d28ae2f1fd8",
+  "planned_auxiliary_analysis": [
+    "Count predictions above the frozen threshold on curated IDPO:0000006 order residues; report raw FP and specificity.",
+    "Count unknown residues called separately without treating them as FP or TP.",
+    "Do not modify model, threshold, evaluator, or training on the basis of this panel.",
+    "Do not compute precision or a 99-percent mining claim because the panel contains no verified DFL positives and is not a whole-protein no-linker adjudication."
+  ]
+}

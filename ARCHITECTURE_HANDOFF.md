@@ -4,7 +4,7 @@ Date: 17 October 2026. Written for someone picking this up cold from the reposit
 
 Read order: this file, then `SPEC.md` and `CHECKLIST.md` (on PR #6), then `RESEARCH_HANDOFF.md` on the active branch. Those three are the binding rules. This file is the design map: what to build, how each part is shaped, which papers it rests on, what already exists, and what is not verified.
 
-Status: **the project is paused.** Dorya has stopped work and will resume later, possibly with another tool. This document is documentation only. It contains no training, no split, no benchmark contact and no new result. Do not start any item below without Dorya's explicit go-ahead.
+Status update (18 October 2026): Dorya explicitly resumed work. PRs #1–#7 are merged into `codex/dfl-research-handoff`. This is a 17 October architecture snapshot; read `CURRENT_DIRECTION_2026-10-18.md` for the current classifier-first implementation order. Its evidence and benchmark limitations still apply.
 
 Every draft PR named here targets `codex/dfl-research-handoff`. As of this writing the CI workflow does not run on PRs into that branch (see section 11), so a missing red check is not a pass.
 

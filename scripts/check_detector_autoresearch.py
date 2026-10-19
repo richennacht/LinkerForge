@@ -8,6 +8,15 @@ from pathlib import Path
 
 import psutil
 
+if __package__:
+    from scripts.preflight_caid3_protected_training import verify
+else:
+    from preflight_caid3_protected_training import verify
+
+
+DEPRECATED_V1_SPLIT = "data/processed/caid3_protected_dfl_v1/manifest.json"
+DEFAULT_V2_SPLIT = "data/processed/dfl_b1_v2_family_split/manifest.json"
+
 
 def inspect(ledger_path: Path) -> dict:
     ledger = json.loads(ledger_path.read_text(encoding="utf-8"))
@@ -16,23 +25,32 @@ def inspect(ledger_path: Path) -> dict:
     if len(active) > 1:
         return {"action": "integrity_stop", "reason": "multiple running trials in ledger"}
     if not active:
-        # The historical ledger predates the untouched-benchmark firewall. Do
-        # not surface its stale "launch" suggestion when current data fail it.
-        from preflight_caid3_protected_training import verify
-
-        protected_manifest = root / "data/processed/caid3_protected_dfl_v1/manifest.json"
+        split_rel = str(ledger.get("split_manifest", DEFAULT_V2_SPLIT)).replace("\\", "/")
+        if split_rel == DEPRECATED_V1_SPLIT:
+            return {
+                "action": "data_integrity_audit_only",
+                "round_status": ledger.get("status"),
+                "reason": f"Deprecated split {DEPRECATED_V1_SPLIT} is prohibited",
+                "next_action": "Use data/processed/dfl_b1_v2_family_split/manifest.json and rerun preflight.",
+            }
+        protected_manifest = root / split_rel
         try:
-            verify(protected_manifest)
+            verified = verify(protected_manifest)
         except (ValueError, KeyError, OSError, ImportError) as exc:
             return {
                 "action": "data_integrity_audit_only",
                 "round_status": ledger.get("status"),
+                "split_manifest": split_rel,
                 "reason": str(exc),
                 "next_action": "Rebuild a versioned benchmark-excluded family split and rerun preflight before any new training job.",
             }
         return {
             "action": "launch_or_audit",
             "round_status": ledger.get("status"),
+            "split_manifest": split_rel,
+            "preflight_status": verified.get("status"),
+            "split_manifest_sha256": verified.get("split_manifest_sha256"),
+            "counts": verified.get("counts"),
             "next_action": ledger.get("next_action"),
         }
 
@@ -78,7 +96,7 @@ def main() -> None:
         ledger_path = root / pointer["ledger"]
     else:
         ledger_path = args.ledger
-    print(json.dumps(inspect(ledger_path), indent=2))
+    print(json.dumps(inspect(ledger_path), indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":

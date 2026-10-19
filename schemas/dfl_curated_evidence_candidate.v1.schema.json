@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/richennacht/LinkerForge/schemas/dfl_curated_evidence_candidate.v1.schema.json",
+  "title": "Screened DisProt DFL evidence candidate, not a B1 split",
+  "type": "object",
+  "required": ["schema_version", "record_type", "protein_id", "sequence", "labels", "task", "source", "evidence_quality", "evidence", "conflicting_residues_masked_x", "provenance", "training_eligibility"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "record_type": {"const": "disprot_dfl_evidence_candidate"},
+    "protein_id": {"type": "string", "pattern": "^DP[0-9]+$"},
+    "uniprot_accession": {"type": ["string", "null"]},
+    "sequence": {"type": "string", "pattern": "^[ACDEFGHIKLMNPQRSTVWYBXZJUO]+$"},
+    "labels": {"type": "string", "pattern": "^[10x]+$"},
+    "task": {"const": "DFL_curated_positive_and_experimental_order"},
+    "source": {"const": "DisProt_2026_06"},
+    "evidence_quality": {"enum": ["curated_nonflagged_regions_not_adjudicated_no_linker", "curator_validated_cited_but_unpublished_flag_requires_review"]},
+    "evidence": {
+      "type": "object",
+      "required": ["positive", "ordered"],
+      "properties": {
+        "positive": {"type": "array", "items": {"$ref": "#/$defs/region"}},
+        "ordered": {"type": "array", "items": {"$ref": "#/$defs/region"}}
+      },
+      "additionalProperties": false
+    },
+    "conflicting_residues_masked_x": {"type": "integer", "minimum": 0},
+    "provenance": {
+      "type": "object",
+      "required": ["source_id", "input_sha256", "pipeline_commit", "config_hash", "schema_sha256", "python_version"],
+      "properties": {
+        "source_id": {"type": "string"},
+        "input_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "pipeline_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "config_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "schema_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "python_version": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "training_eligibility": {"enum": ["candidate_not_B1", "review_only_not_trainable", "excluded_benchmark_or_unresolved"]},
+    "quarantine_reason": {"enum": ["unresolved_family_metadata", "benchmark_id_or_direct_sequence_match", "benchmark_connected_family_component"]},
+    "family_component_id": {"type": "string", "pattern": "^[0-9a-f]{20}$"}
+  },
+  "$defs": {
+    "region": {
+      "type": "object",
+      "required": ["region_id", "start", "end", "term_id", "reference_id", "ec_id", "released", "unpublished_flag"],
+      "properties": {
+        "region_id": {"type": "string"},
+        "start": {"type": "integer", "minimum": 1},
+        "end": {"type": "integer", "minimum": 1},
+        "term_id": {"enum": ["IDPO:0000033", "IDPO:0000006"]},
+        "reference_id": {"type": "string"},
+        "ec_id": {"type": ["string", "null"]},
+        "released": {"type": "string"},
+        "unpublished_flag": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "oneOf": [
+    {"required": ["quarantine_reason"], "not": {"required": ["family_component_id"]}},
+    {"required": ["family_component_id"], "not": {"required": ["quarantine_reason"]}}
+  ],
+  "additionalProperties": false
+}

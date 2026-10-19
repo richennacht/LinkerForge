@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/richennacht/LinkerForge/schemas/uniprot_explicit_flexible_linker_candidate.v1.schema.json",
+  "title": "Explicit UniProt flexible-linker candidate, not DFL gold",
+  "type": "object",
+  "required": ["schema_version", "record_type", "source_id", "sequence", "labels", "annotation", "provenance", "training_eligibility"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "record_type": {"const": "uniprot_explicit_flexible_linker_candidate"},
+    "source_id": {"type": "string", "minLength": 1},
+    "sequence": {"type": "string", "pattern": "^[ACDEFGHIKLMNPQRSTVWYBXZJUO]+$"},
+    "labels": {"type": "string", "pattern": "^[1x]+$"},
+    "annotation": {
+      "type": "object",
+      "required": ["start_1based", "end_1based", "note", "evidence", "evidence_tier"],
+      "properties": {
+        "start_1based": {"type": "integer", "minimum": 1},
+        "end_1based": {"type": "integer", "minimum": 1},
+        "note": {"type": "string", "minLength": 1},
+        "evidence": {"type": "string"},
+        "evidence_tier": {"enum": ["pubmed_supported_region_not_DFL_adjudicated", "explicit_region_weak"]}
+      },
+      "additionalProperties": false
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["catalog_sha256", "uniprot_sequence_sha256", "source_url", "retrieved_at_utc", "pipeline_commit", "script_sha256", "schema_sha256", "software"],
+      "properties": {
+        "catalog_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "uniprot_sequence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "source_url": {"type": "string"},
+        "retrieved_at_utc": {"type": "string"},
+        "pipeline_commit": {"type": "string"},
+        "script_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "schema_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "software": {"type": "object"}
+      },
+      "additionalProperties": false
+    },
+    "training_eligibility": {"const": "candidate_not_DFL_gold_or_negative_adjudicated"}
+  },
+  "additionalProperties": false
+}

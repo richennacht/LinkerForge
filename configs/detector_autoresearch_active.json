@@ -1,5 +1,6 @@
 {
-  "schema_version": "0.1.0",
-  "config": "configs/dfl_autoresearch_data_gate_2026-10-12.json",
-  "ledger": "reports/dfl_autoresearch_data_gate_2026-10-12.json"
+  "schema_version": "2.0.0",
+  "config": "configs/dfl_b1_v2_three_layer_cnn_2026-10-18.json",
+  "ledger": "reports/dfl_b1_v2_cnn_round_2026-10-18.json",
+  "split_manifest": "data/processed/dfl_b1_v2_family_split/manifest.json"
 }

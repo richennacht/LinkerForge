@@ -2,7 +2,7 @@
 
 Read this first. It is written for an agent with no memory of the project. It states what is verified, what is not, what must not be claimed, and what has to happen before a publishable result exists. The step-by-step work order is in `CHECKLIST.md`, next to this file.
 
-Status: **the project is paused.** Dorya has stopped all work and will resume later, possibly with another tool. Do not start research, training, or subagent work on the strength of this file alone. Only resume on an explicit instruction from Dorya. The only sanctioned work so far is writing documents like this one.
+Status update (18 October 2026): work resumed on explicit user instruction. PRs #1–#7 have been merged into `codex/dfl-research-handoff`. This document remains a 17 October evidence snapshot; read `CURRENT_DIRECTION_2026-10-18.md` for the current classifier-first, geometry-plus-template and retrieval-baseline programme. Scientific gates below remain binding.
 
 Sources of truth, in order: `RESEARCH_HANDOFF.md` on `codex/dfl-research-handoff`, the dated reports under `reports/`, then this file. If this file disagrees with a dated report, the report wins and this file needs fixing.
 
@@ -81,7 +81,7 @@ Same model scores, two evaluation masks. The TE82 masked CNN scores 0.450 APS wh
 
 ---
 
-## 3. Open pull requests (all drafts)
+## 3. Pull requests (drafts when this snapshot was written; merged 18 October)
 
 Base branch for #1 to #3 is `codex/dfl-research-handoff`. Dorya is not a repo collaborator, so GitHub review requests fail. The repo is the system of record.
 

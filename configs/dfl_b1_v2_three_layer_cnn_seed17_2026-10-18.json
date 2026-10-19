@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0.0",
+  "purpose": "Matched three-layer CNN seed repeat on rebuilt B1 V2 family split",
+  "claim_status": "development_only_not_mining_certified",
+  "split_manifest": "data/processed/dfl_b1_v2_family_split/manifest.json",
+  "split_manifest_sha256": "d62136ce699294a0c07f0fa01a5350d3571643796cedadaf37d8399824893452",
+  "train_sha256": "bab060409449d4d45966602bf58498cbf6c98915a40b037759a623f3554f849b",
+  "development_sha256": "06996ce725006b9c64a97e99392ad3eba575a6b688c8c79447537f9c964b7019",
+  "auxiliary_sha256": "65d755fad4daad71a6bf1823c7b668b56400401bd70ffa6815e4e3daba007f0f",
+  "encoder": "facebook/esm2_t12_35M_UR50D",
+  "encoder_policy": "frozen_cached_offline",
+  "architecture": "three_layer_cnn_1_5_1_50_5",
+  "seed": 17,
+  "epochs": 12,
+  "batch_size": 2,
+  "max_residues_per_window": 510,
+  "learning_rate": 0.0003,
+  "max_seconds": 1800,
+  "selection": "maximum masked development residue APS; auxiliary order panel untouched",
+  "prohibited_for_selection": ["CAID3", "DP94", "TE64", "auxiliary"]
+}

@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://linkerforge.local/schemas/mined_and_natural_linker_dataset_v1.schema.json",
+  "title": "LinkerForge Mined and Natural Linker Dataset V1 Manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "dataset_id",
+    "status",
+    "source_pins",
+    "classifier_provenance",
+    "part1_validation_summary",
+    "authority_tiers",
+    "files",
+    "counts_by_tier",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "dataset_id": { "const": "mined_and_natural_linkers_v1" },
+    "status": { "const": "part1_completed_provenance_stratified_for_part2_design_and_retrieval" },
+    "source_pins": {
+      "type": "object",
+      "required": [
+        "b1_v2_split_manifest_sha256",
+        "cath_full_pilot_sha256",
+        "disprot_2026_06_sha256",
+        "curated_template_library_sha256",
+        "caid3_registry_sha256",
+        "dp94_registry_sha256"
+      ]
+    },
+    "classifier_provenance": {
+      "type": "object",
+      "required": [
+        "model_architecture",
+        "encoder",
+        "seed",
+        "checkpoint_sha256",
+        "frozen_residue_threshold",
+        "provisional_span_threshold"
+      ]
+    },
+    "part1_validation_summary": {
+      "type": "object",
+      "required": [
+        "b1_family_disjoint_split_passed",
+        "b2_conformal_calibration",
+        "b3_no_linker_specificity_panel"
+      ]
+    },
+    "authority_tiers": {
+      "type": "object",
+      "required": [
+        "natural_cath_pdb_verified",
+        "natural_disprot_curated_dfl",
+        "mined_domain_gated_interdomain",
+        "literature_engineered_template"
+      ]
+    },
+    "files": {
+      "type": "object",
+      "required": [
+        "all_records_jsonl",
+        "natural_authorities_jsonl",
+        "mined_candidates_jsonl",
+        "template_authorities_jsonl",
+        "b3_no_linker_specificity_panel_jsonl"
+      ]
+    },
+    "counts_by_tier": {
+      "type": "object",
+      "required": [
+        "natural_cath_pdb_verified",
+        "natural_disprot_curated_dfl",
+        "mined_high_confidence_dfl_call",
+        "mined_provisional_dfl_candidate",
+        "mined_domain_gap_abstained",
+        "literature_engineered_template",
+        "b3_no_linker_specificity_panel"
+      ]
+    },
+    "limitations": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    }
+  },
+  "additionalProperties": true
+}

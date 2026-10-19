@@ -2,7 +2,7 @@
 
 Companion to `SPEC.md`. Read that first, especially section 5 (integrity constraints). Items are ordered. Do not start a blocked item until its dependencies are checked off.
 
-Pause rule: the project is paused. Do not run any item without Dorya's explicit go-ahead. Items marked PAPER I need no GPU, no laptop and no new data.
+Status update (18 October 2026): Dorya explicitly resumed work, beginning with the classifier and then geometry-plus-template design with a retrieval baseline. See `CURRENT_DIRECTION_2026-10-18.md`. The scientific dependencies and benchmark seals below remain in force.
 
 Subagent rule: at most two at a time, and Haiku only. Never Sonnet or Opus. Prefer doing the work inline.
 
@@ -64,11 +64,15 @@ These items need no GPU, no laptop and no new data. They use committed reports a
 
 Paper II is the certified high-precision caller plus mined set. Do not draft it until B1 passes.
 
-- [ ] **B1. Family-disjoint train, development and auxiliary split with a passing preflight.**
+- [x] **B1. Family-disjoint train, development and auxiliary split with a passing preflight.**
   - What: build a new versioned split that is disjoint by family cluster (not by protein ID). Make its launcher pass a hash-checked preflight against all nominated benchmark sequence registries, including `data/processed/prospective_dfl_holdout_dp94_v1/`.
   - Done when: `scripts/preflight_caid3_protected_training.py` and `scripts/check_detector_autoresearch.py` pass on the new split. The current split (`caid3_protected_dfl_v1`) is not used.
   - Blocker: the current split overlaps DP94. DP94 is a candidate, not an independently validated benchmark. Its label semantics are unverified.
   - Depends on: a chosen family clustering method. `MINING_RUN_SIZING.md` proposes MMseqs2 at 30% identity and 50% coverage for leakage control. That is a proposal, not a tested setting, and it is not yet decided whether it defines families.
+  - Implementation checkpoint (18 October): `scripts/preflight_dfl_family_training.py` and synthetic rejection tests are tracked; see `CLASSIFIER_DATA_GATE.md`. The actual versioned split, verified family map and launcher integration are still open. This is **not** B1 completion.
+  - Source-capacity audit (18 October): four provenance-bearing candidate pools yield only 40 unique DFL-positive sequences after direct CAID3/DP94 sequence screening, and 5 outside benchmark-touching components under the declared *transitive local* graph. See `reports/DFL_B1_FEASIBILITY_AUDIT_2026-10-18.md`. Neither count certifies biological family independence or a viable split; B1 remains unchecked.
+  - Weak annotated-source route (18 October): reconstructed 884 UniProt explicit flexible/disordered-linker annotations on full sequences with exact peptide/coordinate checks and `x` elsewhere. Eleven avoid direct registry screening, only one in the PubMed tier; they are **not** independently adjudicated DFL gold. See the same audit. No substitution for B1.
+  - Completed (18 October): Preregistered and built `data/processed/dfl_b1_v2_family_split/manifest.json` (`cbb0358c096c9c870b1e37528ad0d41fb261a5eda470c0b73c0ba9090c370050`, `family_manifest.json` `db484272985535f08cf182166503973e77753abd00c7a4df1a197cc9db971dd2`) via `literature/DFL_FIREWALL_V2_PREREGISTRATION_2026-10-18.md`, `schemas/dfl_family_split_v2.schema.json`, `scripts/preflight_dfl_family_training_v2.py`, and `scripts/build_dfl_b1_v2_split.py`. Under `RULE_V2` (`30%` identity, $\ge 50$ aligned columns, $\ge 80\%$ true ungapped residue coverage on both sequences; `0.000%` residue-shuffle and `0.021%` 12-mer block-shuffle false-hit rates) plus transitive `Pfam`/`Gene3D`/`UniRef50` family components, 97 proteins across 91 benchmark-disjoint family components survive (`60` train, `28` development, `9` auxiliary order panel; `1,920` `1` residues and `1,253` verified `0` residues). `scripts/preflight_caid3_protected_training.py`, `scripts/check_detector_autoresearch.py` (via `configs/detector_autoresearch_active.json` -> `reports/dfl_b1_v2_family_round_2026-10-18.json`), and `scripts/run_caid3_protected_dfl_trial.py --preflight-only` (via `configs/dfl_b1_v2_family_round_2026-10-18.json`) all pass on the V2 split while explicitly prohibiting `caid3_protected_dfl_v1`. Note: Paper II remains gated on `B2` (conformal risk control) and `B3` (adjudicated no-linker specificity panel).
 
 - [ ] **B2. Conformal thresholds with abstention.**
   - What: implement conformal risk control (Learn then Test) for a precision target. Calibrate on a small clean protein-split calibration set drawn from B1's split. Report the abstention rate.
@@ -76,12 +80,14 @@ Paper II is the certified high-precision caller plus mined set. Do not draft it 
   - Blocker: PR #1 has selective prediction with a binomial bound, not conformal risk control. It is an input, not a substitute.
   - Depends on: B1.
   - Integrity: the 0.90 operating point from current development data is not a guarantee and must not be called one.
+  - Exploratory implementation (19 October): The cutoff search on known development residues reports `93` TP and `1` FP at `0.639120` (nominal unadjusted Clopper–Pearson UCB `4.95%`). The search reuses calibration labels across cutoffs without multiplicity control, treats correlated residues as trials, and does not match the production mean/max span caller. This is not certified conformal risk control or a prospective precision guarantee. See `reports/PAPER_CLAIMS_AUDIT_2026-10-19.md`.
 
 - [ ] **B3. Adjudicated no-linker set.**
   - What: assemble proteins believed to contain no linker, with each one checked for absence of flexible linkers (manual or evidence-based adjudication). Keep it disjoint from B1 and from CAID3.
   - Done when: the set exists with per-protein evidence and adjudicator notes, and specificity can be measured on it.
   - Blocker: without this set there is no specificity claim, and therefore no mining claim. This is the most important blocked item after B1.
   - Depends on: B1 (for disjointness).
+  - Proxy audit (19 October): A mixed 40-protein panel had `39 / 40` zero high-tier calls. Its 31 single/homo-domain proteins fail the gate by construction, and absent `IDPO:0000033` annotation does not prove no linker. The nine auxiliary order-labelled proteins do not establish whole-protein absence either. Independent per-protein no-linker adjudication remains undone. See `reports/PAPER_CLAIMS_AUDIT_2026-10-19.md`.
 
 - [ ] **B4. Label-ceiling analysis.**
   - What: estimate how many apparent false positives are unannotated real linkers. Use the flagged residues from development and the known unknown-label inventory.
@@ -120,17 +126,22 @@ Paper II is the certified high-precision caller plus mined set. Do not draft it 
 
 These can run on existing mined or natural linker data. Each is publishable either way.
 
-- [ ] **X1. Do Li et al.'s relative-position structural features transfer across domain pairs?**
+- [x] **X1. Do Li et al.'s relative-position structural features transfer across domain pairs?**
   - What: Li et al. assert that relative-position structural features transfer across domain pairs and never test it. Test on natural linkers from LinkerDB (E1) or SynLinker-derived sources, grouped by domain pair, with features computed from AlphaFold DB structures.
   - Done when: a held-out-domain-pair result is reported with a baseline that uses sequence only, and with raw counts.
   - Depends on: E1 or another source of natural linkers with flanking domains.
   - Integrity: Li et al.'s own figures are not used. The test is on our own data.
+  - Result (18 October): Evaluated via `scripts/evaluate_x1_relative_position_transfer.py` on 91 coordinate-complete CATH v4.4.0 natural two-domain proteins across 57 CATH domain-pair groups (5 seeds, 135 held-out evaluations; `reports/x1_relative_position_transfer_2026-10-18.json` and `reports/DFL_B1_V2_PREREGISTRATION_AND_X1_TRANSFER_2026-10-18.md`). Learned linear weights on 3D relative-position features (`sequence_plus_relative_position_3d`, mean MRR `0.0684`, Top-1 `0/135`, Top-5 `4/135`) do **not** improve over `sequence_only` (mean MRR `0.0709`, Top-1 `0/135`, Top-5 `5/135`; paired cluster-bootstrap $\Delta\text{MRR} = -0.0025$, 95% CI $[-0.0173, +0.0058]$) or `sequence_plus_local_port` (mean MRR `0.0697`, Top-1 `0/135`, Top-5 `6/135`), whereas a zero-parameter physical `geometry_span_match` rule ($3.8\,\text{\AA}/\text{res}$ reach + $2.5\,\text{\AA}/\text{res}$ span match) achieves mean MRR `0.1710` (Top-1 `7/135`, Top-5 `37/135`).
 
-- [ ] **X2. Does template retrieval reconstruct held-out natural linkers from flanking context?**
+- [x] **X2. Does template retrieval reconstruct held-out natural linkers from flanking context?**
   - What: hold out natural linkers. For each, retrieve the closest linker from the template library (PR #2) using flanking domain context only. Measure sequence recovery and length error. Include a non-retrieval baseline (for example, the most frequent linker of matching length).
   - Done when: the retrieval result and baseline are reported with raw counts.
   - Depends on: E1 for natural linkers with flanking context. PR #2 for the library.
   - Integrity: a strong retrieval result collapses the generative contribution. Report it either way.
+  - Result (19 October): Evaluated via `scripts/evaluate_x2_template_and_authority_retrieval.py` (`src/linkerforge/retrieval/baseline.py`) on 5-fold strictly cluster-disjoint (`homology_cluster_id`-disjoint) cross-validation over Cohort A (`91` CATH v4.4.0 3D natural linkers across `57` superfamily-pair clusters) and Cohort B (`148` combined natural authorities = `91` CATH + `57` DisProt curated `IDPO:0000033` across `113` clusters) from `mined_and_natural_linkers_v1` (`009ea585...`; see `reports/x2_retrieval_and_part2_design_2026-10-19.json` and `reports/PART2_GEOMETRY_TEMPLATE_DESIGN_AND_X2_RETRIEVAL_2026-10-19.md`):
+    1. *Exact sequence identity is at the random baseline across unrelated domain pairs (`8.2%–13.3%` NW identity across all blind and oracle-length arms).*
+    2. *Flanking-context template and authority retrieval strongly recover biophysical composition:* on Cohort B (`n = 148`), `flanking_context_template_retrieval` achieves `0.8052` composition cosine (`95% CI [0.7685, 0.8400]`) and `flanking_context_nn_natural_authority` achieves `0.8001` (`95% CI [0.7634, 0.8340]`), beating `fixed_ggggs3_control` (`0.5996`), `training_median_length_gs_control` (`0.5330`), and the non-retrieval `length_matched_frequent_natural_control` (`0.4833`) by $+0.20\text{ to }+0.32$ cosine units.
+    3. *3D port geometry (`geometry_only_control`), not flanking sequence alone, governs linker length and bridgeability:* on Cohort A (`n = 91`), `geometry_only_control` achieves `MAE = 4.49 aa` (`61/91` within $\pm 5\text{ aa}$), `91/91` (`100.0%`) physical $3.8\,\text{\AA}/\text{res}$ feasibility, and `0.7701` composition cosine (vs `MAE = 5.27–7.15 aa` and `82–87/91` feasible from flanking sequences alone); with target length specified (`length_matched_template_control`), the 23-entry PR #2 template library achieves `MAE = 0.74 aa` (`86/91` within $\pm 5\text{ aa}$, `90/91` 3D feasible, `0.7466` composition cosine) on Cohort A and `MAE = 2.87 aa` (`125/148` within $\pm 5\text{ aa}$, `0.7945` composition cosine) on Cohort B.
 
 ---
 

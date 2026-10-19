@@ -1,0 +1,451 @@
+{
+  "aggregate_metrics": {
+    "fixed_gs": {
+      "max_mrr": 0.11926370379801751,
+      "mean_mrr_across_seeds": 0.1065568788170554,
+      "min_mrr": 0.08749060791544451,
+      "pooled_top1_rate": 0.0,
+      "pooled_top1_raw_count": "0/135",
+      "pooled_top5_rate": 0.14074074074074075,
+      "pooled_top5_raw_count": "19/135",
+      "total_held_out_evaluations": 135
+    },
+    "geometry_span_match": {
+      "max_mrr": 0.20751340222348563,
+      "mean_mrr_across_seeds": 0.17102193941434032,
+      "min_mrr": 0.13472228996008773,
+      "pooled_top1_rate": 0.05185185185185185,
+      "pooled_top1_raw_count": "7/135",
+      "pooled_top5_rate": 0.2740740740740741,
+      "pooled_top5_raw_count": "37/135",
+      "total_held_out_evaluations": 135
+    },
+    "length_heuristic": {
+      "max_mrr": 0.1378642944009809,
+      "mean_mrr_across_seeds": 0.11596380385245333,
+      "min_mrr": 0.08879673044303148,
+      "pooled_top1_rate": 0.044444444444444446,
+      "pooled_top1_raw_count": "6/135",
+      "pooled_top5_rate": 0.0962962962962963,
+      "pooled_top5_raw_count": "13/135",
+      "total_held_out_evaluations": 135
+    },
+    "nearest_training": {
+      "max_mrr": 0.03220246322781274,
+      "mean_mrr_across_seeds": 0.03194302816350189,
+      "min_mrr": 0.03155666790260784,
+      "pooled_top1_rate": 0.0,
+      "pooled_top1_raw_count": "0/135",
+      "pooled_top5_rate": 0.0,
+      "pooled_top5_raw_count": "0/135",
+      "total_held_out_evaluations": 135
+    },
+    "sequence_only": {
+      "max_mrr": 0.08137925044318253,
+      "mean_mrr_across_seeds": 0.07094169341425119,
+      "min_mrr": 0.05855632256521509,
+      "pooled_top1_rate": 0.0,
+      "pooled_top1_raw_count": "0/135",
+      "pooled_top5_rate": 0.037037037037037035,
+      "pooled_top5_raw_count": "5/135",
+      "total_held_out_evaluations": 135
+    },
+    "sequence_plus_local_port": {
+      "max_mrr": 0.07645936730536614,
+      "mean_mrr_across_seeds": 0.06973938256635685,
+      "min_mrr": 0.058413666338502944,
+      "pooled_top1_rate": 0.0,
+      "pooled_top1_raw_count": "0/135",
+      "pooled_top5_rate": 0.044444444444444446,
+      "pooled_top5_raw_count": "6/135",
+      "total_held_out_evaluations": 135
+    },
+    "sequence_plus_relative_position_3d": {
+      "max_mrr": 0.07417034149986768,
+      "mean_mrr_across_seeds": 0.06840449160856696,
+      "min_mrr": 0.06257103836868198,
+      "pooled_top1_rate": 0.0,
+      "pooled_top1_raw_count": "0/135",
+      "pooled_top5_rate": 0.02962962962962963,
+      "pooled_top5_raw_count": "4/135",
+      "total_held_out_evaluations": 135
+    }
+  },
+  "coordinate_complete_records": 91,
+  "experiment": "X1_held_out_domain_pair_relative_position_transfer",
+  "limitations": [
+    "Evaluated on 91 coordinate-complete CATH v4.4.0 two-domain natural proteins across 57 CATH domain-pair groups.",
+    "No Li et al. 2026 figures were used; features were computed directly from verified PDB coordinates.",
+    "Pilot records have unreviewed linker interiors and test structural-context transfer for natural-linker ranking, not wet-lab expression."
+  ],
+  "paired_cluster_bootstrap_mrr_differences": {
+    "local_port_vs_sequence_only": {
+      "ci95_high": 0.0007262361495266947,
+      "ci95_low": -0.004375881760326716,
+      "observed_delta_mrr": -0.00120231084789435
+    },
+    "relative_position_3d_vs_local_port": {
+      "ci95_high": 0.005578979217705622,
+      "ci95_low": -0.013170455912519155,
+      "observed_delta_mrr": -0.0013348909577898804
+    },
+    "relative_position_3d_vs_sequence_only": {
+      "ci95_high": 0.0058225904246618915,
+      "ci95_low": -0.017325771083420163,
+      "observed_delta_mrr": -0.0025372018056842305
+    }
+  },
+  "per_seed": [
+    {
+      "held_out_domain_pair_groups": 27,
+      "held_out_examples": 27,
+      "metrics": {
+        "fixed_gs": {
+          "mrr": 0.11405688227798651,
+          "n": 27,
+          "top1_count": 0,
+          "top1_rate": 0.0,
+          "top5_count": 4,
+          "top5_rate": 0.14814814814814814
+        },
+        "geometry_span_match": {
+          "mrr": 0.20751340222348563,
+          "n": 27,
+          "top1_count": 2,
+          "top1_rate": 0.07407407407407407,
+          "top5_count": 8,
+          "top5_rate": 0.2962962962962963
+        },
+        "length_heuristic": {
+          "mrr": 0.12310838358862464,
+          "n": 27,
+          "top1_count": 1,
+          "top1_rate": 0.037037037037037035,
+          "top5_count": 3,
+          "top5_rate": 0.1111111111111111
+        },
+        "nearest_training": {
+          "mrr": 0.03195998845563176,
+          "n": 27,
+          "top1_count": 0,
+          "top1_rate": 0.0,
+          "top5_count": 0,
+          "top5_rate": 0.0
+        },
+        "sequence_only": {
+          "mrr": 0.07845664196904163,
+          "n": 27,
+          "top1_count": 0,
+          "top1_rate": 0.0,
+          "top5_count": 1,
+          "top5_rate": 0.037037037037037035
+        },
+        "sequence_plus_local_port": {
+          "mrr": 0.07620999771167657,
+          "n": 27,
+          "top1_count": 0,
+          "top1_rate": 0.0,
+          "top5_count": 1,
+          "top5_rate": 0.037037037037037035
+        },
+        "sequence_plus_relative_position_3d": {
+          "mrr": 0.06340696948070285,
+          "n": 27,
+          "top1_count": 0,
+          "top1_rate": 0.0,
+          "top5_count": 0,
+          "top5_rate": 0.0
+        }
+      },
+      "seed": 7,
+      "split_counts": {
+        "blind": 13,
+        "train": 64,
+        "validation": 14
+      }
+    },
+    {
+      "held_out_domain_pair_groups": 27,
+      "held_out_examples": 27,
+      "metrics": {
+        "fixed_gs": {
+          "mrr": 0.11294809061120263,
+          "n": 27,
+          "top1_count": 0,
+          "top1_rate": 0.0,
+          "top5_count": 5,
+          "top5_rate": 0.18518518518518517
+        },
+        "geometry_span_match": {
+          "mrr": 0.15016556278237853,
+          "n": 27,
+          "top1_count": 1,
+          "top1_rate": 0.037037037037037035,
+          "top5_count": 9,
+          "top5_rate": 0.3333333333333333
+        },
+        "length_heuristic": {
+          "mrr": 0.08879673044303148,
+          "n": 27,
+          "top1_count": 1,
+          "top1_rate": 0.037037037037037035,
+          "top5_count": 1,
+          "top5_rate": 0.037037037037037035
+        },
+        "nearest_training": {
+          "mrr": 0.032023313720569935,
+          "n": 27,
+          "top1_count": 0,
+          "top1_rate": 0.0,
+          "top5_count": 0,
+          "top5_rate": 0.0
+        },
+        "sequence_only": {
+          "mrr": 0.06702834380264047,
+          "n": 27,
+          "top1_count": 0,
+          "top1_rate": 0.0,
+          "top5_count": 1,
+          "top5_rate": 0.037037037037037035
+        },
+        "sequence_plus_local_port": {
+          "mrr": 0.0672939935242109,
+          "n": 27,
+          "top1_count": 0,
+          "top1_rate": 0.0,
+          "top5_count": 1,
+          "top5_rate": 0.037037037037037035
+        },
+        "sequence_plus_relative_position_3d": {
+          "mrr": 0.06798695377717608,
+          "n": 27,
+          "top1_count": 0,
+          "top1_rate": 0.0,
+          "top5_count": 1,
+          "top5_rate": 0.037037037037037035
+        }
+      },
+      "seed": 17,
+      "split_counts": {
+        "blind": 13,
+        "train": 64,
+        "validation": 14
+      }
+    },
+    {
+      "held_out_domain_pair_groups": 27,
+      "held_out_examples": 27,
+      "metrics": {
+        "fixed_gs": {
+          "mrr": 0.08749060791544451,
+          "n": 27,
+          "top1_count": 0,
+          "top1_rate": 0.0,
+          "top5_count": 3,
+          "top5_rate": 0.1111111111111111
+        },
+        "geometry_span_match": {
+          "mrr": 0.17458742709463812,
+          "n": 27,
+          "top1_count": 2,
+          "top1_rate": 0.07407407407407407,
+          "top5_count": 7,
+          "top5_rate": 0.25925925925925924
+        },
+        "length_heuristic": {
+          "mrr": 0.12383321126429062,
+          "n": 27,
+          "top1_count": 1,
+          "top1_rate": 0.037037037037037035,
+          "top5_count": 3,
+          "top5_rate": 0.1111111111111111
+        },
+        "nearest_training": {
+          "mrr": 0.03220246322781274,
+          "n": 27,
+          "top1_count": 0,
+          "top1_rate": 0.0,
+          "top5_count": 0,
+          "top5_rate": 0.0
+        },
+        "sequence_only": {
+          "mrr": 0.08137925044318253,
+          "n": 27,
+          "top1_count": 0,
+          "top1_rate": 0.0,
+          "top5_count": 3,
+          "top5_rate": 0.1111111111111111
+        },
+        "sequence_plus_local_port": {
+          "mrr": 0.07645936730536614,
+          "n": 27,
+          "top1_count": 0,
+          "top1_rate": 0.0,
+          "top5_count": 4,
+          "top5_rate": 0.14814814814814814
+        },
+        "sequence_plus_relative_position_3d": {
+          "mrr": 0.07417034149986768,
+          "n": 27,
+          "top1_count": 0,
+          "top1_rate": 0.0,
+          "top5_count": 3,
+          "top5_rate": 0.1111111111111111
+        }
+      },
+      "seed": 31,
+      "split_counts": {
+        "blind": 13,
+        "train": 64,
+        "validation": 14
+      }
+    },
+    {
+      "held_out_domain_pair_groups": 27,
+      "held_out_examples": 27,
+      "metrics": {
+        "fixed_gs": {
+          "mrr": 0.11926370379801751,
+          "n": 27,
+          "top1_count": 0,
+          "top1_rate": 0.0,
+          "top5_count": 3,
+          "top5_rate": 0.1111111111111111
+        },
+        "geometry_span_match": {
+          "mrr": 0.13472228996008773,
+          "n": 27,
+          "top1_count": 0,
+          "top1_rate": 0.0,
+          "top5_count": 7,
+          "top5_rate": 0.25925925925925924
+        },
+        "length_heuristic": {
+          "mrr": 0.10621639956533901,
+          "n": 27,
+          "top1_count": 1,
+          "top1_rate": 0.037037037037037035,
+          "top5_count": 3,
+          "top5_rate": 0.1111111111111111
+        },
+        "nearest_training": {
+          "mrr": 0.03155666790260784,
+          "n": 27,
+          "top1_count": 0,
+          "top1_rate": 0.0,
+          "top5_count": 0,
+          "top5_rate": 0.0
+        },
+        "sequence_only": {
+          "mrr": 0.06928790829117626,
+          "n": 27,
+          "top1_count": 0,
+          "top1_rate": 0.0,
+          "top5_count": 0,
+          "top5_rate": 0.0
+        },
+        "sequence_plus_local_port": {
+          "mrr": 0.07031988795202776,
+          "n": 27,
+          "top1_count": 0,
+          "top1_rate": 0.0,
+          "top5_count": 0,
+          "top5_rate": 0.0
+        },
+        "sequence_plus_relative_position_3d": {
+          "mrr": 0.07388715491640625,
+          "n": 27,
+          "top1_count": 0,
+          "top1_rate": 0.0,
+          "top5_count": 0,
+          "top5_rate": 0.0
+        }
+      },
+      "seed": 43,
+      "split_counts": {
+        "blind": 13,
+        "train": 64,
+        "validation": 14
+      }
+    },
+    {
+      "held_out_domain_pair_groups": 27,
+      "held_out_examples": 27,
+      "metrics": {
+        "fixed_gs": {
+          "mrr": 0.09902510948262583,
+          "n": 27,
+          "top1_count": 0,
+          "top1_rate": 0.0,
+          "top5_count": 4,
+          "top5_rate": 0.14814814814814814
+        },
+        "geometry_span_match": {
+          "mrr": 0.18812101501111161,
+          "n": 27,
+          "top1_count": 2,
+          "top1_rate": 0.07407407407407407,
+          "top5_count": 6,
+          "top5_rate": 0.2222222222222222
+        },
+        "length_heuristic": {
+          "mrr": 0.1378642944009809,
+          "n": 27,
+          "top1_count": 2,
+          "top1_rate": 0.07407407407407407,
+          "top5_count": 3,
+          "top5_rate": 0.1111111111111111
+        },
+        "nearest_training": {
+          "mrr": 0.03197270751088718,
+          "n": 27,
+          "top1_count": 0,
+          "top1_rate": 0.0,
+          "top5_count": 0,
+          "top5_rate": 0.0
+        },
+        "sequence_only": {
+          "mrr": 0.05855632256521509,
+          "n": 27,
+          "top1_count": 0,
+          "top1_rate": 0.0,
+          "top5_count": 0,
+          "top5_rate": 0.0
+        },
+        "sequence_plus_local_port": {
+          "mrr": 0.058413666338502944,
+          "n": 27,
+          "top1_count": 0,
+          "top1_rate": 0.0,
+          "top5_count": 0,
+          "top5_rate": 0.0
+        },
+        "sequence_plus_relative_position_3d": {
+          "mrr": 0.06257103836868198,
+          "n": 27,
+          "top1_count": 0,
+          "top1_rate": 0.0,
+          "top5_count": 0,
+          "top5_rate": 0.0
+        }
+      },
+      "seed": 97,
+      "split_counts": {
+        "blind": 13,
+        "train": 64,
+        "validation": 14
+      }
+    }
+  ],
+  "seeds": [
+    7,
+    17,
+    31,
+    43,
+    97
+  ],
+  "source_records_sha256": "20deca0e0bff4d1c68b245cc4e15756fc4e6462537c67a7d4508b5f8f58cfd85",
+  "status": "completed_held_out_domain_pair_ablation",
+  "total_records": 91,
+  "unique_domain_pair_groups": 57
+}

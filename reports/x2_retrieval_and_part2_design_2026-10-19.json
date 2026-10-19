@@ -1,0 +1,1500 @@
+{
+  "dataset_provenance": {
+    "dataset_id": "mined_and_natural_linkers_v1",
+    "manifest_sha256": "b1b8c5b34eb9a98eb627005a810f367e4364be9a75447af9740b3bff6d3e3232",
+    "mined_high_confidence_count": 6556,
+    "mined_total_count": 27595,
+    "natural_cath_count": 91,
+    "natural_disprot_count": 57,
+    "template_count": 23
+  },
+  "experiment_id": "X2_retrieval_baseline_and_part2_geometry_template_design",
+  "part2_design_engine_verification": {
+    "cases": {
+      "flexible_cleavable_tandem": {
+        "q1_feasibility": {
+          "chain_topology": {
+            "chain_crossings_required": 1,
+            "frequency": "The standard fusion format.",
+            "non_peptide_tethers": 0,
+            "note": "Topology is reported because a geometrically satisfiable tether set with no realisable chain topology is not a usable design.",
+            "peptide_tethers": 1,
+            "requirement": "One chain: domain A, linker, domain B. Both anchors are chain termini.",
+            "tether_count": 1,
+            "topology": "tandem"
+          },
+          "flexible_strain": {
+            "fraction_of_contour_required": 0.3289,
+            "near_full_extension": false,
+            "near_full_extension_fraction": 0.8,
+            "requires_stretching_beyond_rms": false,
+            "rms_end_to_end_gaussian_angstrom": 20.29,
+            "rms_end_to_end_wormlike_angstrom": 19.86
+          },
+          "primary_span_window": {
+            "attachment_distance_angstrom": 20.0,
+            "chain_model": {
+              "characteristic_ratio": 1.9,
+              "composition": "G4S2",
+              "contour_per_residue_angstrom": 3.8,
+              "persistence_length_angstrom": 3.7
+            },
+            "linker_type": "flexible",
+            "maximum_residues": null,
+            "maximum_residues_reason": "A flexible linker has no geometric upper bound; extra length costs configurational entropy and loosens relative domain orientation, which this calculator does not score.",
+            "minimum_residues": 5,
+            "minimum_residues_basis": "Physical lower bound at the 3.8 A virtual Ca-Ca bond: nothing shorter can reach.",
+            "minimum_residues_design": 5,
+            "minimum_residues_design_basis": "At the 3.5 A per-residue rise commonly quoted for extended linkers. One or two residues longer than the physical bound for short spans; use it to avoid designing a linker that only just reaches.",
+            "minimum_residues_range": [
+              5,
+              6
+            ],
+            "per_residue_rise_angstrom": 3.8,
+            "per_residue_rise_range_angstrom": [
+              3.3,
+              3.8
+            ],
+            "unstrained_residues": 15
+          },
+          "requested_cleavability": "cleavable",
+          "requested_rigidity": "flexible",
+          "return_tether_span_window": null,
+          "target_length_verdict": {
+            "reason": "15 residues are within the required-length window [5, unbounded] for 20.0 A.",
+            "requested_residues": 15,
+            "verdict": "bridgeable"
+          },
+          "target_residues_used": 15,
+          "topology": "end_to_end_tandem"
+        },
+        "q2_attachment_and_context": {
+          "attachment_scope_note": "End-to-end tandem fusion requires 1 polypeptide linker; internal insertion requires 2 polypeptide tethers leaving and re-entering the host domain.",
+          "left_domain_id": null,
+          "left_flank_length": 0,
+          "right_domain_id": null,
+          "right_flank_length": 0,
+          "structure_junction_report": null
+        },
+        "q3_candidates": [
+          {
+            "authority_tier": "mined_high_confidence_dfl_call",
+            "candidate_id": "mined_swissprot_gap:G5EFX6:244-258",
+            "cleavability_label": "cleavable",
+            "construction_mode": "single_segment_template_or_authority_retrieval",
+            "flags": [
+              "bridgeable",
+              "tier:mined_high_confidence_dfl_call",
+              "unstrained_rms_reach"
+            ],
+            "flanking_context_similarity": 0.0,
+            "geometric_verdict": "bridgeable",
+            "length": 15,
+            "matched_proteases": [
+              "unspecified protease-sensitive"
+            ],
+            "provenance_note": "mined_high_confidence_dfl_call (two_stage_domain_gated_seed31_cnn_prediction_not_ground_truth)",
+            "rank": 1,
+            "rigidity_p_rigid": 0.4192,
+            "rigidity_predicted_label": "flexible",
+            "sequence": "GNRKRRYKKTCETAE",
+            "target_length_deviation_residues": 0.0
+          },
+          {
+            "authority_tier": "literature_engineered_template",
+            "candidate_id": "template:cleav-fxia-fviia-fix-albumin",
+            "cleavability_label": "cleavable",
+            "construction_mode": "single_segment_template_or_authority_retrieval",
+            "flags": [
+              "bridgeable",
+              "tier:literature_engineered_template",
+              "unstrained_rms_reach"
+            ],
+            "flanking_context_similarity": 0.0,
+            "geometric_verdict": "bridgeable",
+            "length": 17,
+            "matched_proteases": [
+              "FXIa/FVIIa"
+            ],
+            "provenance_note": "Chen X, Zaro JL, Shen W-C. Fusion protein linkers: property, design and functionality. Advanced Drug Delivery Reviews 65 (2013) 1357-1369. (Section on in vivo cleavable linkers; Table 3), attributing to Schulte, review reference [59] in text and [58] in Fig. 4 (primary DOI not verified)",
+            "rank": 2,
+            "rigidity_p_rigid": 0.4033,
+            "rigidity_predicted_label": "flexible",
+            "sequence": "VSQTSKLTRAETVFPDV",
+            "target_length_deviation_residues": 2.0
+          },
+          {
+            "authority_tier": "literature_engineered_template",
+            "candidate_id": "template:cleav-kex2-furin-dithiocyclopeptide",
+            "cleavability_label": "cleavable",
+            "construction_mode": "single_segment_template_or_authority_retrieval",
+            "flags": [
+              "bridgeable",
+              "tier:literature_engineered_template"
+            ],
+            "flanking_context_similarity": 0.0,
+            "geometric_verdict": "bridgeable",
+            "length": 12,
+            "matched_proteases": [
+              "Kex2/furin-type"
+            ],
+            "provenance_note": "Chen X, Zaro JL, Shen W-C. Fusion protein linkers: property, design and functionality. Advanced Drug Delivery Reviews 65 (2013) 1357-1369. (Section on in vivo cleavable linkers; Table 3), attributing to Zhao et al., review reference [42] (primary DOI not verified)",
+            "rank": 3,
+            "rigidity_p_rigid": 0.4545,
+            "rigidity_predicted_label": "flexible",
+            "sequence": "CRRRRRREAEAC",
+            "target_length_deviation_residues": 3.0
+          },
+          {
+            "authority_tier": "literature_engineered_template",
+            "candidate_id": "template:cleav-furin-ribotoxin",
+            "cleavability_label": "cleavable",
+            "construction_mode": "single_segment_template_or_authority_retrieval",
+            "flags": [
+              "bridgeable",
+              "tier:literature_engineered_template"
+            ],
+            "flanking_context_similarity": 0.0,
+            "geometric_verdict": "bridgeable",
+            "length": 10,
+            "matched_proteases": [
+              "furin"
+            ],
+            "provenance_note": "Chen X, Zaro JL, Shen W-C. Fusion protein linkers: property, design and functionality. Advanced Drug Delivery Reviews 65 (2013) 1357-1369. (Section on in vivo cleavable linkers; Table 3), attributing to Goyal and Batra, review reference [72] (primary DOI not verified)",
+            "rank": 4,
+            "rigidity_p_rigid": 0.3714,
+            "rigidity_predicted_label": "flexible",
+            "sequence": "TRHRQPRGWE",
+            "target_length_deviation_residues": 5.0
+          },
+          {
+            "authority_tier": "literature_engineered_template",
+            "candidate_id": "template:cleav-furin-scfv",
+            "cleavability_label": "cleavable",
+            "construction_mode": "single_segment_template_or_authority_retrieval",
+            "flags": [
+              "bridgeable",
+              "tier:literature_engineered_template"
+            ],
+            "flanking_context_similarity": 0.0,
+            "geometric_verdict": "bridgeable",
+            "length": 10,
+            "matched_proteases": [
+              "furin"
+            ],
+            "provenance_note": "Chen X, Zaro JL, Shen W-C. Fusion protein linkers: property, design and functionality. Advanced Drug Delivery Reviews 65 (2013) 1357-1369. (Section on in vivo cleavable linkers; Table 3), attributing to Wang et al., review reference [73]; Table 3 groups it with [72] (primary DOI not verified)",
+            "rank": 5,
+            "rigidity_p_rigid": 0.3554,
+            "rigidity_predicted_label": "flexible",
+            "sequence": "AGNRVRRSVG",
+            "target_length_deviation_residues": 5.0
+          }
+        ],
+        "schema_version": "1.0.0",
+        "scope_and_integrity_notes": [
+          "Geometric bridgeability is a necessary physical condition (3.8 A/res C-alpha ceiling; 1.5 A/res helical rise), never a fusion expression or activity probability (SPEC.md section 5.8).",
+          "Cleavable + rigid requests return a two-part composite construct (rigid spacer + flexible GS-flanked protease cassette) because proteolysis requires local backbone unfolding (Hubbard et al. 1994).",
+          "Mined candidates (`mined_high_confidence_dfl_call`) are model-called inter-domain spans from Part 1 and carry explicit provenance flags distinct from curated natural or literature authorities."
+        ]
+      },
+      "flexible_non_cleavable_internal_insertion": {
+        "q1_feasibility": {
+          "chain_topology": {
+            "chain_crossings_required": 2,
+            "frequency": "Established as domain insertion; common in engineered switches.",
+            "non_peptide_tethers": 0,
+            "note": "Topology is reported because a geometrically satisfiable tether set with no realisable chain topology is not a usable design.",
+            "peptide_tethers": 2,
+            "requirement": "One chain crossing twice: domain B sits inside a surface loop of domain A, so the anchors on A are the two flanks of one loop and the anchors on B are its two termini. Both loop flanks must tolerate interruption.",
+            "tether_count": 2,
+            "topology": "insertional"
+          },
+          "flexible_strain": {
+            "fraction_of_contour_required": 0.3947,
+            "near_full_extension": false,
+            "near_full_extension_fraction": 0.8,
+            "requires_stretching_beyond_rms": false,
+            "rms_end_to_end_gaussian_angstrom": 15.71,
+            "rms_end_to_end_wormlike_angstrom": 15.02
+          },
+          "primary_span_window": {
+            "attachment_distance_angstrom": 15.0,
+            "chain_model": {
+              "characteristic_ratio": 1.9,
+              "composition": "G4S2",
+              "contour_per_residue_angstrom": 3.8,
+              "persistence_length_angstrom": 3.7
+            },
+            "linker_type": "flexible",
+            "maximum_residues": null,
+            "maximum_residues_reason": "A flexible linker has no geometric upper bound; extra length costs configurational entropy and loosens relative domain orientation, which this calculator does not score.",
+            "minimum_residues": 3,
+            "minimum_residues_basis": "Physical lower bound at the 3.8 A virtual Ca-Ca bond: nothing shorter can reach.",
+            "minimum_residues_design": 4,
+            "minimum_residues_design_basis": "At the 3.5 A per-residue rise commonly quoted for extended linkers. One or two residues longer than the physical bound for short spans; use it to avoid designing a linker that only just reaches.",
+            "minimum_residues_range": [
+              3,
+              4
+            ],
+            "per_residue_rise_angstrom": 3.8,
+            "per_residue_rise_range_angstrom": [
+              3.3,
+              3.8
+            ],
+            "unstrained_residues": 9
+          },
+          "requested_cleavability": "non_cleavable",
+          "requested_rigidity": "flexible",
+          "return_tether_span_window": {
+            "attachment_distance_angstrom": 16.5,
+            "chain_model": {
+              "characteristic_ratio": 1.9,
+              "composition": "G4S2",
+              "contour_per_residue_angstrom": 3.8,
+              "persistence_length_angstrom": 3.7
+            },
+            "linker_type": "flexible",
+            "maximum_residues": null,
+            "maximum_residues_reason": "A flexible linker has no geometric upper bound; extra length costs configurational entropy and loosens relative domain orientation, which this calculator does not score.",
+            "minimum_residues": 4,
+            "minimum_residues_basis": "Physical lower bound at the 3.8 A virtual Ca-Ca bond: nothing shorter can reach.",
+            "minimum_residues_design": 4,
+            "minimum_residues_design_basis": "At the 3.5 A per-residue rise commonly quoted for extended linkers. One or two residues longer than the physical bound for short spans; use it to avoid designing a linker that only just reaches.",
+            "minimum_residues_range": [
+              4,
+              4
+            ],
+            "per_residue_rise_angstrom": 3.8,
+            "per_residue_rise_range_angstrom": [
+              3.3,
+              3.8
+            ],
+            "unstrained_residues": 10
+          },
+          "target_length_verdict": {
+            "reason": "9 residues are within the required-length window [3, unbounded] for 15.0 A.",
+            "requested_residues": 9,
+            "verdict": "bridgeable"
+          },
+          "target_residues_used": 9,
+          "topology": "internal_insertion_two_tether"
+        },
+        "q2_attachment_and_context": {
+          "attachment_scope_note": "End-to-end tandem fusion requires 1 polypeptide linker; internal insertion requires 2 polypeptide tethers leaving and re-entering the host domain.",
+          "left_domain_id": null,
+          "left_flank_length": 0,
+          "right_domain_id": null,
+          "right_flank_length": 0,
+          "structure_junction_report": null
+        },
+        "q3_candidates": [
+          {
+            "authority_tier": "natural_cath_pdb_verified",
+            "candidate_id": "cath:1wky_A_1-304_314-464",
+            "cleavability_label": "no_known_motif",
+            "construction_mode": "single_segment_template_or_authority_retrieval",
+            "flags": [
+              "bridgeable",
+              "tier:natural_cath_pdb_verified",
+              "unstrained_rms_reach",
+              "requires_second_return_tether_for_internal_insertion"
+            ],
+            "flanking_context_similarity": 0.0,
+            "geometric_verdict": "bridgeable",
+            "length": 9,
+            "matched_proteases": [],
+            "provenance_note": "natural_cath_pdb_verified (experimental_structure_cath_v4_4_0)",
+            "rank": 1,
+            "rigidity_p_rigid": 0.254,
+            "rigidity_predicted_label": "flexible",
+            "sequence": "GGGSDGRTS",
+            "target_length_deviation_residues": 0.0
+          },
+          {
+            "authority_tier": "natural_cath_pdb_verified",
+            "candidate_id": "cath:1z7e_F_1-304_314-656",
+            "cleavability_label": "no_known_motif",
+            "construction_mode": "single_segment_template_or_authority_retrieval",
+            "flags": [
+              "bridgeable",
+              "tier:natural_cath_pdb_verified",
+              "unstrained_rms_reach",
+              "requires_second_return_tether_for_internal_insertion"
+            ],
+            "flanking_context_similarity": 0.0,
+            "geometric_verdict": "bridgeable",
+            "length": 9,
+            "matched_proteases": [],
+            "provenance_note": "natural_cath_pdb_verified (experimental_structure_cath_v4_4_0)",
+            "rank": 2,
+            "rigidity_p_rigid": 0.427,
+            "rigidity_predicted_label": "flexible",
+            "sequence": "NSQPACTAR",
+            "target_length_deviation_residues": 0.0
+          },
+          {
+            "authority_tier": "natural_cath_pdb_verified",
+            "candidate_id": "cath:2r5v_B_1-143_153-347",
+            "cleavability_label": "no_known_motif",
+            "construction_mode": "single_segment_template_or_authority_retrieval",
+            "flags": [
+              "bridgeable",
+              "tier:natural_cath_pdb_verified",
+              "unstrained_rms_reach",
+              "requires_second_return_tether_for_internal_insertion"
+            ],
+            "flanking_context_similarity": 0.0,
+            "geometric_verdict": "bridgeable",
+            "length": 9,
+            "matched_proteases": [],
+            "provenance_note": "natural_cath_pdb_verified (experimental_structure_cath_v4_4_0)",
+            "rank": 3,
+            "rigidity_p_rigid": 0.3333,
+            "rigidity_predicted_label": "flexible",
+            "sequence": "DVTNHGKGD",
+            "target_length_deviation_residues": 0.0
+          }
+        ],
+        "schema_version": "1.0.0",
+        "scope_and_integrity_notes": [
+          "Geometric bridgeability is a necessary physical condition (3.8 A/res C-alpha ceiling; 1.5 A/res helical rise), never a fusion expression or activity probability (SPEC.md section 5.8).",
+          "Cleavable + rigid requests return a two-part composite construct (rigid spacer + flexible GS-flanked protease cassette) because proteolysis requires local backbone unfolding (Hubbard et al. 1994).",
+          "Mined candidates (`mined_high_confidence_dfl_call`) are model-called inter-domain spans from Part 1 and carry explicit provenance flags distinct from curated natural or literature authorities."
+        ]
+      },
+      "flexible_non_cleavable_tandem_3d": {
+        "q1_feasibility": {
+          "chain_topology": {
+            "chain_crossings_required": 1,
+            "frequency": "The standard fusion format.",
+            "non_peptide_tethers": 0,
+            "note": "Topology is reported because a geometrically satisfiable tether set with no realisable chain topology is not a usable design.",
+            "peptide_tethers": 1,
+            "requirement": "One chain: domain A, linker, domain B. Both anchors are chain termini.",
+            "tether_count": 1,
+            "topology": "tandem"
+          },
+          "flexible_strain": {
+            "fraction_of_contour_required": 0.3477,
+            "near_full_extension": false,
+            "near_full_extension_fraction": 0.8,
+            "requires_stretching_beyond_rms": false,
+            "rms_end_to_end_gaussian_angstrom": 18.89,
+            "rms_end_to_end_wormlike_angstrom": 18.39
+          },
+          "primary_span_window": {
+            "attachment_distance_angstrom": 18.5,
+            "chain_model": {
+              "characteristic_ratio": 1.9,
+              "composition": "G4S2",
+              "contour_per_residue_angstrom": 3.8,
+              "persistence_length_angstrom": 3.7
+            },
+            "linker_type": "flexible",
+            "maximum_residues": null,
+            "maximum_residues_reason": "A flexible linker has no geometric upper bound; extra length costs configurational entropy and loosens relative domain orientation, which this calculator does not score.",
+            "minimum_residues": 4,
+            "minimum_residues_basis": "Physical lower bound at the 3.8 A virtual Ca-Ca bond: nothing shorter can reach.",
+            "minimum_residues_design": 5,
+            "minimum_residues_design_basis": "At the 3.5 A per-residue rise commonly quoted for extended linkers. One or two residues longer than the physical bound for short spans; use it to avoid designing a linker that only just reaches.",
+            "minimum_residues_range": [
+              4,
+              5
+            ],
+            "per_residue_rise_angstrom": 3.8,
+            "per_residue_rise_range_angstrom": [
+              3.3,
+              3.8
+            ],
+            "unstrained_residues": 13
+          },
+          "requested_cleavability": "non_cleavable",
+          "requested_rigidity": "flexible",
+          "return_tether_span_window": null,
+          "target_length_verdict": {
+            "reason": "13 residues are within the required-length window [4, unbounded] for 18.5 A.",
+            "requested_residues": 13,
+            "verdict": "bridgeable"
+          },
+          "target_residues_used": 13,
+          "topology": "end_to_end_tandem"
+        },
+        "q2_attachment_and_context": {
+          "attachment_scope_note": "End-to-end tandem fusion requires 1 polypeptide linker; internal insertion requires 2 polypeptide tethers leaving and re-entering the host domain.",
+          "left_domain_id": "3.30.40.10",
+          "left_flank_length": 57,
+          "right_domain_id": "1.20.920.10",
+          "right_flank_length": 80,
+          "structure_junction_report": {
+            "accessibility": {
+              "context_chains": [
+                "A",
+                "B"
+              ],
+              "domain_a_anchor": {
+                "band": "partially_exposed",
+                "bands_used": {
+                  "buried_below": 0.09,
+                  "exposed_at_or_above": 0.25
+                },
+                "heavy_atoms_only": true,
+                "max_asa_angstrom2": 240.0,
+                "relative_solvent_accessibility": 0.2064,
+                "residue": "A99",
+                "residue_name": "PHE",
+                "sasa_angstrom2": 49.53
+              },
+              "domain_b_anchor": {
+                "band": "exposed",
+                "bands_used": {
+                  "buried_below": 0.09,
+                  "exposed_at_or_above": 0.25
+                },
+                "heavy_atoms_only": true,
+                "max_asa_angstrom2": 159.0,
+                "relative_solvent_accessibility": 0.5091,
+                "residue": "B1",
+                "residue_name": "PRO",
+                "sasa_angstrom2": 80.95
+              }
+            },
+            "attachment_points": {
+              "domain_a": {
+                "ca": [
+                  4.302,
+                  34.042,
+                  31.557
+                ],
+                "chain": "A",
+                "residue": 99,
+                "residue_name": "PHE",
+                "side": "c_terminal"
+              },
+              "domain_b": {
+                "ca": [
+                  8.118,
+                  37.641,
+                  33.529
+                ],
+                "chain": "B",
+                "residue": 1,
+                "residue_name": "PRO",
+                "side": "n_terminal"
+              }
+            },
+            "citations": {
+              "ca_virtual_bond": "van Rosmalen, M., Krom, M., & Merkx, M. (2017). Tuning the flexibility of glycine-serine linkers to allow rational design of multidomain proteins. Biochemistry, 56(50), 6565-6574. https://doi.org/10.1021/acs.biochem.7b00902 - contour length per residue b0 = 3.8 A.",
+              "disulfide_criteria": "Sowdhamini, R., Srinivasan, N., Shoichet, B., Santi, D. V., Ramakrishnan, C., & Balaram, P. (1989). Stereochemical modeling of disulfide bridges: criteria for introduction into proteins by site-directed mutagenesis. Protein Engineering, 3(2), 95-103. https://doi.org/10.1093/protein/3.2.95 - candidate pairs have Ca-Ca distance no more than 6.5 A and Cb-Cb no more than 4.5 A. The lower end of the Ca-Ca window used here is a steric floor set to one virtual Ca-Ca bond, not a published criterion.",
+              "extended_rise": "Pauling, L., & Corey, R. B. (1951). The pleated sheet, a new layer configuration of polypeptide chains. PNAS, 37(5), 251-256. https://doi.org/10.1073/pnas.37.5.251 - axial translation per residue in the pleated sheet, 3.3-3.5 A, i.e. the realistic fully extended rise; the 3.8 A virtual bond is the absolute trans-peptide ceiling.",
+              "gs_chain_statistics": "van Rosmalen, M., Krom, M., & Merkx, M. (2017), Table 1 and eq 7 - persistence lengths and characteristic ratios C_inf for GS-rich linkers, and the Gaussian-chain relation <re^2> = C_inf * n * b0^2.",
+              "helical_linker_design": "Arai, R., Ueda, H., Kitayama, A., Kamiya, N., & Nagamune, T. (2001). Design of the linkers which effectively separate domains of a bifunctional fusion protein. Protein Engineering, 14(8), 529-532. https://doi.org/10.1093/protein/14.8.529 - A(EAAAK)nA linkers form alpha-helices and separate domains by an amount that grows with n; the paper reports CD/FRET trends, not a per-residue rise, so the rise above is used.",
+              "helix_rise": "Pauling, L., Corey, R. B., & Branson, H. R. (1951). The structure of proteins: two hydrogen-bonded helical configurations of the polypeptide chain. PNAS, 37(4), 205-211. https://doi.org/10.1073/pnas.37.4.205 - alpha-helix translation per residue 1.47-1.5 A along the helix axis.",
+              "interdomain_linker_lengths": "George, R. A., & Heringa, J. (2002). An analysis of protein domain linkers: their classification and role in protein folding. Protein Engineering, 15(11), 871-879. https://doi.org/10.1093/protein/15.11.871 - natural interdomain linker length distribution, used only as context for reporting, never as a threshold.",
+              "max_asa": "Tien, M. Z., Meyer, A. G., Sydykova, D. K., Spielman, S. J., & Wilke, C. O. (2013). Maximum allowed solvent accessibilites of residues in proteins. PLoS ONE, 8(11), e80635. https://doi.org/10.1371/journal.pone.0080635 - theoretical MaxASA values used to normalise ASA into relative solvent accessibility.",
+              "rsa_threshold": "Rost, B., & Sander, C. (1994). Conservation and prediction of solvent accessibility in protein families. Proteins, 20(3), 216-226. https://doi.org/10.1002/prot.340200303 - the buried/exposed relative-accessibility convention. Published cutoffs range from about 5% to 25%; LinkerForge reports the value and all three bands rather than picking one.",
+              "sasa_algorithm": "Shrake, A., & Rupley, J. A. (1973). Environment and exposure to solvent of protein atoms. Lysozyme and insulin. Journal of Molecular Biology, 79(2), 351-371. https://doi.org/10.1016/0022-2836(73)90011-9 - numerical sphere-point solvent accessible surface area with a 1.4 A water probe.",
+              "sasa_definition": "Lee, B., & Richards, F. M. (1971). The interpretation of protein structures: estimation of static accessibility. Journal of Molecular Biology, 55(3), 379-400. https://doi.org/10.1016/0022-2836(71)90324-X - definition of solvent accessible surface area and the 1.4 A probe radius.",
+              "vdw_radii": "Bondi, A. (1964). van der Waals volumes and radii. The Journal of Physical Chemistry, 68(3), 441-451. https://doi.org/10.1021/j100785a001",
+              "wlc": "Kratky, O., & Porod, G. (1949). Rontgenuntersuchung geloster Fadenmolekule. Recueil des Travaux Chimiques des Pays-Bas, 68(12), 1106-1122. https://doi.org/10.1002/recl.19490681203 - worm-like chain mean square end-to-end distance used with the persistence lengths above."
+            },
+            "linker_type": "flexible",
+            "orientation": {
+              "domain_a": {
+                "anchor_faces_partner_domain": true,
+                "anchor_outward_angle_to_span_degrees": 84.94,
+                "chain_exit_angle_to_span_degrees": 106.3,
+                "domain_centroid_to_anchor_angstrom": 23.693,
+                "mean_atom_distance_from_centroid_angstrom": 12.825
+              },
+              "domain_b": {
+                "anchor_faces_partner_domain": false,
+                "anchor_outward_angle_to_span_degrees": 121.32,
+                "chain_exit_angle_to_span_degrees": 88.95,
+                "domain_centroid_to_anchor_angstrom": 18.089,
+                "mean_atom_distance_from_centroid_angstrom": 12.823
+              }
+            },
+            "out_of_scope": [
+              "Expression, folding and activity of the resulting construct.",
+              "Whether the two domains disrupt each other's structure or interact at a new interface.",
+              "Linker sequence choice beyond the flexible/helical distinction.",
+              "Conformational ensembles: only one input conformation is measured."
+            ],
+            "record_type": "linker_junction_geometry",
+            "requested_length_verdict": {
+              "reason": "13 residues are within the required-length window [1, unbounded] for 5.604 A.",
+              "requested_residues": 13,
+              "strain": {
+                "fraction_of_contour_required": 0.1053,
+                "near_full_extension": false,
+                "near_full_extension_fraction": 0.8,
+                "requires_stretching_beyond_rms": false,
+                "rms_end_to_end_gaussian_angstrom": 18.89,
+                "rms_end_to_end_wormlike_angstrom": 18.39
+              },
+              "verdict": "bridgeable"
+            },
+            "required_linker_length": {
+              "attachment_distance_angstrom": 5.604,
+              "chain_model": {
+                "characteristic_ratio": 1.9,
+                "composition": "G4S2",
+                "contour_per_residue_angstrom": 3.8,
+                "persistence_length_angstrom": 3.7
+              },
+              "linker_type": "flexible",
+              "maximum_residues": null,
+              "maximum_residues_reason": "A flexible linker has no geometric upper bound; extra length costs configurational entropy and loosens relative domain orientation, which this calculator does not score.",
+              "minimum_residues": 1,
+              "minimum_residues_basis": "Physical lower bound at the 3.8 A virtual Ca-Ca bond: nothing shorter can reach.",
+              "minimum_residues_design": 1,
+              "minimum_residues_design_basis": "At the 3.5 A per-residue rise commonly quoted for extended linkers. One or two residues longer than the physical bound for short spans; use it to avoid designing a linker that only just reaches.",
+              "minimum_residues_range": [
+                1,
+                1
+              ],
+              "per_residue_rise_angstrom": 3.8,
+              "per_residue_rise_range_angstrom": [
+                3.3,
+                3.8
+              ],
+              "unstrained_residues": 2
+            },
+            "schema_version": "1.0.0",
+            "single_chain_input": false,
+            "span": {
+              "path": {
+                "blocking_atom_count": 0,
+                "detour_lower_bound": false,
+                "distance_used_for_required_length_angstrom": 5.604,
+                "minimum_clearance_angstrom": 2.47,
+                "passes_through_domain": false,
+                "path_length_angstrom": 5.604,
+                "path_model": "straight_line",
+                "required_clearance_angstrom": 1.7,
+                "required_length_is_lower_bound_only": false,
+                "straight_distance_angstrom": 5.604
+              },
+              "path_length_used_angstrom": 5.604,
+              "straight_ca_distance_angstrom": 5.604
+            }
+          }
+        },
+        "q3_candidates": [
+          {
+            "authority_tier": "natural_cath_pdb_verified",
+            "candidate_id": "cath:3o33_A_1-57_68-182",
+            "cleavability_label": "no_known_motif",
+            "construction_mode": "single_segment_template_or_authority_retrieval",
+            "flags": [
+              "bridgeable",
+              "tier:natural_cath_pdb_verified"
+            ],
+            "flanking_context_similarity": 1.0,
+            "geometric_verdict": "bridgeable",
+            "length": 10,
+            "matched_proteases": [],
+            "provenance_note": "natural_cath_pdb_verified (experimental_structure_cath_v4_4_0)",
+            "rank": 1,
+            "rigidity_p_rigid": 0.4195,
+            "rigidity_predicted_label": "flexible",
+            "sequence": "CDAPSHNSEK",
+            "target_length_deviation_residues": 3.0
+          },
+          {
+            "authority_tier": "natural_cath_pdb_verified",
+            "candidate_id": "cath:5h1u_A_1-58_65-180",
+            "cleavability_label": "no_known_motif",
+            "construction_mode": "single_segment_template_or_authority_retrieval",
+            "flags": [
+              "bridgeable",
+              "tier:natural_cath_pdb_verified"
+            ],
+            "flanking_context_similarity": 0.9818,
+            "geometric_verdict": "bridgeable",
+            "length": 6,
+            "matched_proteases": [],
+            "provenance_note": "natural_cath_pdb_verified (experimental_structure_cath_v4_4_0)",
+            "rank": 2,
+            "rigidity_p_rigid": 0.3718,
+            "rigidity_predicted_label": "flexible",
+            "sequence": "PSHNSE",
+            "target_length_deviation_residues": 7.0
+          },
+          {
+            "authority_tier": "natural_disprot_curated_dfl",
+            "candidate_id": "disprot_curated:DP02681:292-326",
+            "cleavability_label": "no_known_motif",
+            "construction_mode": "single_segment_template_or_authority_retrieval",
+            "flags": [
+              "bridgeable",
+              "tier:natural_disprot_curated_dfl",
+              "unstrained_rms_reach"
+            ],
+            "flanking_context_similarity": 0.7897,
+            "geometric_verdict": "bridgeable",
+            "length": 35,
+            "matched_proteases": [],
+            "provenance_note": "natural_disprot_curated_dfl (curator_validated_idpo_0000033)",
+            "rank": 3,
+            "rigidity_p_rigid": 0.4586,
+            "rigidity_predicted_label": "flexible",
+            "sequence": "CQLNPEETLLQQNGIQEKIKGLDQAKKIEATGCNQ",
+            "target_length_deviation_residues": 22.0
+          },
+          {
+            "authority_tier": "natural_disprot_curated_dfl",
+            "candidate_id": "disprot_curated:DP02585:253-263",
+            "cleavability_label": "no_known_motif",
+            "construction_mode": "single_segment_template_or_authority_retrieval",
+            "flags": [
+              "bridgeable",
+              "tier:natural_disprot_curated_dfl"
+            ],
+            "flanking_context_similarity": 0.7803,
+            "geometric_verdict": "bridgeable",
+            "length": 11,
+            "matched_proteases": [],
+            "provenance_note": "natural_disprot_curated_dfl (curator_validated_idpo_0000033)",
+            "rank": 4,
+            "rigidity_p_rigid": 0.3676,
+            "rigidity_predicted_label": "flexible",
+            "sequence": "VESGEPRGPLN",
+            "target_length_deviation_residues": 2.0
+          },
+          {
+            "authority_tier": "natural_disprot_curated_dfl",
+            "candidate_id": "disprot_curated:DP03499:1428-1437",
+            "cleavability_label": "no_known_motif",
+            "construction_mode": "single_segment_template_or_authority_retrieval",
+            "flags": [
+              "bridgeable",
+              "tier:natural_disprot_curated_dfl"
+            ],
+            "flanking_context_similarity": 0.7554,
+            "geometric_verdict": "bridgeable",
+            "length": 10,
+            "matched_proteases": [],
+            "provenance_note": "natural_disprot_curated_dfl (curator_validated_idpo_0000033)",
+            "rank": 5,
+            "rigidity_p_rigid": 0.39,
+            "rigidity_predicted_label": "flexible",
+            "sequence": "GEESEAPGQR",
+            "target_length_deviation_residues": 3.0
+          }
+        ],
+        "schema_version": "1.0.0",
+        "scope_and_integrity_notes": [
+          "Geometric bridgeability is a necessary physical condition (3.8 A/res C-alpha ceiling; 1.5 A/res helical rise), never a fusion expression or activity probability (SPEC.md section 5.8).",
+          "Cleavable + rigid requests return a two-part composite construct (rigid spacer + flexible GS-flanked protease cassette) because proteolysis requires local backbone unfolding (Hubbard et al. 1994).",
+          "Mined candidates (`mined_high_confidence_dfl_call`) are model-called inter-domain spans from Part 1 and carry explicit provenance flags distinct from curated natural or literature authorities."
+        ]
+      },
+      "rigid_cleavable_composite_tandem": {
+        "q1_feasibility": {
+          "chain_topology": {
+            "chain_crossings_required": 1,
+            "frequency": "The standard fusion format.",
+            "non_peptide_tethers": 0,
+            "note": "Topology is reported because a geometrically satisfiable tether set with no realisable chain topology is not a usable design.",
+            "peptide_tethers": 1,
+            "requirement": "One chain: domain A, linker, domain B. Both anchors are chain termini.",
+            "tether_count": 1,
+            "topology": "tandem"
+          },
+          "flexible_strain": null,
+          "primary_span_window": {
+            "attachment_distance_angstrom": 28.0,
+            "junction_tolerance_angstrom": 7.6,
+            "linker_type": "helical",
+            "maximum_residues": 22,
+            "maximum_residues_reason": "A helical linker is modelled as a stiff rod: a rod longer than the window holds the two domains further apart than the chosen attachment points allow, which is a geometric failure in its own right.",
+            "minimum_residues": 13,
+            "minimum_residues_range": [
+              13,
+              13
+            ],
+            "per_residue_rise_angstrom": 1.5,
+            "per_residue_rise_range_angstrom": [
+              1.47,
+              1.5
+            ],
+            "window_exists": true
+          },
+          "requested_cleavability": "cleavable",
+          "requested_rigidity": "rigid",
+          "return_tether_span_window": null,
+          "target_length_verdict": {
+            "reason": "18 residues are within the required-length window [13, 22] for 28.0 A.",
+            "requested_residues": 18,
+            "verdict": "bridgeable"
+          },
+          "target_residues_used": 18,
+          "topology": "end_to_end_tandem"
+        },
+        "q2_attachment_and_context": {
+          "attachment_scope_note": "End-to-end tandem fusion requires 1 polypeptide linker; internal insertion requires 2 polypeptide tethers leaving and re-entering the host domain.",
+          "left_domain_id": null,
+          "left_flank_length": 0,
+          "right_domain_id": null,
+          "right_flank_length": 0,
+          "structure_junction_report": null
+        },
+        "q3_candidates": [
+          {
+            "authority_tier": "literature_engineered_template",
+            "candidate_id": "composite:rigid-papap+cleav-rkrr",
+            "cleavability_label": "cleavable",
+            "construction_mode": "two_part_rigid_spacer_plus_flexible_protease_cassette",
+            "flags": [
+              "composite_rigid_spacer_plus_flexible_cassette",
+              "requires_local_unfolding_at_cassette",
+              "bridgeable"
+            ],
+            "flanking_context_similarity": 0.0,
+            "geometric_verdict": "bridgeable",
+            "length": 19,
+            "matched_proteases": [
+              "unspecified protease-sensitive"
+            ],
+            "provenance_note": "Two-part composite (`rigid-cleavable-composite`): rigid spacer rigid-papap (PAPAP) + flexible protease cassette from cleav-rkrr (Chen X, Zaro JL, Shen W-C. Fusion protein linkers: property, design and functionality. Advanced Drug Delivery Reviews 65 (2013) 1357-1369. (Section on in vivo cleavable linkers; Table 3), attributing to Zhao et al., review reference [42] (primary DOI not verified)). Local unfolding required for proteolysis (Hubbard et al. 1994).",
+            "rank": 1,
+            "rigidity_p_rigid": 0.3375,
+            "rigidity_predicted_label": "rigid_spacer_plus_flexible_cassette",
+            "sequence": "PAPAPGGGGSRKRRGGGGS",
+            "target_length_deviation_residues": 0.0
+          },
+          {
+            "authority_tier": "literature_engineered_template",
+            "candidate_id": "composite:rigid-papap+cleav-cathepsinb-gflg",
+            "cleavability_label": "cleavable",
+            "construction_mode": "two_part_rigid_spacer_plus_flexible_protease_cassette",
+            "flags": [
+              "composite_rigid_spacer_plus_flexible_cassette",
+              "requires_local_unfolding_at_cassette",
+              "bridgeable"
+            ],
+            "flanking_context_similarity": 0.0,
+            "geometric_verdict": "bridgeable",
+            "length": 19,
+            "matched_proteases": [
+              "cathepsin B"
+            ],
+            "provenance_note": "Two-part composite (`rigid-cleavable-composite`): rigid spacer rigid-papap (PAPAP) + flexible protease cassette from cleav-cathepsinb-gflg (Chen X, Zaro JL, Shen W-C. Fusion protein linkers: property, design and functionality. Advanced Drug Delivery Reviews 65 (2013) 1357-1369. (Section on in vivo cleavable linkers; Table 3), attributing to Yuan et al., review reference [77] (primary DOI not verified)). Local unfolding required for proteolysis (Hubbard et al. 1994).",
+            "rank": 2,
+            "rigidity_p_rigid": 0.3088,
+            "rigidity_predicted_label": "rigid_spacer_plus_flexible_cassette",
+            "sequence": "PAPAPGGGGSGFLGGGGGS",
+            "target_length_deviation_residues": 0.0
+          },
+          {
+            "authority_tier": "literature_engineered_template",
+            "candidate_id": "composite:rigid-papap+cleav-mmp-plglwa",
+            "cleavability_label": "cleavable",
+            "construction_mode": "two_part_rigid_spacer_plus_flexible_protease_cassette",
+            "flags": [
+              "composite_rigid_spacer_plus_flexible_cassette",
+              "requires_local_unfolding_at_cassette",
+              "bridgeable"
+            ],
+            "flanking_context_similarity": 0.0,
+            "geometric_verdict": "bridgeable",
+            "length": 21,
+            "matched_proteases": [
+              "MMP-1/MMP-9"
+            ],
+            "provenance_note": "Two-part composite (`rigid-cleavable-composite`): rigid spacer rigid-papap (PAPAP) + flexible protease cassette from cleav-mmp-plglwa (Chen X, Zaro JL, Shen W-C. Fusion protein linkers: property, design and functionality. Advanced Drug Delivery Reviews 65 (2013) 1357-1369. (Section on in vivo cleavable linkers; Table 3), attributing to Vessillier et al., review reference [64] in text and [66] in Fig. 4 (primary DOI not verified)). Local unfolding required for proteolysis (Hubbard et al. 1994).",
+            "rank": 3,
+            "rigidity_p_rigid": 0.3472,
+            "rigidity_predicted_label": "rigid_spacer_plus_flexible_cassette",
+            "sequence": "PAPAPGGGGSPLGLWAGGGGS",
+            "target_length_deviation_residues": 0.0
+          },
+          {
+            "authority_tier": "literature_engineered_template",
+            "candidate_id": "composite:rigid-papap+cleav-hiv-pr",
+            "cleavability_label": "cleavable",
+            "construction_mode": "two_part_rigid_spacer_plus_flexible_protease_cassette",
+            "flags": [
+              "composite_rigid_spacer_plus_flexible_cassette",
+              "requires_local_unfolding_at_cassette",
+              "bridgeable"
+            ],
+            "flanking_context_similarity": 0.0,
+            "geometric_verdict": "bridgeable",
+            "length": 21,
+            "matched_proteases": [
+              "HIV protease"
+            ],
+            "provenance_note": "Two-part composite (`rigid-cleavable-composite`): rigid spacer rigid-papap (PAPAP) + flexible protease cassette from cleav-hiv-pr (Chen X, Zaro JL, Shen W-C. Fusion protein linkers: property, design and functionality. Advanced Drug Delivery Reviews 65 (2013) 1357-1369. (Section on in vivo cleavable linkers; Table 3), attributing to Park et al., review reference [68] in text and [67] in Fig. 4 (primary DOI not verified)). Local unfolding required for proteolysis (Hubbard et al. 1994).",
+            "rank": 4,
+            "rigidity_p_rigid": 0.3714,
+            "rigidity_predicted_label": "rigid_spacer_plus_flexible_cassette",
+            "sequence": "PAPAPGGGGSRVLAEAGGGGS",
+            "target_length_deviation_residues": 0.0
+          },
+          {
+            "authority_tier": "literature_engineered_template",
+            "candidate_id": "composite:rigid-papap+cleav-factor-xa",
+            "cleavability_label": "cleavable",
+            "construction_mode": "two_part_rigid_spacer_plus_flexible_protease_cassette",
+            "flags": [
+              "composite_rigid_spacer_plus_flexible_cassette",
+              "requires_local_unfolding_at_cassette",
+              "bridgeable"
+            ],
+            "flanking_context_similarity": 0.0,
+            "geometric_verdict": "bridgeable",
+            "length": 23,
+            "matched_proteases": [
+              "Factor Xa"
+            ],
+            "provenance_note": "Two-part composite (`rigid-cleavable-composite`): rigid spacer rigid-papap (PAPAP) + flexible protease cassette from cleav-factor-xa (Chen X, Zaro JL, Shen W-C. Fusion protein linkers: property, design and functionality. Advanced Drug Delivery Reviews 65 (2013) 1357-1369. (Section on in vivo cleavable linkers; Table 3), attributing to Park et al., review reference [68] (primary DOI not verified)). Local unfolding required for proteolysis (Hubbard et al. 1994).",
+            "rank": 5,
+            "rigidity_p_rigid": 0.3132,
+            "rigidity_predicted_label": "rigid_spacer_plus_flexible_cassette",
+            "sequence": "PAPAPGGGGSGGIEGRGSGGGGS",
+            "target_length_deviation_residues": 0.0
+          }
+        ],
+        "schema_version": "1.0.0",
+        "scope_and_integrity_notes": [
+          "Geometric bridgeability is a necessary physical condition (3.8 A/res C-alpha ceiling; 1.5 A/res helical rise), never a fusion expression or activity probability (SPEC.md section 5.8).",
+          "Cleavable + rigid requests return a two-part composite construct (rigid spacer + flexible GS-flanked protease cassette) because proteolysis requires local backbone unfolding (Hubbard et al. 1994).",
+          "Mined candidates (`mined_high_confidence_dfl_call`) are model-called inter-domain spans from Part 1 and carry explicit provenance flags distinct from curated natural or literature authorities."
+        ]
+      },
+      "rigid_non_cleavable_tandem": {
+        "q1_feasibility": {
+          "chain_topology": {
+            "chain_crossings_required": 1,
+            "frequency": "The standard fusion format.",
+            "non_peptide_tethers": 0,
+            "note": "Topology is reported because a geometrically satisfiable tether set with no realisable chain topology is not a usable design.",
+            "peptide_tethers": 1,
+            "requirement": "One chain: domain A, linker, domain B. Both anchors are chain termini.",
+            "tether_count": 1,
+            "topology": "tandem"
+          },
+          "flexible_strain": null,
+          "primary_span_window": {
+            "attachment_distance_angstrom": 22.0,
+            "junction_tolerance_angstrom": 7.6,
+            "linker_type": "helical",
+            "maximum_residues": 18,
+            "maximum_residues_reason": "A helical linker is modelled as a stiff rod: a rod longer than the window holds the two domains further apart than the chosen attachment points allow, which is a geometric failure in its own right.",
+            "minimum_residues": 9,
+            "minimum_residues_range": [
+              9,
+              9
+            ],
+            "per_residue_rise_angstrom": 1.5,
+            "per_residue_rise_range_angstrom": [
+              1.47,
+              1.5
+            ],
+            "window_exists": true
+          },
+          "requested_cleavability": "non_cleavable",
+          "requested_rigidity": "rigid",
+          "return_tether_span_window": null,
+          "target_length_verdict": {
+            "reason": "14 residues are within the required-length window [9, 18] for 22.0 A.",
+            "requested_residues": 14,
+            "verdict": "bridgeable"
+          },
+          "target_residues_used": 14,
+          "topology": "end_to_end_tandem"
+        },
+        "q2_attachment_and_context": {
+          "attachment_scope_note": "End-to-end tandem fusion requires 1 polypeptide linker; internal insertion requires 2 polypeptide tethers leaving and re-entering the host domain.",
+          "left_domain_id": null,
+          "left_flank_length": 0,
+          "right_domain_id": null,
+          "right_flank_length": 0,
+          "structure_junction_report": null
+        },
+        "q3_candidates": [
+          {
+            "authority_tier": "mined_high_confidence_dfl_call",
+            "candidate_id": "mined_swissprot_gap:P23388:143-156",
+            "cleavability_label": "no_known_motif",
+            "construction_mode": "single_segment_template_or_authority_retrieval",
+            "flags": [
+              "bridgeable",
+              "tier:mined_high_confidence_dfl_call"
+            ],
+            "flanking_context_similarity": 0.0,
+            "geometric_verdict": "bridgeable",
+            "length": 14,
+            "matched_proteases": [],
+            "provenance_note": "mined_high_confidence_dfl_call (two_stage_domain_gated_seed31_cnn_prediction_not_ground_truth)",
+            "rank": 1,
+            "rigidity_p_rigid": 0.5245,
+            "rigidity_predicted_label": "rigid",
+            "sequence": "AAPVAAPAETPADF",
+            "target_length_deviation_residues": 0.0
+          },
+          {
+            "authority_tier": "literature_engineered_template",
+            "candidate_id": "template:rigid-eaaak3",
+            "cleavability_label": "no_known_motif",
+            "construction_mode": "single_segment_template_or_authority_retrieval",
+            "flags": [
+              "bridgeable",
+              "tier:literature_engineered_template"
+            ],
+            "flanking_context_similarity": 0.0,
+            "geometric_verdict": "bridgeable",
+            "length": 15,
+            "matched_proteases": [],
+            "provenance_note": "Chen X, Zaro JL, Shen W-C. Fusion protein linkers: property, design and functionality. Advanced Drug Delivery Reviews 65 (2013) 1357-1369. (Section on rigid linkers; Table 3), attributing to Virus coat protein display, review reference [51] in text and [50] in Table 3 (primary DOI not verified)",
+            "rank": 2,
+            "rigidity_p_rigid": 0.5963,
+            "rigidity_predicted_label": "rigid",
+            "sequence": "EAAAKEAAAKEAAAK",
+            "target_length_deviation_residues": 1.0
+          },
+          {
+            "authority_tier": "mined_high_confidence_dfl_call",
+            "candidate_id": "mined_swissprot_gap:P23221:121-135",
+            "cleavability_label": "no_known_motif",
+            "construction_mode": "single_segment_template_or_authority_retrieval",
+            "flags": [
+              "bridgeable",
+              "tier:mined_high_confidence_dfl_call"
+            ],
+            "flanking_context_similarity": 0.0,
+            "geometric_verdict": "bridgeable",
+            "length": 15,
+            "matched_proteases": [],
+            "provenance_note": "mined_high_confidence_dfl_call (two_stage_domain_gated_seed31_cnn_prediction_not_ground_truth)",
+            "rank": 3,
+            "rigidity_p_rigid": 0.5049,
+            "rigidity_predicted_label": "rigid",
+            "sequence": "RQAEPAAKSEAVAQD",
+            "target_length_deviation_residues": 1.0
+          },
+          {
+            "authority_tier": "mined_high_confidence_dfl_call",
+            "candidate_id": "mined_uniprot_explicit:A0A0T5NVP6:160-172",
+            "cleavability_label": "no_known_motif",
+            "construction_mode": "single_segment_template_or_authority_retrieval",
+            "flags": [
+              "bridgeable",
+              "tier:mined_high_confidence_dfl_call"
+            ],
+            "flanking_context_similarity": 0.0,
+            "geometric_verdict": "bridgeable",
+            "length": 13,
+            "matched_proteases": [],
+            "provenance_note": "mined_high_confidence_dfl_call (two_stage_domain_gated_seed31_cnn_prediction_not_ground_truth)",
+            "rank": 4,
+            "rigidity_p_rigid": 0.5138,
+            "rigidity_predicted_label": "rigid",
+            "sequence": "AAKAAPVKAPSGA",
+            "target_length_deviation_residues": 1.0
+          },
+          {
+            "authority_tier": "mined_high_confidence_dfl_call",
+            "candidate_id": "mined_uniprot_explicit:A0A1D9MEX4:156-168",
+            "cleavability_label": "no_known_motif",
+            "construction_mode": "single_segment_template_or_authority_retrieval",
+            "flags": [
+              "bridgeable",
+              "tier:mined_high_confidence_dfl_call"
+            ],
+            "flanking_context_similarity": 0.0,
+            "geometric_verdict": "bridgeable",
+            "length": 13,
+            "matched_proteases": [],
+            "provenance_note": "mined_high_confidence_dfl_call (two_stage_domain_gated_seed31_cnn_prediction_not_ground_truth)",
+            "rank": 5,
+            "rigidity_p_rigid": 0.5049,
+            "rigidity_predicted_label": "rigid",
+            "sequence": "APKPRTRPAAAPK",
+            "target_length_deviation_residues": 1.0
+          }
+        ],
+        "schema_version": "1.0.0",
+        "scope_and_integrity_notes": [
+          "Geometric bridgeability is a necessary physical condition (3.8 A/res C-alpha ceiling; 1.5 A/res helical rise), never a fusion expression or activity probability (SPEC.md section 5.8).",
+          "Cleavable + rigid requests return a two-part composite construct (rigid spacer + flexible GS-flanked protease cassette) because proteolysis requires local backbone unfolding (Hubbard et al. 1994).",
+          "Mined candidates (`mined_high_confidence_dfl_call`) are model-called inter-domain spans from Part 1 and carry explicit provenance flags distinct from curated natural or literature authorities."
+        ]
+      }
+    },
+    "fixture_pdb_sha256": "3ae900d6486d78a835bc4182a55d1cacda97e18663c13f57617c34e05d08f519"
+  },
+  "schema_version": "1.0.0",
+  "x2_retrieval_benchmark": {
+    "cohort_a_cath_3d_natural_91": {
+      "arms": {
+        "fixed_ggggs3_control": {
+          "composition_cosine_cluster_boot_95ci": [
+            0.5536,
+            0.67
+          ],
+          "composition_cosine_similarity_mean": 0.61,
+          "distinct_homology_clusters": 57,
+          "evaluated_records": 91,
+          "length_mae_cluster_boot_95ci": [
+            5.3421,
+            7.2118
+          ],
+          "length_mae_residues": 6.2637,
+          "length_within_2aa_count": 10,
+          "length_within_2aa_rate": 0.1099,
+          "length_within_5aa_count": 39,
+          "length_within_5aa_rate": 0.4286,
+          "physical_3p8A_feasible_count": 91,
+          "physical_3p8A_feasible_rate": 1.0,
+          "positional_aa_recovery_mean": 0.145,
+          "rigidity_axis_match_count": 91,
+          "rigidity_axis_match_rate": 1.0,
+          "sequence_nw_identity_cluster_boot_95ci": [
+            0.0729,
+            0.1721
+          ],
+          "sequence_nw_identity_mean": 0.1171
+        },
+        "flanking_context_nn_natural_authority": {
+          "composition_cosine_cluster_boot_95ci": [
+            0.6782,
+            0.7836
+          ],
+          "composition_cosine_similarity_mean": 0.7274,
+          "distinct_homology_clusters": 57,
+          "evaluated_records": 91,
+          "length_mae_cluster_boot_95ci": [
+            5.8718,
+            8.5824
+          ],
+          "length_mae_residues": 7.1538,
+          "length_within_2aa_count": 20,
+          "length_within_2aa_rate": 0.2198,
+          "length_within_5aa_count": 43,
+          "length_within_5aa_rate": 0.4725,
+          "physical_3p8A_feasible_count": 82,
+          "physical_3p8A_feasible_rate": 0.9011,
+          "positional_aa_recovery_mean": 0.0905,
+          "rigidity_axis_match_count": 91,
+          "rigidity_axis_match_rate": 1.0,
+          "sequence_nw_identity_cluster_boot_95ci": [
+            0.071,
+            0.1164
+          ],
+          "sequence_nw_identity_mean": 0.0928
+        },
+        "flanking_context_nn_natural_plus_mined": {
+          "composition_cosine_cluster_boot_95ci": [
+            0.7192,
+            0.8049
+          ],
+          "composition_cosine_similarity_mean": 0.7622,
+          "distinct_homology_clusters": 57,
+          "evaluated_records": 91,
+          "length_mae_cluster_boot_95ci": [
+            11.5275,
+            18.1558
+          ],
+          "length_mae_residues": 14.5275,
+          "length_within_2aa_count": 15,
+          "length_within_2aa_rate": 0.1648,
+          "length_within_5aa_count": 24,
+          "length_within_5aa_rate": 0.2637,
+          "physical_3p8A_feasible_count": 90,
+          "physical_3p8A_feasible_rate": 0.989,
+          "positional_aa_recovery_mean": 0.0919,
+          "rigidity_axis_match_count": 84,
+          "rigidity_axis_match_rate": 0.9231,
+          "sequence_nw_identity_cluster_boot_95ci": [
+            0.0966,
+            0.1974
+          ],
+          "sequence_nw_identity_mean": 0.1426
+        },
+        "flanking_context_template_retrieval": {
+          "composition_cosine_cluster_boot_95ci": [
+            0.6713,
+            0.7764
+          ],
+          "composition_cosine_similarity_mean": 0.7257,
+          "distinct_homology_clusters": 57,
+          "evaluated_records": 91,
+          "length_mae_cluster_boot_95ci": [
+            4.2283,
+            6.4268
+          ],
+          "length_mae_residues": 5.2747,
+          "length_within_2aa_count": 32,
+          "length_within_2aa_rate": 0.3516,
+          "length_within_5aa_count": 57,
+          "length_within_5aa_rate": 0.6264,
+          "physical_3p8A_feasible_count": 87,
+          "physical_3p8A_feasible_rate": 0.956,
+          "positional_aa_recovery_mean": 0.0752,
+          "rigidity_axis_match_count": 91,
+          "rigidity_axis_match_rate": 1.0,
+          "sequence_nw_identity_cluster_boot_95ci": [
+            0.0666,
+            0.0998
+          ],
+          "sequence_nw_identity_mean": 0.0819
+        },
+        "geometry_only_control": {
+          "composition_cosine_cluster_boot_95ci": [
+            0.7385,
+            0.8013
+          ],
+          "composition_cosine_similarity_mean": 0.7701,
+          "distinct_homology_clusters": 57,
+          "evaluated_records": 91,
+          "length_mae_cluster_boot_95ci": [
+            3.5977,
+            5.4845
+          ],
+          "length_mae_residues": 4.4945,
+          "length_within_2aa_count": 41,
+          "length_within_2aa_rate": 0.4505,
+          "length_within_5aa_count": 61,
+          "length_within_5aa_rate": 0.6703,
+          "physical_3p8A_feasible_count": 91,
+          "physical_3p8A_feasible_rate": 1.0,
+          "positional_aa_recovery_mean": 0.0905,
+          "rigidity_axis_match_count": 91,
+          "rigidity_axis_match_rate": 1.0,
+          "sequence_nw_identity_cluster_boot_95ci": [
+            0.1069,
+            0.157
+          ],
+          "sequence_nw_identity_mean": 0.1317
+        },
+        "geometry_plus_flanking_hybrid_retrieval": {
+          "composition_cosine_cluster_boot_95ci": [
+            0.6772,
+            0.7756
+          ],
+          "composition_cosine_similarity_mean": 0.7264,
+          "distinct_homology_clusters": 57,
+          "evaluated_records": 91,
+          "length_mae_cluster_boot_95ci": [
+            3.5747,
+            5.5616
+          ],
+          "length_mae_residues": 4.5604,
+          "length_within_2aa_count": 43,
+          "length_within_2aa_rate": 0.4725,
+          "length_within_5aa_count": 63,
+          "length_within_5aa_rate": 0.6923,
+          "physical_3p8A_feasible_count": 91,
+          "physical_3p8A_feasible_rate": 1.0,
+          "positional_aa_recovery_mean": 0.0908,
+          "rigidity_axis_match_count": 91,
+          "rigidity_axis_match_rate": 1.0,
+          "sequence_nw_identity_cluster_boot_95ci": [
+            0.1121,
+            0.2126
+          ],
+          "sequence_nw_identity_mean": 0.1565
+        },
+        "length_matched_frequent_natural_control": {
+          "composition_cosine_cluster_boot_95ci": [
+            0.3635,
+            0.4907
+          ],
+          "composition_cosine_similarity_mean": 0.4202,
+          "distinct_homology_clusters": 57,
+          "evaluated_records": 91,
+          "length_mae_cluster_boot_95ci": [
+            0.0,
+            0.0
+          ],
+          "length_mae_residues": 0.0,
+          "length_within_2aa_count": 91,
+          "length_within_2aa_rate": 1.0,
+          "length_within_5aa_count": 91,
+          "length_within_5aa_rate": 1.0,
+          "physical_3p8A_feasible_count": 90,
+          "physical_3p8A_feasible_rate": 0.989,
+          "positional_aa_recovery_mean": 0.0863,
+          "rigidity_axis_match_count": 91,
+          "rigidity_axis_match_rate": 1.0,
+          "sequence_nw_identity_cluster_boot_95ci": [
+            0.0608,
+            0.1213
+          ],
+          "sequence_nw_identity_mean": 0.0863
+        },
+        "length_matched_template_control": {
+          "composition_cosine_cluster_boot_95ci": [
+            0.7035,
+            0.786
+          ],
+          "composition_cosine_similarity_mean": 0.7466,
+          "distinct_homology_clusters": 57,
+          "evaluated_records": 91,
+          "length_mae_cluster_boot_95ci": [
+            0.3506,
+            1.1528
+          ],
+          "length_mae_residues": 0.7363,
+          "length_within_2aa_count": 84,
+          "length_within_2aa_rate": 0.9231,
+          "length_within_5aa_count": 86,
+          "length_within_5aa_rate": 0.9451,
+          "physical_3p8A_feasible_count": 90,
+          "physical_3p8A_feasible_rate": 0.989,
+          "positional_aa_recovery_mean": 0.1064,
+          "rigidity_axis_match_count": 91,
+          "rigidity_axis_match_rate": 1.0,
+          "sequence_nw_identity_cluster_boot_95ci": [
+            0.0915,
+            0.1823
+          ],
+          "sequence_nw_identity_mean": 0.1316
+        },
+        "training_median_length_gs_control": {
+          "composition_cosine_cluster_boot_95ci": [
+            0.4539,
+            0.5961
+          ],
+          "composition_cosine_similarity_mean": 0.5199,
+          "distinct_homology_clusters": 57,
+          "evaluated_records": 91,
+          "length_mae_cluster_boot_95ci": [
+            3.4521,
+            5.693
+          ],
+          "length_mae_residues": 4.5165,
+          "length_within_2aa_count": 36,
+          "length_within_2aa_rate": 0.3956,
+          "length_within_5aa_count": 69,
+          "length_within_5aa_rate": 0.7582,
+          "physical_3p8A_feasible_count": 89,
+          "physical_3p8A_feasible_rate": 0.978,
+          "positional_aa_recovery_mean": 0.1247,
+          "rigidity_axis_match_count": 91,
+          "rigidity_axis_match_rate": 1.0,
+          "sequence_nw_identity_cluster_boot_95ci": [
+            0.0858,
+            0.1891
+          ],
+          "sequence_nw_identity_mean": 0.1331
+        }
+      },
+      "distinct_homology_clusters": 57,
+      "mined_candidate_pool_size": 27595,
+      "n_folds": 5,
+      "seed": 17,
+      "template_pool_size": 23,
+      "total_evaluated_natural_linkers": 91
+    },
+    "cohort_b_all_natural_authorities_148": {
+      "arms": {
+        "fixed_ggggs3_control": {
+          "composition_cosine_cluster_boot_95ci": [
+            0.5615,
+            0.6432
+          ],
+          "composition_cosine_similarity_mean": 0.5996,
+          "distinct_homology_clusters": 109,
+          "evaluated_records": 148,
+          "length_mae_cluster_boot_95ci": [
+            6.4406,
+            8.8768
+          ],
+          "length_mae_residues": 7.5676,
+          "length_within_2aa_count": 26,
+          "length_within_2aa_rate": 0.1757,
+          "length_within_5aa_count": 71,
+          "length_within_5aa_rate": 0.4797,
+          "physical_3p8A_feasible_count": 91,
+          "physical_3p8A_feasible_rate": 1.0,
+          "positional_aa_recovery_mean": 0.1147,
+          "rigidity_axis_match_count": 147,
+          "rigidity_axis_match_rate": 0.9932,
+          "sequence_nw_identity_cluster_boot_95ci": [
+            0.0837,
+            0.1545
+          ],
+          "sequence_nw_identity_mean": 0.113
+        },
+        "flanking_context_nn_natural_authority": {
+          "composition_cosine_cluster_boot_95ci": [
+            0.7683,
+            0.829
+          ],
+          "composition_cosine_similarity_mean": 0.8001,
+          "distinct_homology_clusters": 109,
+          "evaluated_records": 148,
+          "length_mae_cluster_boot_95ci": [
+            11.2083,
+            15.5486
+          ],
+          "length_mae_residues": 13.2973,
+          "length_within_2aa_count": 29,
+          "length_within_2aa_rate": 0.1959,
+          "length_within_5aa_count": 51,
+          "length_within_5aa_rate": 0.3446,
+          "physical_3p8A_feasible_count": 90,
+          "physical_3p8A_feasible_rate": 0.989,
+          "positional_aa_recovery_mean": 0.0662,
+          "rigidity_axis_match_count": 143,
+          "rigidity_axis_match_rate": 0.9662,
+          "sequence_nw_identity_cluster_boot_95ci": [
+            0.0886,
+            0.1081
+          ],
+          "sequence_nw_identity_mean": 0.0981
+        },
+        "flanking_context_nn_natural_plus_mined": {
+          "composition_cosine_cluster_boot_95ci": [
+            0.7648,
+            0.8283
+          ],
+          "composition_cosine_similarity_mean": 0.7971,
+          "distinct_homology_clusters": 109,
+          "evaluated_records": 148,
+          "length_mae_cluster_boot_95ci": [
+            11.5659,
+            16.0359
+          ],
+          "length_mae_residues": 13.6892,
+          "length_within_2aa_count": 19,
+          "length_within_2aa_rate": 0.1284,
+          "length_within_5aa_count": 44,
+          "length_within_5aa_rate": 0.2973,
+          "physical_3p8A_feasible_count": 90,
+          "physical_3p8A_feasible_rate": 0.989,
+          "positional_aa_recovery_mean": 0.0854,
+          "rigidity_axis_match_count": 137,
+          "rigidity_axis_match_rate": 0.9257,
+          "sequence_nw_identity_cluster_boot_95ci": [
+            0.1125,
+            0.1865
+          ],
+          "sequence_nw_identity_mean": 0.1451
+        },
+        "flanking_context_template_retrieval": {
+          "composition_cosine_cluster_boot_95ci": [
+            0.7724,
+            0.8361
+          ],
+          "composition_cosine_similarity_mean": 0.8052,
+          "distinct_homology_clusters": 109,
+          "evaluated_records": 148,
+          "length_mae_cluster_boot_95ci": [
+            8.3562,
+            10.9128
+          ],
+          "length_mae_residues": 9.6014,
+          "length_within_2aa_count": 21,
+          "length_within_2aa_rate": 0.1419,
+          "length_within_5aa_count": 49,
+          "length_within_5aa_rate": 0.3311,
+          "physical_3p8A_feasible_count": 91,
+          "physical_3p8A_feasible_rate": 1.0,
+          "positional_aa_recovery_mean": 0.0723,
+          "rigidity_axis_match_count": 147,
+          "rigidity_axis_match_rate": 0.9932,
+          "sequence_nw_identity_cluster_boot_95ci": [
+            0.0938,
+            0.1153
+          ],
+          "sequence_nw_identity_mean": 0.105
+        },
+        "length_matched_frequent_natural_control": {
+          "composition_cosine_cluster_boot_95ci": [
+            0.436,
+            0.5356
+          ],
+          "composition_cosine_similarity_mean": 0.4833,
+          "distinct_homology_clusters": 109,
+          "evaluated_records": 148,
+          "length_mae_cluster_boot_95ci": [
+            0.0,
+            0.0
+          ],
+          "length_mae_residues": 0.0,
+          "length_within_2aa_count": 148,
+          "length_within_2aa_rate": 1.0,
+          "length_within_5aa_count": 148,
+          "length_within_5aa_rate": 1.0,
+          "physical_3p8A_feasible_count": 90,
+          "physical_3p8A_feasible_rate": 0.989,
+          "positional_aa_recovery_mean": 0.0868,
+          "rigidity_axis_match_count": 147,
+          "rigidity_axis_match_rate": 0.9932,
+          "sequence_nw_identity_cluster_boot_95ci": [
+            0.0681,
+            0.1085
+          ],
+          "sequence_nw_identity_mean": 0.0868
+        },
+        "length_matched_template_control": {
+          "composition_cosine_cluster_boot_95ci": [
+            0.7637,
+            0.8267
+          ],
+          "composition_cosine_similarity_mean": 0.7945,
+          "distinct_homology_clusters": 109,
+          "evaluated_records": 148,
+          "length_mae_cluster_boot_95ci": [
+            1.8859,
+            4.0267
+          ],
+          "length_mae_residues": 2.8716,
+          "length_within_2aa_count": 120,
+          "length_within_2aa_rate": 0.8108,
+          "length_within_5aa_count": 125,
+          "length_within_5aa_rate": 0.8446,
+          "physical_3p8A_feasible_count": 90,
+          "physical_3p8A_feasible_rate": 0.989,
+          "positional_aa_recovery_mean": 0.0897,
+          "rigidity_axis_match_count": 147,
+          "rigidity_axis_match_rate": 0.9932,
+          "sequence_nw_identity_cluster_boot_95ci": [
+            0.0993,
+            0.1605
+          ],
+          "sequence_nw_identity_mean": 0.1258
+        },
+        "training_median_length_gs_control": {
+          "composition_cosine_cluster_boot_95ci": [
+            0.4907,
+            0.5826
+          ],
+          "composition_cosine_similarity_mean": 0.533,
+          "distinct_homology_clusters": 109,
+          "evaluated_records": 148,
+          "length_mae_cluster_boot_95ci": [
+            5.8561,
+            8.7578
+          ],
+          "length_mae_residues": 7.1892,
+          "length_within_2aa_count": 45,
+          "length_within_2aa_rate": 0.3041,
+          "length_within_5aa_count": 83,
+          "length_within_5aa_rate": 0.5608,
+          "physical_3p8A_feasible_count": 91,
+          "physical_3p8A_feasible_rate": 1.0,
+          "positional_aa_recovery_mean": 0.1057,
+          "rigidity_axis_match_count": 147,
+          "rigidity_axis_match_rate": 0.9932,
+          "sequence_nw_identity_cluster_boot_95ci": [
+            0.0814,
+            0.1456
+          ],
+          "sequence_nw_identity_mean": 0.1094
+        }
+      },
+      "distinct_homology_clusters": 109,
+      "mined_candidate_pool_size": 27595,
+      "n_folds": 5,
+      "seed": 17,
+      "template_pool_size": 23,
+      "total_evaluated_natural_linkers": 148
+    }
+  }
+}

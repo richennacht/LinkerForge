@@ -1,0 +1,30 @@
+{
+  "schema_version": "2.0.0",
+  "round_id": "dfl-b1-v2-family-disjoint-baselines-2026-10-18",
+  "config": "configs/dfl_b1_v2_family_round_2026-10-18.json",
+  "split_manifest": "data/processed/dfl_b1_v2_family_split/manifest.json",
+  "split_manifest_sha256": "cbb0358c096c9c870b1e37528ad0d41fb261a5eda470c0b73c0ba9090c370050",
+  "family_manifest_sha256": "db484272985535f08cf182166503973e77753abd00c7a4df1a197cc9db971dd2",
+  "status": "v2_family_disjoint_split_verified_ready_for_bounded_trials",
+  "maximum_architecture_trials": 3,
+  "maximum_gpu_hours": 6,
+  "completed_trials": 0,
+  "gpu_hours_used": 0,
+  "historical_completed_rounds": [
+    {
+      "round_id": "dfl-bounded-span-2026-10-16",
+      "report": "reports/DFL_BOUNDED_SPAN_ROUND_2026-10-16.md",
+      "split_used": "data/processed/caid3_protected_dfl_v1 (now deprecated due to DP94 overlap)"
+    },
+    {
+      "round_id": "dfl-context-span-and-sam-repeat-2026-10-17",
+      "report": "reports/DFL_SAM_REPEAT_AND_LOCKED_CAID3_2026-10-17.md",
+      "split_used": "data/processed/caid3_protected_dfl_v1 (now deprecated due to DP94 overlap)"
+    }
+  ],
+  "trials": [],
+  "v2_preregistration_contract": "literature/DFL_FIREWALL_V2_PREREGISTRATION_2026-10-18.md",
+  "v2_split_verification_report": "reports/dfl_b1_v2_family_split_verification_2026-10-18.json",
+  "v2_and_x1_summary_report": "reports/DFL_B1_V2_PREREGISTRATION_AND_X1_TRANSFER_2026-10-18.md",
+  "next_action": "V2 family-disjoint split (60 train, 28 development, 9 auxiliary order panel across 91 benchmark-disjoint family components) passes preflight_caid3_protected_training.py and preflight_dfl_family_training_v2.py. Deprecated caid3_protected_dfl_v1 is prohibited. Ready for bounded 3-trial/6-GPU-hour baseline and proposal runs on development only; assemble external single-domain PDB no-linker panel (B3) and calibrate conformal risk control (B2) before any untouched holdout evaluation."
+}

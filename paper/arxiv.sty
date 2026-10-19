@@ -1,0 +1,60 @@
+% arxiv.sty — Clean arXiv Preprint Style Package (TeXLive / Overleaf / arXiv Standard)
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{arxiv}[2026/10/19 Standard arXiv Preprint Style]
+
+\RequirePackage[verbose=true,letterpaper]{geometry}
+\AtBeginDocument{
+  \newgeometry{
+    textheight=9in,
+    textwidth=6.5in,
+    top=1in,
+    headheight=14pt,
+    headsep=25pt,
+    footskip=30pt
+  }
+}
+
+\widowpenalty=10000
+\clubpenalty=10000
+\flushbottom
+\sloppy
+
+\RequirePackage{fancyhdr}
+\fancyhf{}
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyheadoffset{0pt}
+\rhead{\scshape \footnotesize LinkerForge Preprint --- October 2026}
+\lhead{\scshape \footnotesize Domain-Gated Conformal Proteome Mining \& Geometry-Guided Fusion Linker Design}
+\cfoot{\thepage}
+
+% Title formatting
+\def\@maketitle{%
+  \vbox{%
+    \hsize\textwidth
+    \linewidth\hsize
+    \vskip 0.1in
+    \hrule height 2pt
+    \vskip 0.22in
+    {\centering \LARGE\bfseries \@title\par}
+    \vskip 0.22in
+    \hrule height 1pt
+    \vskip 0.2in
+    {\centering \normalsize \@author\par}
+    \vskip 0.15in
+    {\centering \footnotesize \@date\par}
+    \vskip 0.2in
+  }
+}
+
+% Abstract environment
+\renewenvironment{abstract}{%
+  \centerline{\large\bfseries Abstract}%
+  \vspace{0.5ex}%
+  \begin{quote}%
+}{%
+  \end{quote}%
+  \vskip 1ex%
+}
+
+\endinput

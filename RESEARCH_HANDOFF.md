@@ -2,11 +2,26 @@
 
 Read this after `README.md` and `AGENTS.md`. The active scientific task is **sequence-based segmentation of disordered flexible linker (DFL) residues in natural proteins**. The older fusion-linker *design/ranking* specification in README Sections 1–16 is retained as historical/future context; it is not the current training target. DLD's structural independent/dependent-domain linker labels are a separate secondary task and must not silently become DFL ground truth.
 
+**18 October update:** the user resumed work with a classifier-first sequence:
+validated DFL caller → audited natural-linker mining → deterministic geometry
+plus cited templates → retrieval baseline before any generative design claim.
+PRs #1–#7 are merged into this branch. See
+`CURRENT_DIRECTION_2026-10-18.md` and `CLASSIFIER_INFERENCE.md`. The old
+training firewall and spent-CAID3 rule below are unchanged.
+
 ## What exists, and what does not
 
 - There are local detector trainers, preprocessing scripts, experiment configs, tests, and retrospective reports under `scripts/`, `src/`, `configs/`, `tests/`, and `reports/`. The React frontend remains a labelled demonstration, not a deployed detector.
 - The protected SAM-like baseline, variants and three-seed repeats were evaluated on filtered development. See `reports/DFL_SAM_REPEAT_AND_LOCKED_CAID3_2026-10-17.md`. Neither the variants nor the baseline demonstrated published-method superiority. The one-time CAID3 common-27 comparison is **spent and retrospective**; never tune or select against it again.
 - Current `data/processed/caid3_protected_dfl_v1` is **not eligible for new training**: a prospective sequence-only DP94 screen found overlap with the proposed holdout. `scripts/preflight_caid3_protected_training.py` and `scripts/check_detector_autoresearch.py` fail closed. DP94 is only a candidate, not an independently validated DFL benchmark; verify its label semantics and published-method exposure before considering it.
+- The DisoFLAG authors document a DFL annotation track for DP94 (line 9 of
+  their released records), so it is inaccurate to call DP94 an IDR-only file.
+  Its public availability, negative/unknown semantics, source overlap, and
+  competitor-training lineage still prevent a fresh blind-test claim. The
+  18 October B1 audit leaves only 24 positive sequences outside both the
+  unchanged direct local firewall and the exploratory transitive
+  Pfam/Gene3D/UniRef50 graph; see
+  `reports/DFL_B1_PAPER_SURVEY_AND_SPLIT_DESIGN_2026-10-18.md`.
 - No untouched, homology/domain-family-certified common-target benchmark has yet established a breakthrough. Do not call a development score, public CAID3 comparison, or local-alignment-only exclusion a new blind test.
 
 ## Binding scientific rules
@@ -42,4 +57,8 @@ This environment is **not committed** and the command is not a clean-clone insta
 - Competitor track: document published predictor training corpora, versions, available frozen outputs and whether a truly common-target, equal-coverage comparison is possible.
 - ML track: implement and test the new split/preflight and matched development baselines; launch training only after the firewall passes. Preserve the old negative results and one-time CAID3 seal.
 
-Three existing 15-minute local Codex heartbeats coordinate these tracks. Their schedules and local GPU environment do **not** transfer through Git; other models should use this handoff and the versioned contracts, not assume a running background job after cloning.
+The three former 15-minute detector heartbeats were not found as active
+automations when the user requested pausing them on 18 October. No replacement
+schedule was created. Local schedules and the GPU environment do **not**
+transfer through Git; collaborators must not assume a running background job
+after cloning.

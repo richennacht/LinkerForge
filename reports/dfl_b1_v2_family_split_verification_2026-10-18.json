@@ -1,0 +1,61 @@
+﻿{
+  "counts": {
+    "auxiliary": 9,
+    "development": 28,
+    "train": 60
+  },
+  "family_manifest_sha256": "db484272985535f08cf182166503973e77753abd00c7a4df1a197cc9db971dd2",
+  "gates": {
+    "benchmark_firewall_preflight_for_split": true,
+    "frozen_family_disjoint_train_development_split": true,
+    "independently_adjudicated_order_negative_panel": true,
+    "verified_negative_residues": true
+  },
+  "limitations": [
+    "Curator-validated released DisProt_2026_06 IDPO:0000033 (1) and IDPO:0000006 (0) regions only; all other residues remain x.",
+    "Includes publicly released (2022_03-2026_06), PMID/DOI-cited, curator-validated regions that retained DisProt's internal unpublished=true flag.",
+    "Auxiliary split is a family-disjoint IDPO:0000006 experimental-order negative panel; single-domain PDB crystallographic panel remains recommended for full proteome mining calibration.",
+    "No benchmark labels were opened or parsed."
+  ],
+  "mask_counts": {
+    "auxiliary": {
+      "0": 194,
+      "1": 0,
+      "x": 3347
+    },
+    "development": {
+      "0": 518,
+      "1": 547,
+      "x": 13713
+    },
+    "train": {
+      "0": 541,
+      "1": 1373,
+      "x": 24372
+    }
+  },
+  "registry_sha256": {
+    "caid3": "2a754cada707eb5a748d9302e3425d06ee6f5a60b19baa853432e2d044d16e70",
+    "dp94": "c19834e1e5ca510845e631d1cc0ea3112d247ed84d8cbe077edbf38378c1f90e"
+  },
+  "registry_states": {
+    "caid3": "retrospective_spent_exclusion_only",
+    "dp94": "unopened"
+  },
+  "shuffle_null_verification": {
+    "block12_shuffle_hits": 1,
+    "block12_shuffle_rate": 0.00020833333333333335,
+    "observed_hits": 11,
+    "residue_shuffle_hits": 0,
+    "residue_shuffle_rate": 0.0,
+    "sample_size_each_side": 40,
+    "seeds": [
+      173,
+      271,
+      811
+    ],
+    "total_pairs": 4800
+  },
+  "split_manifest_sha256": "cbb0358c096c9c870b1e37528ad0d41fb261a5eda470c0b73c0ba9090c370050",
+  "status": "pass_v2_preregistered_sequence_and_family_firewall"
+}

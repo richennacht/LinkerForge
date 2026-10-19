@@ -1,5 +1,18 @@
 # LinkerForge
 
+**New here?** Read [START_HERE.md](./START_HERE.md) for the current project map,
+what runs today, and the entry point for each workstream. This README remains
+the canonical scientific specification; historical goals below are labelled.
+
+> **Current programme (18 October 2026):** begin with a trustworthy sequence-based
+> disordered flexible linker (DFL) classifier; use only an independently
+> validated, high-precision caller to mine natural linkers. Downstream design
+> combines the deterministic geometry calculator, a cited linker-template
+> library, and a matched retrieval baseline before considering generation.
+> The existing classifier checkpoint can run provisional inference, but is not
+> certified for mining. See [the current direction](./CURRENT_DIRECTION_2026-10-18.md)
+> and [classifier inference contract](./CLASSIFIER_INFERENCE.md).
+
 > **Research-direction update (11 October 2026):** LinkerForge's active research
 > goal has changed from *designing a fusion linker* to *detecting linker spans
 > in an input protein sequence*. The [detector research charter](./literature/LINKER_DETECTION_FRONTIER_CHARTER_2026-10-11.md)
@@ -17,7 +30,9 @@ LinkerForge is a **computational research prototype** for recommending a peptide
 
 This README is the canonical, self-contained project specification. A new team member, coding agent, cloud notebook, or clean laptop should be able to recover the project scope and continue without the original planning conversation.
 
-> **Current state:** the React demonstration interface, CI/CD, and an embedded Mol* reference-structure viewer are implemented. The viewer displays experimental PDB entries and is not a prediction service. Some Python extraction, baseline, streaming, and C-alpha structural-diagnostic code exists, but the validated dataset, trained models, full structural funnel, and cloud jobs below remain MVP specifications and must not be represented as completed results.
+> **Current state:** the React demonstration interface, CI/CD, a full-screen structure area, two-sequence template construction, and an embedded Mol* reference-structure viewer are implemented. A user may export a complete fusion FASTA and load a sequence-matched predicted PDB into a browser 3Dmol.js viewer; no structure is generated in the browser. An optional bounded ColabFold command adapter exists but ColabFold and its weights/databases are not bundled or validated on the target cloud image. The validated dataset, trained fusion ranker, full structural funnel, and cloud jobs below remain MVP specifications and must not be represented as completed results. See [full-fusion local workflow](./docs/FULL_FUSION_LOCAL_WORKFLOW.md).
+
+The optional [Tauri desktop shell](./docs/DESKTOP_LOCAL_FOLDING.md) can launch a bounded local full-fusion ColabFold job and display a sequence-checked PDB. ColabFold itself is not included; 6 GB GPU feasibility has not been established.
 
 ## One-minute description
 

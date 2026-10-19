@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://linkerforge.local/schemas/dfl_family_split_v2.schema.json",
+  "title": "DFL Family-Disjoint Split Manifest V2",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "status",
+    "preregistration_doc",
+    "similarity_rule",
+    "shuffle_null_verification",
+    "source_policies",
+    "benchmark_registries",
+    "family_manifest",
+    "files",
+    "counts",
+    "mask_counts",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "2.0.0"
+    },
+    "status": {
+      "const": "preregistered_v2_family_disjoint_split"
+    },
+    "preregistration_doc": {
+      "type": "string",
+      "minLength": 1
+    },
+    "similarity_rule": {
+      "type": "object",
+      "required": [
+        "rule_version",
+        "matrix",
+        "gap_open",
+        "gap_extend",
+        "minimum_identity",
+        "minimum_aligned_residues",
+        "minimum_each_sequence_residue_coverage",
+        "coverage_definition",
+        "maximum_shuffle_null_rate"
+      ],
+      "properties": {
+        "rule_version": { "const": "2.0.0" },
+        "matrix": { "const": "BLOSUM62" },
+        "gap_open": { "const": 10 },
+        "gap_extend": { "const": 1 },
+        "minimum_identity": { "const": 0.3 },
+        "minimum_aligned_residues": { "const": 50 },
+        "minimum_each_sequence_residue_coverage": { "const": 0.8 },
+        "coverage_definition": { "const": "ungapped_aligned_residues_divided_by_sequence_length" },
+        "maximum_shuffle_null_rate": { "const": 0.005 }
+      },
+      "additionalProperties": false
+    },
+    "shuffle_null_verification": {
+      "type": "object",
+      "required": [
+        "seeds",
+        "sample_size_each_side",
+        "total_pairs",
+        "observed_hits",
+        "residue_shuffle_hits",
+        "block12_shuffle_hits",
+        "residue_shuffle_rate",
+        "block12_shuffle_rate"
+      ],
+      "properties": {
+        "seeds": {
+          "type": "array",
+          "items": { "type": "integer" },
+          "minItems": 3
+        },
+        "sample_size_each_side": { "type": "integer", "minimum": 10 },
+        "total_pairs": { "type": "integer", "minimum": 300 },
+        "observed_hits": { "type": "integer", "minimum": 0 },
+        "residue_shuffle_hits": { "type": "integer", "minimum": 0 },
+        "block12_shuffle_hits": { "type": "integer", "minimum": 0 },
+        "residue_shuffle_rate": { "type": "number", "minimum": 0, "maximum": 0.005 },
+        "block12_shuffle_rate": { "type": "number", "minimum": 0, "maximum": 0.005 }
+      },
+      "additionalProperties": false
+    },
+    "source_policies": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "benchmark_registries": {
+      "type": "array",
+      "minItems": 2
+    },
+    "family_manifest": {
+      "type": "object",
+      "required": ["path", "sha256"]
+    },
+    "files": {
+      "type": "object",
+      "required": ["train", "development", "auxiliary"]
+    },
+    "counts": {
+      "type": "object",
+      "required": ["train", "development", "auxiliary"]
+    },
+    "mask_counts": {
+      "type": "object",
+      "required": ["train", "development", "auxiliary"]
+    },
+    "limitations": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    }
+  },
+  "additionalProperties": true
+}
