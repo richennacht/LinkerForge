@@ -74,6 +74,11 @@ def main() -> None:
     parser.add_argument("--lock", type=Path, required=True)
     parser.add_argument("--owner", required=True)
     parser.add_argument("--timeout-hours", type=float, default=18.0)
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="Resume a previously interrupted, hash-matched panel and retain completed .done.txt queries.",
+    )
     args = parser.parse_args()
 
     fasta = args.fasta.resolve()
@@ -84,8 +89,27 @@ def main() -> None:
     total_constructs = len(headers)
     models_per_construct = 5
     total_models = total_constructs * models_per_construct
+    manifest_path = output.parent / "colabfold_run_manifest.json"
+    prior_manifest: dict | None = None
     if output.exists() and any(output.iterdir()):
-        raise FileExistsError(f"Refusing to overwrite nonempty prediction directory: {output}")
+        if not args.resume:
+            raise FileExistsError(f"Refusing to overwrite nonempty prediction directory: {output}")
+        if not manifest_path.is_file():
+            raise FileNotFoundError(f"Resume requires the prior run manifest: {manifest_path}")
+        prior_manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        validate_manifest(prior_manifest)
+        if prior_manifest["status"] == "complete":
+            raise RuntimeError("Refusing to resume a completed ColabFold panel")
+        if prior_manifest["input_fasta_sha256"] != sha256(fasta):
+            raise RuntimeError("Resume FASTA hash does not match the prior run")
+        if Path(prior_manifest["output"]).resolve() != output:
+            raise RuntimeError("Resume output path does not match the prior run")
+        if prior_manifest["construct_count"] != total_constructs:
+            raise RuntimeError("Resume construct count does not match the prior run")
+        if prior_manifest["models_per_construct"] != models_per_construct:
+            raise RuntimeError("Resume model count does not match the prior run")
+    elif args.resume:
+        raise FileNotFoundError("Resume was requested but the prediction directory is empty or absent")
     output.mkdir(parents=True, exist_ok=True)
     progress.parent.mkdir(parents=True, exist_ok=True)
     lock.parent.mkdir(parents=True, exist_ok=True)
@@ -121,50 +145,76 @@ def main() -> None:
         wsl_path(fasta),
         wsl_path(output),
     ]
-    manifest_path = output.parent / "colabfold_run_manifest.json"
-    manifest = {
-        "schema_version": "linkerforge.colabfold-panel-run.v1",
-        "status": "running",
-        "started_utc": utc_now(),
-        "input_fasta": str(fasta),
-        "input_fasta_sha256": sha256(fasta),
-        "output": str(output),
-        "construct_count": total_constructs,
-        "models_per_construct": models_per_construct,
-        "planned_rankable_models": total_models,
-        "command": command,
-        "environment_overrides": {
-            "TF_FORCE_UNIFIED_MEMORY": "1",
-            "TF_FORCE_GPU_ALLOW_GROWTH": "true",
-            "XLA_PYTHON_CLIENT_MEM_FRACTION": "4.0",
-            "XLA_PYTHON_CLIENT_PREALLOCATE": "false",
-            "XLA_PYTHON_CLIENT_ALLOCATOR": "platform",
-        },
-        "provenance": {
-            "commit_sha": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
-            "runner_sha256": sha256(Path(__file__)),
-            "versions": {"python": platform.python_version()},
-        },
-        "claim_boundary": "Matched public-sequence structure predictions; not compatibility, function, or experimental validation.",
-    }
+    started_now = utc_now()
+    if prior_manifest is None:
+        manifest = {
+            "schema_version": "linkerforge.colabfold-panel-run.v1",
+            "status": "running",
+            "started_utc": started_now,
+            "input_fasta": str(fasta),
+            "input_fasta_sha256": sha256(fasta),
+            "output": str(output),
+            "construct_count": total_constructs,
+            "models_per_construct": models_per_construct,
+            "planned_rankable_models": total_models,
+            "command": command,
+            "environment_overrides": {
+                "TF_FORCE_UNIFIED_MEMORY": "1",
+                "TF_FORCE_GPU_ALLOW_GROWTH": "true",
+                "XLA_PYTHON_CLIENT_MEM_FRACTION": "4.0",
+                "XLA_PYTHON_CLIENT_PREALLOCATE": "false",
+                "XLA_PYTHON_CLIENT_ALLOCATOR": "platform",
+            },
+            "provenance": {
+                "commit_sha": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
+                "runner_sha256": sha256(Path(__file__)),
+                "versions": {"python": platform.python_version()},
+            },
+            "claim_boundary": "Matched public-sequence structure predictions; not compatibility, function, or experimental validation.",
+        }
+    else:
+        completed_before_resume, rankable_before_resume = count_outputs(output)
+        manifest = prior_manifest
+        manifest.setdefault("resume_events", []).append({
+            "resumed_utc": started_now,
+            "prior_status": prior_manifest["status"],
+            "completed_constructs_before_resume": completed_before_resume,
+            "rankable_models_before_resume": rankable_before_resume,
+            "provenance": {
+                "commit_sha": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
+                "runner_sha256": sha256(Path(__file__)),
+                "versions": {"python": platform.python_version()},
+            },
+        })
+        manifest.update(
+            status="running",
+            latest_started_utc=started_now,
+            command=command,
+        )
+        manifest.pop("completed_utc", None)
+        manifest.pop("failure_reason", None)
     validate_manifest(manifest)
     atomic_json(manifest_path, manifest)
+    completed_at_start, rankable_at_start = count_outputs(output)
     atomic_json(progress, {
         "schema_version": "linkerforge.panel-progress.v1",
-        "state": "starting",
+        "state": "resuming" if args.resume else "starting",
         "updated_utc": utc_now(),
-        "completed_constructs": 0,
+        "completed_constructs": completed_at_start,
         "total_constructs": total_constructs,
-        "rankable_models": 0,
+        "rankable_models": rankable_at_start,
         "planned_rankable_models": total_models,
-        "prediction_percent": 0.0,
-        "overall_percent": 0.0,
+        "prediction_percent": round(100 * rankable_at_start / total_models, 1),
+        "overall_percent": round(90 * rankable_at_start / total_models, 1),
     })
     log_path = output.parent / "colabfold.log"
     process: subprocess.Popen[bytes] | None = None
     deadline = time.monotonic() + args.timeout_hours * 3600
     try:
-        with log_path.open("wb") as log:
+        with log_path.open("ab" if args.resume else "wb") as log:
+            if args.resume:
+                log.write(f"\n=== resume {started_now} ===\n".encode("utf-8"))
+                log.flush()
             process = subprocess.Popen(
                 command,
                 cwd=ROOT,
