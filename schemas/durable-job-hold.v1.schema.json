@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://linkerforge.org/schemas/durable-job-hold.v1.schema.json",
+  "title": "LinkerForge durable job hold v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "state",
+    "recorded_utc",
+    "reason",
+    "resume_policy",
+    "run_directory",
+    "request_sha256",
+    "status_sha256",
+    "stopped_state",
+    "stopped_stage",
+    "claim_boundary"
+  ],
+  "properties": {
+    "schema_version": {"const": "linkerforge.durable-job-hold.v1"},
+    "state": {"const": "on_hold"},
+    "recorded_utc": {"type": "string", "minLength": 1},
+    "reason": {"type": "string", "minLength": 1},
+    "resume_policy": {"type": "string", "minLength": 1},
+    "run_directory": {"type": "string", "minLength": 1},
+    "request_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "status_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "stopped_state": {"type": "string", "minLength": 1},
+    "stopped_stage": {"type": "string", "minLength": 1},
+    "claim_boundary": {"type": "string", "minLength": 1}
+  },
+  "additionalProperties": false
+}

@@ -6,6 +6,12 @@ firewall. An available alternative answers a specific question; it does not
 turn an unmeasured outcome into a positive result. Wet-lab execution remains
 outside this project's requested scope.
 
+**Execution update (21 October 2026):** ensemble agreement, lDDT/TM-score,
+automatic functional-site mapping, DSSP, post-OpenMM change analysis and the
+production-length OpenMM run are now explicitly on hold as future scope. Their
+purpose, implementation sequence, prerequisites, outputs and claim boundaries
+are defined in the [deferred structural-validation roadmap](./FUTURE_STRUCTURAL_VALIDATION_ROADMAP_2026-10-21.md).
+
 | Evidence question | Practical method | Implementation and remaining scope |
 | --- | --- | --- |
 | Does a linker bury a domain residue in the predicted pose? | Differential solvent-accessible surface area (SASA) with Biopython Shrake–Rupley | Implemented CPU analysis, sequence and coordinate hash checks, per-residue outputs and evidence-record linking. Requires researcher-supplied functional annotations to interpret protected sites. |
@@ -13,12 +19,12 @@ outside this project's requested scope.
 | Does the structure contain unrealistic atomic contacts? | Pinned Reduce 4.15 / Probe 2.18 hydrogen-aware severe-overlap screen | Implemented and completed on seven public predictions. It reports transparent unique-pair counts and never calls them the canonical MolProbity clashscore. No LinkerForge acceptance threshold is frozen. |
 | Can strained coordinates relax? | Existing OpenMM minimization | Available and executed as part of the prior smoke protocol. Energy decrease does not establish biological stability or replace Rosetta loop reconstruction. |
 | Can a missing linker conformation be reconstructed? | Rosetta KIC or another separately validated loop-sampling method | Future integration. Surface area, clash checks and minimization do not replace this test. |
-| Are results reproducible across public constructs? | Matched ColabFold controls across three public pairs | Existing single-pair panel complete; additional two-pair durable prediction job is separate and ongoing. This panel is descriptive, not a family-disjoint prospective evaluation. |
+| Are results reproducible across public constructs? | Matched ColabFold controls across three public pairs | Existing single-pair panel is complete. The additional two-pair job is intentionally paused after 4/14 constructs and 20/70 models; its retained outputs can be hash-checked and resumed. This panel is descriptive, not a family-disjoint prospective evaluation. |
 | Does an external detector recognize inserted linkers? | Published DFLpred implementation on the existing 28-construct public panel | Executed comparator. It assesses flexible-linker propensity. LINKER-Pred, TransDFL and DisoFLAG remain future pinned comparisons. |
 | How did historical LinkerForge detector heads compare on identical public targets? | Frozen-score retrospective on the 27-protein CAID3 common set | Completed negative result: best historical LinkerForge APS/Fmax was 0.089/0.165 versus 0.482/0.491 for IPA-AF2-Linker, 0.429/0.473 for LINKER-Pred-Lite and 0.409/0.464 for DisoFLAG-DFL. This spent public result cannot guide tuning or selection, contains only linker-positive proteins, and does not assess fusion compatibility. Fresh pinned inference remains future work. |
 | Are structural conclusions robust across architectures? | ESMFold; another validated independent model family; OpenFold for AlphaFold-family reproducibility | Future integration with the same sequences and analysis rules. Five AF2 parameter models are not five independent model families. |
 | Is the compatibility ranker scientifically calibrated? | Independently evidenced engineered-fusion outcomes and an untouched grouped evaluation | No computational substitution establishes this. Future scientific development. The mined corpus remains useful for discovery/retrieval and reviewed weak supervision. |
-| Are MD trajectories long enough to support stability claims? | Replicated production simulations with convergence checks | Storage-aware v2 protocol and launch preflight are implemented and pass: 10 ps metrics/checkpoints are retained while full-system DCD frames are stored every 50 ps. Execution remains future until the active ColabFold GPU panel finishes; the existing 3 × 50 ps run verifies software execution only. |
+| Are MD trajectories long enough to support stability claims? | Replicated production simulations with convergence checks | Future scope / on hold. The storage-aware v2 protocol and launch preflight are implemented, but production must not start automatically. A future explicit launch must repeat every preflight and run the post-OpenMM analysis. The existing 3 × 50 ps run verifies software execution only. |
 | Can the app run without institutional cloud access? | Existing local Tauri/WSL execution and durable run manifests | Implemented for bounded public inputs. Approved institutional/cloud execution remains future deployment. |
 | Can research results be preserved without a signing service? | Existing checksummed research ZIP and SHA-256 history | Implemented integrity alternative. Publisher signing and institutional signatures remain future release/deployment work. |
 
@@ -104,13 +110,15 @@ of trajectory data and 31.76 GPU hours. With the unchanged 1.5× allowance plus
 space passes. Artifact:
 `reports/openmm-production-preflight-storage-aware-2026-10-21.json`.
 
-This only removes the storage blocker. A durable six-stage production pipeline
-is now running in a wait state at
-`runs/job-control/openmm-production-v2-after-colabfold-20261021/`. It waits for
-the ColabFold comparison artifact, repeats the disk preflight, acquires the
-shared GPU lock, runs all three replicas, produces descriptive five-block and
-between-replicate diagnostics, links the evidence, and validates schemas. A
-completed run still would not prove biological stability.
+This only removed the storage blocker. The previously queued durable production
+pipeline at
+`runs/job-control/openmm-production-v2-after-colabfold-20261021/` was placed on
+hold before simulation and is now future scope. It must not start automatically
+when ColabFold completes. Any later execution requires an explicit decision, a
+new unique durable run directory, a repeated disk/dependency/CUDA/input preflight
+and the full downstream convergence/change analysis described in the roadmap.
+The projected GPU time remains approximately 31.76 hours. Until every future
+stage succeeds, this is not stability evidence.
 
 ## Sources checked
 
