@@ -24,6 +24,9 @@ export interface FusionCandidate {
   linker: string
   fullSequence: string
   method: string
+  role: 'design_template' | 'fixed_control' | 'direct_control'
+  rationale: string
+  evidenceQuality: 'template_only' | 'control'
 }
 
 export function buildTemplateCandidates(
@@ -46,12 +49,84 @@ export function buildTemplateCandidates(
     const unit = rigidity === 'rigid' ? 'EAAAK' : 'GGGGS'
     return unit.repeat(Math.ceil(length / unit.length)).slice(0, length)
   })
-  return [...new Set(linkers)].map((linker, index) => ({
-    id: `template-${index + 1}`,
-    linker,
-    fullSequence: `${domainA}${linker}${domainB}`,
-    method: cleavable ? 'TEV motif template' : rigidity === 'rigid' ? 'EAAAK template' : 'GGGGS template',
-  }))
+  const fixedControl = 'GGGGSGGGGSGGGGS'
+  const candidates: FusionCandidate[] = [...new Set(linkers)].map((linker, index) => {
+    const isFixedControl = linker === fixedControl
+    const isRequestedLength = linker.length === requested
+    const lengthDirection = linker.length < requested ? 'shorter' : 'longer'
+    return {
+      id: isFixedControl ? 'control-fixed-ggggs3' : `template-${index + 1}`,
+      linker,
+      fullSequence: `${domainA}${linker}${domainB}`,
+      method: isFixedControl
+        ? 'Fixed (GGGGS)3 control'
+        : isRequestedLength
+          ? cleavable ? 'Target-length TEV candidate' : rigidity === 'rigid' ? 'Target-length EAAAK candidate' : 'Target-length GGGGS candidate'
+          : `${lengthDirection === 'shorter' ? 'Shorter' : 'Longer'} length-sensitivity candidate`,
+      role: isFixedControl ? 'fixed_control' : 'design_template',
+      rationale: isFixedControl
+        ? 'Required fixed flexible-linker comparator from the project contract.'
+        : isRequestedLength
+          ? `Matches the requested ${requested}-residue target length; deterministic and unranked.`
+          : `${lengthDirection === 'shorter' ? 'Shorter' : 'Longer'} sensitivity candidate around the requested ${requested}-residue target; deterministic and unranked.`,
+      evidenceQuality: isFixedControl ? 'control' : 'template_only',
+    }
+  })
+  if (!candidates.some((candidate) => candidate.linker === fixedControl)) {
+    candidates.push({
+      id: 'control-fixed-ggggs3',
+      linker: fixedControl,
+      fullSequence: `${domainA}${fixedControl}${domainB}`,
+      method: 'Fixed (GGGGS)3 control',
+      role: 'fixed_control',
+      rationale: 'Required fixed flexible-linker comparator from the project contract.',
+      evidenceQuality: 'control',
+    })
+  }
+  candidates.push({
+    id: 'control-direct-fusion',
+    linker: '',
+    fullSequence: `${domainA}${domainB}`,
+    method: 'Direct fusion control',
+    role: 'direct_control',
+    rationale: 'Required zero-linker comparator; included as a control, not a recommended design.',
+    evidenceQuality: 'control',
+  })
+  return candidates
+}
+
+export interface PdbConfidenceSummary {
+  overall: number | null
+  domainA: number | null
+  linker: number | null
+  domainB: number | null
+  residueCount: number
+}
+
+function mean(values: number[]) {
+  if (values.length === 0) return null
+  return values.reduce((sum, value) => sum + value, 0) / values.length
+}
+
+export function summarizePdbConfidence(
+  pdb: string,
+  domainALength: number,
+  linkerLength: number
+): PdbConfidenceSummary {
+  const values: number[] = []
+  for (const line of pdb.split(/\r?\n/)) {
+    if (!line.startsWith('ATOM  ') || line.slice(12, 16).trim() !== 'CA') continue
+    const confidence = Number(line.slice(60, 66).trim())
+    if (Number.isFinite(confidence)) values.push(confidence)
+  }
+  const linkerEnd = domainALength + linkerLength
+  return {
+    overall: mean(values),
+    domainA: mean(values.slice(0, domainALength)),
+    linker: mean(values.slice(domainALength, linkerEnd)),
+    domainB: mean(values.slice(linkerEnd)),
+    residueCount: values.length,
+  }
 }
 
 export function fusionFasta(sequence: string): string {

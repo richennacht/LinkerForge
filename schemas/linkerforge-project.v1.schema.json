@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://linkerforge.org/schemas/linkerforge-project.v1.schema.json",
+  "title": "LinkerForge project file v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "project", "domains", "design", "privacy"],
+  "properties": {
+    "schema_version": {"const": "linkerforge.project.v1"},
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "biological_objective", "expression_system", "protected_sites"],
+      "properties": {
+        "name": {"type": "string"},
+        "biological_objective": {"type": "string"},
+        "expression_system": {"type": "string"},
+        "protected_sites": {"type": "string"}
+      }
+    },
+    "domains": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["A", "B"],
+      "properties": {
+        "A": {"$ref": "#/$defs/domain"},
+        "B": {"$ref": "#/$defs/domain"}
+      }
+    },
+    "design": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rigidity", "cleavable", "target_length"],
+      "properties": {
+        "rigidity": {"enum": ["flexible", "rigid"]},
+        "cleavable": {"type": "boolean"},
+        "target_length": {"type": "integer", "minimum": 5, "maximum": 30}
+      }
+    },
+    "privacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["public_msa_consent_saved"],
+      "properties": {"public_msa_consent_saved": {"const": false}}
+    }
+  },
+  "$defs": {
+    "domain": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "sequence", "reference_source_id", "reference_source_kind"],
+      "properties": {
+        "label": {"type": "string"},
+        "sequence": {"type": "string", "pattern": "^(?:(?:>[^\\r\\n]*[\\r\\n]+)?[ACDEFGHIKLMNPQRSTVWY\\s]+)?$"},
+        "reference_source_id": {"type": "string"},
+        "reference_source_kind": {"enum": ["experimental", "predicted"]}
+      }
+    }
+  }
+}

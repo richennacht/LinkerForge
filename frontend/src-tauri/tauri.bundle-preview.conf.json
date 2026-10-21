@@ -1,0 +1,19 @@
+{
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.ico"
+    ],
+    "shortDescription": "Computational fusion-linker design and structure-evidence workspace",
+    "longDescription": "LinkerForge is a computational research prototype for auditable fusion-linker candidate construction, structure prediction orchestration, visualization, and evidence export.",
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser"
+      }
+    }
+  }
+}

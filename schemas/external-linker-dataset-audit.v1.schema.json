@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://linkerforge.org/schemas/external-linker-dataset-audit.v1.schema.json",
+  "title": "LinkerForge external linker dataset archive audit v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "status", "source_artifact", "files", "data_card_consistency", "silver_profile", "gold_profile", "overlap_with_existing_27766_corpus", "fitness", "blockers", "claim_boundary"],
+  "properties": {
+    "schema_version": {"const": "linkerforge.external-linker-dataset-audit.v1"},
+    "status": {"const": "quarantined_not_training_authorized"},
+    "source_artifact": {
+      "type": "object",
+      "required": ["filename", "sha256", "entry_count", "uncompressed_bytes", "unsafe_member_names", "embedded_virtual_environment_entries", "embedded_git_entries", "license_file_present"],
+      "properties": {
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "entry_count": {"type": "integer", "minimum": 1},
+        "uncompressed_bytes": {"type": "integer", "minimum": 1},
+        "unsafe_member_names": {"type": "array", "items": {"type": "string"}},
+        "license_file_present": {"type": "boolean"}
+      },
+      "additionalProperties": true
+    },
+    "files": {"type": "object"},
+    "data_card_consistency": {"type": "object"},
+    "silver_profile": {"type": "object"},
+    "gold_profile": {"type": "object"},
+    "overlap_with_existing_27766_corpus": {"type": "object"},
+    "fitness": {
+      "type": "object",
+      "required": ["compatibility_ranker_training", "curator_validated_linker_corpus", "automatic_merge_into_existing_corpus", "possible_use"],
+      "properties": {
+        "compatibility_ranker_training": {"const": false},
+        "curator_validated_linker_corpus": {"const": false},
+        "automatic_merge_into_existing_corpus": {"const": false},
+        "possible_use": {"type": "string", "minLength": 1}
+      }
+    },
+    "blockers": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "claim_boundary": {"type": "string", "minLength": 1}
+  }
+}

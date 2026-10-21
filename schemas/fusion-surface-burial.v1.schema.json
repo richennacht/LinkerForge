@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://linkerforge.org/schemas/fusion-surface-burial.v1.schema.json",
+  "title": "Fixed-coordinate fusion surface burial v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "status", "created_utc", "records", "source_ids", "config", "provenance", "evidence_quality", "threshold_status", "limitations", "claim_boundary"],
+  "properties": {
+    "schema_version": {"const": "linkerforge.fusion-surface-burial.v1"},
+    "status": {"const": "complete"},
+    "created_utc": {"type": "string", "format": "date-time"},
+    "threshold_status": {"const": "not_frozen"},
+    "evidence_quality": {"const": "predicted_structure_fixed_coordinate_surface_measurement"},
+    "source_ids": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "config": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["n_points", "probe_radius_angstrom", "atom_policy", "comparison_sha256", "sequence_manifest_sha256"],
+      "properties": {
+        "n_points": {"type": "integer", "minimum": 100},
+        "probe_radius_angstrom": {"type": "number", "exclusiveMinimum": 0},
+        "atom_policy": {"type": "string", "minLength": 1},
+        "comparison_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "sequence_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["commit_sha", "config_sha256", "script_sha256", "versions", "executable", "arguments", "worktree_modified"],
+      "properties": {
+        "commit_sha": {"type": "string", "minLength": 1},
+        "config_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "script_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "versions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["python", "biopython", "numpy"],
+          "properties": {
+            "python": {"type": "string", "minLength": 1},
+            "biopython": {"type": "string", "minLength": 1},
+            "numpy": {"type": "string", "minLength": 1}
+          }
+        },
+        "executable": {"type": "string", "minLength": 1},
+        "arguments": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "worktree_modified": {"type": "boolean"}
+      }
+    },
+    "records": {"type": "array", "minItems": 1, "items": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["construct_id", "pdb", "pdb_sha256", "sequence_sha256", "domain_sources", "boundaries", "measurements", "domain_surface_buried_by_linker_angstrom2", "domain_surface_buried_by_added_context_angstrom2"],
+      "properties": {
+        "construct_id": {"type": "string", "minLength": 1},
+        "pdb": {"type": "string", "minLength": 1},
+        "pdb_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "sequence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "domain_sources": {"type": "array", "minItems": 2, "items": {"type": "string", "minLength": 1}},
+        "boundaries": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["domain_a_length", "linker_length", "domain_b_length", "linker_start_1based", "linker_end_1based"],
+          "properties": {
+            "domain_a_length": {"type": "integer", "minimum": 1},
+            "linker_length": {"type": "integer", "minimum": 0},
+            "domain_b_length": {"type": "integer", "minimum": 1},
+            "linker_start_1based": {"type": ["integer", "null"], "minimum": 1},
+            "linker_end_1based": {"type": ["integer", "null"], "minimum": 1}
+          }
+        },
+        "measurements": {"type": "array", "minItems": 2, "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["domain", "domain_residue", "fusion_residue", "residue_name", "full_fusion_sasa_angstrom2", "without_linker_sasa_angstrom2", "isolated_domain_same_coordinates_sasa_angstrom2", "linker_attributed_burial_angstrom2", "total_added_context_burial_angstrom2"],
+          "properties": {
+            "domain": {"enum": ["A", "B"]},
+            "domain_residue": {"type": "integer", "minimum": 1},
+            "fusion_residue": {"type": "integer", "minimum": 1},
+            "residue_name": {"type": "string", "pattern": "^[A-Z]{3}$"},
+            "full_fusion_sasa_angstrom2": {"type": "number", "minimum": 0},
+            "without_linker_sasa_angstrom2": {"type": "number", "minimum": 0},
+            "isolated_domain_same_coordinates_sasa_angstrom2": {"type": "number", "minimum": 0},
+            "linker_attributed_burial_angstrom2": {"type": "number", "minimum": 0},
+            "total_added_context_burial_angstrom2": {"type": "number", "minimum": 0}
+          }
+        }},
+        "domain_surface_buried_by_linker_angstrom2": {"type": "number", "minimum": 0},
+        "domain_surface_buried_by_added_context_angstrom2": {"type": "number", "minimum": 0}
+      }
+    }},
+    "limitations": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "claim_boundary": {"type": "string", "minLength": 1}
+  }
+}

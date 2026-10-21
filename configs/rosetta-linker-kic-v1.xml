@@ -1,0 +1,16 @@
+<ROSETTASCRIPTS>
+  <!-- Protocol template only: validate against the institution's pinned Rosetta release before use. -->
+  <SCOREFXNS>
+    <ScoreFunction name="linker_ref2015" weights="ref2015">
+      <Reweight scoretype="chainbreak" weight="10.0" />
+      <Reweight scoretype="linear_chainbreak" weight="10.0" />
+    </ScoreFunction>
+  </SCOREFXNS>
+  <MOVERS>
+    <LoopModeler name="model_linker" config="kic" scorefxn="linker_ref2015" />
+  </MOVERS>
+  <PROTOCOLS>
+    <Add mover_name="model_linker" />
+  </PROTOCOLS>
+  <OUTPUT scorefxn="linker_ref2015" />
+</ROSETTASCRIPTS>

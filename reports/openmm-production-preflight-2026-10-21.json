@@ -1,0 +1,43 @@
+{
+  "schema_version": "linkerforge.openmm-production-preflight.v1",
+  "status": "blocked_insufficient_storage_headroom",
+  "run_authorized": false,
+  "inputs": {
+    "production_config": "M:\\ChatGPT\\LinkerForge 2\\configs\\openmm-publication-protocol-v1.json",
+    "production_config_sha256": "f7f2327167a4e2e7197a1438aefd78cf9739c102dc2ab426039c2c7c0ef7178a",
+    "smoke_manifest": "M:\\ChatGPT\\LinkerForge 2\\runs\\openmm\\acceptance-1ubq-gs10-2gb1-smoke\\run_manifest.json",
+    "smoke_manifest_sha256": "be85b1d93c183805da116d4908d5b3b7a4595514f8ecfe01ae552a865f41a1c0",
+    "smoke_run_directory": "M:\\ChatGPT\\LinkerForge 2\\runs\\openmm\\acceptance-1ubq-gs10-2gb1-smoke",
+    "target_parent": "M:\\ChatGPT\\LinkerForge 2\\runs\\openmm"
+  },
+  "observations": {
+    "smoke_atom_count": 36751,
+    "smoke_replicates": 3,
+    "smoke_production_steps_total": 75000,
+    "smoke_production_seconds_total": 112.103,
+    "smoke_trajectory_frames_total": 75,
+    "smoke_trajectory_bytes_total": 33082728,
+    "observed_bytes_per_frame": 441103.04,
+    "observed_seconds_per_step": 0.001494709
+  },
+  "projection": {
+    "replicates": 3,
+    "production_nanoseconds_per_replicate": 50.0,
+    "trajectory_frames_total": 15000,
+    "trajectory_bytes": 6616545600,
+    "trajectory_gib": 6.162,
+    "runtime_seconds": 114345.252,
+    "runtime_hours": 31.76
+  },
+  "storage_gate": {
+    "free_bytes": 12763181056,
+    "free_gib": 11.887,
+    "trajectory_storage_multiplier": 1.5,
+    "fixed_reserve_gib": 5.0,
+    "required_free_bytes": 15293527520,
+    "required_free_gib": 14.243,
+    "shortfall_bytes": 2530346464,
+    "shortfall_gib": 2.357
+  },
+  "claim_boundary": "This preflight estimates operations from one completed same-construct smoke run. It is not evidence of trajectory convergence, stability, or biological function."
+}

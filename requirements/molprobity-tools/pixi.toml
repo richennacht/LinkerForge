@@ -1,0 +1,10 @@
+[workspace]
+name = "linkerforge-molprobity-tools"
+version = "0.1.0"
+description = "Pinned local Reduce/Probe environment for hydrogen-aware geometry cross-checks"
+channels = ["conda-forge", "bioconda"]
+platforms = ["linux-64"]
+
+[dependencies]
+reduce = "4.15.*"
+probe = "2.18.*"

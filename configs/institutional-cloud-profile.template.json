@@ -1,0 +1,12 @@
+{
+  "schema_version": "linkerforge.institution-profile.v1",
+  "institution": "REPLACE_WITH_APPROVED_INSTITUTION",
+  "approved": false,
+  "partition": "REPLACE_PARTITION",
+  "account": "REPLACE_ACCOUNT",
+  "gpu_resource": "gpu:1",
+  "time_limit": "06:00:00",
+  "cpus_per_task": 8,
+  "memory": "64G",
+  "colabfold_command": "REPLACE_COLABFOLD_COMMAND"
+}

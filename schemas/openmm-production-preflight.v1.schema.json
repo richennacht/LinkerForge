@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://linkerforge.org/schemas/openmm-production-preflight.v1.schema.json",
+  "title": "LinkerForge OpenMM production operational preflight v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "run_authorized",
+    "inputs",
+    "observations",
+    "projection",
+    "storage_gate",
+    "claim_boundary"
+  ],
+  "properties": {
+    "schema_version": {"const": "linkerforge.openmm-production-preflight.v1"},
+    "status": {"enum": ["pass", "blocked_insufficient_storage_headroom"]},
+    "run_authorized": {"type": "boolean"},
+    "inputs": {
+      "type": "object",
+      "required": ["production_config", "production_config_sha256", "smoke_manifest", "smoke_manifest_sha256", "smoke_run_directory", "target_parent"],
+      "properties": {
+        "production_config_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "smoke_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "additionalProperties": true
+    },
+    "observations": {"type": "object"},
+    "projection": {"type": "object"},
+    "storage_gate": {
+      "type": "object",
+      "required": ["free_bytes", "free_gib", "trajectory_storage_multiplier", "fixed_reserve_gib", "required_free_bytes", "required_free_gib", "shortfall_bytes", "shortfall_gib"],
+      "properties": {
+        "free_bytes": {"type": "integer", "minimum": 0},
+        "required_free_bytes": {"type": "integer", "minimum": 0},
+        "shortfall_bytes": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": true
+    },
+    "claim_boundary": {"type": "string", "minLength": 1}
+  }
+}

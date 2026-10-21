@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://linkerforge.org/schemas/openmm-convergence-summary.v1.schema.json",
+  "title": "OpenMM replicated convergence diagnostics v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "status", "created_utc", "run_manifest", "run_manifest_sha256", "config", "replicates", "across_replicates", "threshold_status", "provenance", "limitations", "claim_boundary"],
+  "properties": {
+    "schema_version": {"const": "linkerforge.openmm-convergence-summary.v1"},
+    "status": {"const": "complete_descriptive_only"},
+    "created_utc": {"type": "string", "format": "date-time"},
+    "run_manifest": {"type": "string", "minLength": 1},
+    "run_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "config": {
+      "type": "object", "additionalProperties": false,
+      "required": ["blocks_per_replicate", "acceptance_thresholds"],
+      "properties": {
+        "blocks_per_replicate": {"type": "integer", "minimum": 2},
+        "acceptance_thresholds": {"const": "not_frozen"}
+      }
+    },
+    "replicates": {
+      "type": "array", "minItems": 2,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["replicate", "seed", "metrics_path", "metrics_sha256", "frame_count", "first_step", "last_step", "metrics"],
+        "properties": {
+          "replicate": {"type": "integer", "minimum": 1},
+          "seed": {"type": "integer"},
+          "metrics_path": {"type": "string", "minLength": 1},
+          "metrics_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "frame_count": {"type": "integer", "minimum": 2},
+          "first_step": {"type": "integer", "minimum": 1},
+          "last_step": {"type": "integer", "minimum": 1},
+          "metrics": {"type": "object", "minProperties": 1, "additionalProperties": {"type": "object"}}
+        }
+      }
+    },
+    "across_replicates": {"type": "object", "minProperties": 1, "additionalProperties": {"type": "object"}},
+    "threshold_status": {"const": "not_frozen_no_convergence_verdict"},
+    "provenance": {
+      "type": "object", "additionalProperties": false,
+      "required": ["commit_sha", "script_sha256", "config_sha256"],
+      "properties": {
+        "commit_sha": {"type": "string", "minLength": 1},
+        "script_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "config_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "limitations": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "claim_boundary": {"type": "string", "minLength": 1}
+  }
+}

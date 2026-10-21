@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://linkerforge.local/schemas/linker-curation-review-record.v1.schema.json",
+  "title": "LinkerForge linker curation review record v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "review_id",
+    "record_id",
+    "source_dataset_id",
+    "evidence_role",
+    "authority_tier",
+    "compatibility_outcome",
+    "source_record",
+    "review"
+  ],
+  "properties": {
+    "schema_version": { "const": "linkerforge.linker-curation-review-record.v1" },
+    "review_id": { "type": "string", "minLength": 1 },
+    "record_id": { "type": "string", "minLength": 1 },
+    "source_dataset_id": { "const": "mined_and_natural_linkers_v1" },
+    "evidence_role": {
+      "enum": [
+        "classifier_prediction",
+        "natural_structural_observation",
+        "curated_dfl_annotation",
+        "published_engineered_use"
+      ]
+    },
+    "authority_tier": { "type": "string", "minLength": 1 },
+    "compatibility_outcome": { "const": "not_assessed" },
+    "source_record": {
+      "type": "object",
+      "required": [
+        "protein_id",
+        "linker_sequence",
+        "linker_start_1based",
+        "linker_end_1based",
+        "linker_length",
+        "homology_cluster_id",
+        "evidence_grade",
+        "benchmark_firewall_verified",
+        "classifier_scores",
+        "flanking_context"
+      ],
+      "properties": {
+        "protein_id": { "type": "string" },
+        "linker_sequence": { "type": "string" },
+        "linker_start_1based": { "type": "integer", "minimum": 1 },
+        "linker_end_1based": { "type": "integer", "minimum": 1 },
+        "linker_length": { "type": "integer", "minimum": 1 },
+        "homology_cluster_id": { "type": "string", "minLength": 1 },
+        "evidence_grade": { "type": "string", "minLength": 1 },
+        "mining_source_corpus": { "type": ["string", "null"] },
+        "benchmark_firewall_verified": { "type": "boolean" },
+        "classifier_scores": { "type": "object" },
+        "flanking_context": { "type": "object" },
+        "geometry": { "type": ["object", "null"] },
+        "biophysical_properties": { "type": "object" }
+      },
+      "additionalProperties": false
+    },
+    "review": {
+      "type": "object",
+      "required": [
+        "status",
+        "curator_id",
+        "reviewed_at",
+        "source_checked",
+        "coordinates_correct",
+        "interdomain_connection",
+        "linker_behavior_evidence",
+        "structural_state",
+        "source_support",
+        "decision",
+        "evidence_ids",
+        "notes"
+      ],
+      "properties": {
+        "status": { "enum": ["pending", "completed"] },
+        "curator_id": { "type": ["string", "null"] },
+        "reviewed_at": { "type": ["string", "null"], "format": "date-time" },
+        "source_checked": { "type": "boolean" },
+        "coordinates_correct": { "enum": ["not_reviewed", "yes", "no", "uncertain"] },
+        "interdomain_connection": { "enum": ["not_reviewed", "yes", "no", "uncertain"] },
+        "linker_behavior_evidence": { "enum": ["not_reviewed", "direct", "indirect", "none", "uncertain"] },
+        "structural_state": { "enum": ["not_reviewed", "flexible_disordered", "structured", "mixed", "unresolved", "uncertain"] },
+        "source_support": { "enum": ["not_reviewed", "supports", "contradicts", "insufficient", "unavailable"] },
+        "decision": { "enum": ["not_reviewed", "include", "exclude", "uncertain"] },
+        "evidence_ids": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "notes": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

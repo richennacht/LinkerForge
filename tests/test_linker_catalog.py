@@ -11,10 +11,21 @@ module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 
 
+def catalog_sources_available():
+    config = json.loads(module.CONFIG.read_text(encoding="utf-8"))
+    paths = [config["sources"]["disprot"], config["sources"]["caid3"]]
+    paths.extend(config["sources"]["dld"])
+    return all((ROOT / path).is_file() for path in paths)
+
+
 class CatalogTests(unittest.TestCase):
     def test_runs_are_one_based_inclusive(self):
         self.assertEqual(list(module.runs([0, 1, 1, 0, 1], 1)), [(2, 3), (5, 5)])
 
+    @unittest.skipUnless(
+        catalog_sources_available(),
+        "requires non-versioned protected CAID3, DisProt and DLD source artifacts",
+    )
     def test_reproducible_catalog_and_protected_partition(self):
         with tempfile.TemporaryDirectory() as temp:
             out = Path(temp)

@@ -1,0 +1,81 @@
+{
+  "name": "linkerforge-openmm-production-v2-after-colabfold-20261021",
+  "project_root": "M:\\ChatGPT\\LinkerForge 2",
+  "environment": {},
+  "stages": [
+    {
+      "name": "wait-for-public-multipair-colabfold-summary",
+      "executable": "M:\\ChatGPT\\LinkerForge 2\\.venv\\Scripts\\python.exe",
+      "arguments": [
+        "scripts/wait_for_files.py", "--path",
+        "runs/folds/public-multipair-af2ptm-20261021/three_pair_comparison.json",
+        "--timeout-seconds", "64800", "--poll-seconds", "30"
+      ],
+      "working_directory": "M:\\ChatGPT\\LinkerForge 2"
+    },
+    {
+      "name": "repeat-storage-and-runtime-preflight-before-launch",
+      "executable": "M:\\ChatGPT\\LinkerForge 2\\.venv\\Scripts\\python.exe",
+      "arguments": [
+        "scripts/preflight_openmm_production.py",
+        "--config", "configs/openmm-publication-protocol-v2-storage-aware.json",
+        "--smoke-manifest", "runs/openmm/acceptance-1ubq-gs10-2gb1-smoke/run_manifest.json",
+        "--smoke-run-dir", "runs/openmm/acceptance-1ubq-gs10-2gb1-smoke",
+        "--target-parent", "runs/openmm",
+        "--output", "reports/openmm-production-preflight-launch-2026-10-22.json"
+      ],
+      "working_directory": "M:\\ChatGPT\\LinkerForge 2"
+    },
+    {
+      "name": "run-three-replica-fifty-nanosecond-openmm-production",
+      "executable": "M:\\ChatGPT\\LinkerForge 2\\.venv\\Scripts\\python.exe",
+      "arguments": [
+        "scripts/run_openmm_wsl_with_gpu_lock.py",
+        "--pdb", "runs/folds/acceptance-20261020-ubiquitin-gb1-target10/prediction/LinkerForge_acceptance_1UBQ_GGGGSGGGGS_2GB1_unrelaxed_rank_001_alphafold2_ptm_model_3_seed_000.pdb",
+        "--config", "configs/openmm-publication-protocol-v2-storage-aware.json",
+        "--preflight", "reports/openmm-production-preflight-launch-2026-10-22.json",
+        "--output-dir", "runs/openmm/acceptance-1ubq-gs10-2gb1-production-v2-storage-aware",
+        "--lock", "runs/folds/.linkerforge-gpu.lock",
+        "--owner", "openmm-production-v2-storage-aware"
+      ],
+      "working_directory": "M:\\ChatGPT\\LinkerForge 2"
+    },
+    {
+      "name": "summarize-replicated-trajectory-diagnostics",
+      "executable": "M:\\ChatGPT\\LinkerForge 2\\.venv\\Scripts\\python.exe",
+      "arguments": [
+        "scripts/analyze_openmm_convergence.py",
+        "--run-dir", "runs/openmm/acceptance-1ubq-gs10-2gb1-production-v2-storage-aware",
+        "--output", "runs/openmm/acceptance-1ubq-gs10-2gb1-production-v2-storage-aware/convergence_summary.json",
+        "--blocks", "5"
+      ],
+      "working_directory": "M:\\ChatGPT\\LinkerForge 2"
+    },
+    {
+      "name": "link-production-evidence-to-acceptance-construct",
+      "executable": "M:\\ChatGPT\\LinkerForge 2\\.venv\\Scripts\\python.exe",
+      "arguments": [
+        "scripts/audit_fusion_structure_evidence.py",
+        "--fusion-pdb", "runs/folds/acceptance-20261020-ubiquitin-gb1-target10/prediction/LinkerForge_acceptance_1UBQ_GGGGSGGGGS_2GB1_unrelaxed_rank_001_alphafold2_ptm_model_3_seed_000.pdb",
+        "--score-json", "runs/folds/acceptance-20261020-ubiquitin-gb1-target10/prediction/LinkerForge_acceptance_1UBQ_GGGGSGGGGS_2GB1_scores_rank_001_alphafold2_ptm_model_3_seed_000.json",
+        "--domain-a-reference", "runs/folds/acceptance-20261020-ubiquitin-gb1-target10/references/1UBQ.pdb",
+        "--domain-b-reference", "runs/folds/acceptance-20261020-ubiquitin-gb1-target10/references/2GB1.pdb",
+        "--domain-a-length", "76", "--linker-length", "10",
+        "--protected-site-assessment", "runs/folds/acceptance-20261020-ubiquitin-gb1-target10/protected-site-demo-A48.json",
+        "--matched-comparison", "runs/folds/matched-baselines-20261020-1ubq-2gb1/comparison_summary.json",
+        "--openmm-run", "runs/openmm/acceptance-1ubq-gs10-2gb1-production-v2-storage-aware/run_manifest.json",
+        "--openmm-convergence", "runs/openmm/acceptance-1ubq-gs10-2gb1-production-v2-storage-aware/convergence_summary.json",
+        "--surface-burial", "runs/structure-audits/surface-burial-20261021/surface_burial.json",
+        "--reduce-probe", "runs/structure-audits/reduce-probe-20261021/reduce_probe_overlap_audit.json",
+        "--output", "runs/openmm/acceptance-1ubq-gs10-2gb1-production-v2-storage-aware/acceptance_evidence.json"
+      ],
+      "working_directory": "M:\\ChatGPT\\LinkerForge 2"
+    },
+    {
+      "name": "validate-versioned-json-schemas",
+      "executable": "M:\\ChatGPT\\LinkerForge 2\\.venv\\Scripts\\python.exe",
+      "arguments": ["scripts/validate_json_schemas.py"],
+      "working_directory": "M:\\ChatGPT\\LinkerForge 2"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://linkerforge.org/schemas/institutional-handoff.v1.schema.json",
+  "title": "LinkerForge institutional execution handoff v1",
+  "type": "object",
+  "required": ["schema_version", "status", "institution", "input_fasta_sha256", "source_ids", "profile_sha256", "sbatch_sha256", "linkerforge_commit", "provenance", "evidence_quality", "credentials_included", "submission_performed", "claim_boundary"],
+  "properties": {
+    "schema_version": {"const": "linkerforge.institutional-handoff.v1"},
+    "status": {"enum": ["ready_for_institutional_review", "blocked_pending_institutional_approval"]},
+    "institution": {"type": "string", "minLength": 1},
+    "input_fasta_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_ids": {"type": "array", "minItems": 2, "items": {"type": "string", "minLength": 1}},
+    "profile_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "sbatch_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "linkerforge_commit": {"type": "string"},
+    "provenance": {
+      "type": "object",
+      "required": ["commit_sha", "worktree_modified", "config_sha256", "versions"],
+      "properties": {
+        "commit_sha": {"type": "string", "minLength": 1},
+        "worktree_modified": {"type": "boolean"},
+        "config_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "versions": {"type": "object", "minProperties": 1}
+      }
+    },
+    "evidence_quality": {"type": "string", "minLength": 1},
+    "credentials_included": {"const": false},
+    "submission_performed": {"const": false},
+    "claim_boundary": {"type": "string", "minLength": 1}
+  }
+}

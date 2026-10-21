@@ -19,6 +19,20 @@ permissions:
   contents: read
 
 jobs:
+  schema-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install schema validator
+        run: python -m pip install jsonschema==4.25.1
+      - name: Validate JSON Schema contracts
+        run: python scripts/validate_json_schemas.py
+
   frontend:
     runs-on: ubuntu-latest
     defaults:

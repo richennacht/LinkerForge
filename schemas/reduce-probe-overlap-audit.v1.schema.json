@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://linkerforge.org/schemas/reduce-probe-overlap-audit.v1.schema.json",
+  "title": "Reduce/Probe hydrogen-aware severe-overlap audit v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "status", "created_utc", "records", "source_ids", "config", "provenance", "evidence_quality", "threshold_status", "limitations", "claim_boundary"],
+  "properties": {
+    "schema_version": {"const": "linkerforge.reduce-probe-overlap-audit.v1"},
+    "status": {"const": "complete"},
+    "created_utc": {"type": "string", "format": "date-time"},
+    "evidence_quality": {"const": "predicted_structure_hydrogen_aware_geometry_crosscheck"},
+    "threshold_status": {"const": "descriptive_no_linkerforge_acceptance_threshold"},
+    "source_ids": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "config": {
+      "type": "object", "additionalProperties": false,
+      "required": ["selection", "probe_flags", "comparison_sha256", "sequence_manifest_sha256", "pixi_manifest_sha256", "pixi_lock_sha256"],
+      "properties": {
+        "selection": {"type": "string", "minLength": 1},
+        "probe_flags": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "comparison_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "sequence_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "pixi_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "pixi_lock_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "records": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["construct_id", "input_pdb", "input_pdb_sha256", "reduced_pdb", "reduced_pdb_sha256", "probe_raw", "probe_raw_sha256", "sequence_sha256", "boundaries", "explicit_protein_atom_count", "unique_severe_overlap_pair_count", "unique_severe_overlap_pairs_per_1000_explicit_atoms", "worst_overlap_magnitude_angstrom", "region_pair_counts", "overlaps"],
+        "properties": {
+          "construct_id": {"type": "string", "minLength": 1},
+          "input_pdb": {"type": "string", "minLength": 1},
+          "input_pdb_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "reduced_pdb": {"type": "string", "minLength": 1},
+          "reduced_pdb_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "probe_raw": {"type": "string", "minLength": 1},
+          "probe_raw_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "sequence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "boundaries": {
+            "type": "object", "additionalProperties": false,
+            "required": ["domain_a_length", "linker_length", "domain_b_length"],
+            "properties": {
+              "domain_a_length": {"type": "integer", "minimum": 1},
+              "linker_length": {"type": "integer", "minimum": 0},
+              "domain_b_length": {"type": "integer", "minimum": 1}
+            }
+          },
+          "explicit_protein_atom_count": {"type": "integer", "minimum": 1},
+          "unique_severe_overlap_pair_count": {"type": "integer", "minimum": 0},
+          "unique_severe_overlap_pairs_per_1000_explicit_atoms": {"type": "number", "minimum": 0},
+          "worst_overlap_magnitude_angstrom": {"type": "number", "minimum": 0},
+          "region_pair_counts": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+          "overlaps": {
+            "type": "array",
+            "items": {
+              "type": "object", "additionalProperties": false,
+              "required": ["contact_type", "source_atom", "target_atom", "condensed_dot_count", "minimum_surface_gap_angstrom", "overlap_magnitude_angstrom", "region_pair"],
+              "properties": {
+                "contact_type": {"enum": ["bo", "wo"]},
+                "source_atom": {"$ref": "#/$defs/atom"},
+                "target_atom": {"$ref": "#/$defs/atom"},
+                "condensed_dot_count": {"type": "integer", "minimum": 1},
+                "minimum_surface_gap_angstrom": {"type": "number", "maximum": 0},
+                "overlap_magnitude_angstrom": {"type": "number", "minimum": 0},
+                "region_pair": {"pattern": "^(domain_a|domain_b|linker)--(domain_a|domain_b|linker)$"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "provenance": {
+      "type": "object", "additionalProperties": false,
+      "required": ["commit_sha", "worktree_modified", "config_sha256", "script_sha256", "executable", "arguments", "platform", "versions", "invocations"],
+      "properties": {
+        "commit_sha": {"type": "string", "minLength": 1},
+        "worktree_modified": {"type": "boolean"},
+        "config_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "script_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "executable": {"type": "string", "minLength": 1},
+        "arguments": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "platform": {"type": "string", "minLength": 1},
+        "versions": {
+          "type": "object", "additionalProperties": false,
+          "required": ["reduce", "probe"],
+          "properties": {"reduce": {"type": "string", "minLength": 1}, "probe": {"type": "string", "minLength": 1}}
+        },
+        "invocations": {"type": "array", "minItems": 1, "items": {"type": "object"}}
+      }
+    },
+    "limitations": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "claim_boundary": {"type": "string", "minLength": 1}
+  },
+  "$defs": {
+    "atom": {
+      "type": "object", "additionalProperties": false,
+      "required": ["chain", "residue_number", "residue_name", "atom_name"],
+      "properties": {
+        "chain": {"type": "string", "minLength": 1},
+        "residue_number": {"type": "integer"},
+        "residue_name": {"type": "string", "pattern": "^[A-Za-z0-9]{3}$"},
+        "atom_name": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

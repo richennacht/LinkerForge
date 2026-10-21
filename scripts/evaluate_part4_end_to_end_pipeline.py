@@ -18,8 +18,11 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+from importlib.metadata import PackageNotFoundError, version
 import json
 from pathlib import Path
+import platform
+import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -69,7 +72,10 @@ def run_evaluation(dataset_dir: Path, out_path: Path) -> dict:
         seed=23,
     )
 
-    # Fit full production ranker and authority index on natural + high-confidence mined authorities
+    # Fit the historical hand-feature demonstration ranker. This is deliberately
+    # not called a production ranker: the README-frozen ESM-2 + geometric-GNN
+    # compatibility model and its prospective family-disjoint evaluation are not
+    # implemented by this script.
     full_train = list(natural_records) + list(mined_hi[:1200]) + list(templates)
     ranker = fit_pairwise_compatibility_ranker(full_train, seed=23)
     full_auth_index = AuthoritySequenceIndex(
@@ -115,13 +121,83 @@ def run_evaluation(dataset_dir: Path, out_path: Path) -> dict:
         pml_file = struct_dir / f"{mode_key}.pml"
         pdb_file.write_text(demo_obj["fusion_3d_structure"]["pdb_text"], encoding="utf-8")
         pml_file.write_text(demo_obj["fusion_3d_structure"]["pymol_pml_script"], encoding="utf-8")
-        # Keep JSON concise by storing line counts and relative artifact paths alongside preview
-        demo_obj["fusion_3d_structure"]["pdb_artifact_relpath"] = f"reports/structures/{mode_key}.pdb"
-        demo_obj["fusion_3d_structure"]["pml_artifact_relpath"] = f"reports/structures/{mode_key}.pml"
+        # Keep JSON concise while recording paths that remain correct when the
+        # caller chooses a non-default output directory.
+        try:
+            pdb_record_path = str(pdb_file.resolve().relative_to(ROOT.resolve())).replace("\\", "/")
+            pml_record_path = str(pml_file.resolve().relative_to(ROOT.resolve())).replace("\\", "/")
+        except ValueError:
+            pdb_record_path = str(pdb_file.resolve())
+            pml_record_path = str(pml_file.resolve())
+        demo_obj["fusion_3d_structure"]["pdb_artifact_relpath"] = pdb_record_path
+        demo_obj["fusion_3d_structure"]["pml_artifact_relpath"] = pml_record_path
         del demo_obj["fusion_3d_structure"]["pdb_text"]
+
+    evaluation_config = {
+        "natural_tiers": ["natural_cath_pdb_verified", "natural_disprot_curated_dfl"],
+        "mined_tier": "mined_high_confidence_dfl_call",
+        "mined_benchmark_limit": 600,
+        "mined_training_limit": 1200,
+        "n_folds": 5,
+        "seed": 23,
+        "negative_types_per_positive": 6,
+    }
+    config_sha = hashlib.sha256(
+        json.dumps(evaluation_config, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+    try:
+        commit_sha = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+        worktree_modified = bool(
+            subprocess.run(
+                ["git", "status", "--porcelain"],
+                cwd=ROOT,
+                check=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip()
+        )
+    except (OSError, subprocess.CalledProcessError):
+        commit_sha = "unavailable"
+        worktree_modified = True
+    try:
+        sklearn_version = version("scikit-learn")
+    except PackageNotFoundError:
+        sklearn_version = "unavailable"
 
     payload = {
         "schema_version": "1.0.0",
+        "study_status": "exploratory_reproduction_not_validation",
+        "training_authorized": False,
+        "model_scope": {
+            "implementation": "historical_hand_feature_pairwise_ranker",
+            "is_frozen_readme_esm2_geometric_gnn": False,
+            "is_experimental_success_classifier": False,
+        },
+        "claim_boundaries": [
+            "Results compare natural or model-mined records with rule-generated synthetic corruptions; they do not establish biological linker success.",
+            "The mined high-confidence tier is provisional model output, not curator-verified compatibility ground truth.",
+            "The frozen ESM-2 plus attachment-point geometric-GNN ranker has not been trained or prospectively validated here.",
+            "No protected prospective benchmark was opened or used for model selection.",
+        ],
+        "evidence_quality": "exploratory_model_on_natural_and_provisional_records_with_synthetic_negatives",
+        "source_ids": [manifest["dataset_id"]],
+        "provenance": {
+            "commit_sha": commit_sha,
+            "worktree_modified": worktree_modified,
+            "config_sha256": config_sha,
+            "dataset_manifest_sha256": manifest_sha,
+            "versions": {
+                "python": platform.python_version(),
+                "scikit_learn": sklearn_version,
+            },
+        },
+        "evaluation_config": evaluation_config,
         "dataset_id": manifest["dataset_id"],
         "dataset_manifest_sha256": manifest_sha,
         "authority_index_size": len(natural_records) + len(mined_hi) + len(templates),

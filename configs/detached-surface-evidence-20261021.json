@@ -1,0 +1,41 @@
+{
+  "name": "linkerforge-cpu-surface-evidence-20261021",
+  "project_root": "M:\\ChatGPT\\LinkerForge 2",
+  "environment": {"OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1"},
+  "stages": [
+    {
+      "name": "measure-seven-public-fusion-surfaces",
+      "executable": "M:\\ChatGPT\\LinkerForge 2\\.venv\\Scripts\\python.exe",
+      "arguments": [
+        "scripts/assess_fusion_surface_burial.py", "--comparison", "runs/folds/matched-baselines-20261020-1ubq-2gb1/comparison_summary.json",
+        "--sequence-manifest", "runs/detector-audits/public-fusion-panel-20261020/panel_manifest.json",
+        "--output-dir", "runs/structure-audits/surface-burial-20261021", "--n-points", "960"
+      ],
+      "working_directory": "M:\\ChatGPT\\LinkerForge 2"
+    },
+    {
+      "name": "link-surface-evidence-to-acceptance-construct",
+      "executable": "M:\\ChatGPT\\LinkerForge 2\\.venv\\Scripts\\python.exe",
+      "arguments": [
+        "scripts/audit_fusion_structure_evidence.py",
+        "--fusion-pdb", "runs/folds/acceptance-20261020-ubiquitin-gb1-target10/prediction/LinkerForge_acceptance_1UBQ_GGGGSGGGGS_2GB1_unrelaxed_rank_001_alphafold2_ptm_model_3_seed_000.pdb",
+        "--score-json", "runs/folds/acceptance-20261020-ubiquitin-gb1-target10/prediction/LinkerForge_acceptance_1UBQ_GGGGSGGGGS_2GB1_scores_rank_001_alphafold2_ptm_model_3_seed_000.json",
+        "--domain-a-reference", "runs/folds/acceptance-20261020-ubiquitin-gb1-target10/references/1UBQ.pdb",
+        "--domain-b-reference", "runs/folds/acceptance-20261020-ubiquitin-gb1-target10/references/2GB1.pdb",
+        "--domain-a-length", "76", "--linker-length", "10",
+        "--protected-site-assessment", "runs/folds/acceptance-20261020-ubiquitin-gb1-target10/protected-site-demo-A48.json",
+        "--matched-comparison", "runs/folds/matched-baselines-20261020-1ubq-2gb1/comparison_summary.json",
+        "--openmm-run", "runs/openmm/acceptance-1ubq-gs10-2gb1-smoke/run_manifest.json",
+        "--surface-burial", "runs/structure-audits/surface-burial-20261021/surface_burial.json",
+        "--output", "runs/structure-audits/surface-burial-20261021/acceptance_evidence.json"
+      ],
+      "working_directory": "M:\\ChatGPT\\LinkerForge 2"
+    },
+    {
+      "name": "validate-evidence-schemas",
+      "executable": "M:\\ChatGPT\\LinkerForge 2\\.venv\\Scripts\\python.exe",
+      "arguments": ["scripts/validate_json_schemas.py"],
+      "working_directory": "M:\\ChatGPT\\LinkerForge 2"
+    }
+  ]
+}
