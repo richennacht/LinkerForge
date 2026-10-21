@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://linkerforge.org/schemas/linkerforge-result.v1.schema.json",
+  "title": "LinkerForge computational result snapshot v1",
+  "type": "object",
+  "required": ["schema_version", "generated_at", "status", "project", "candidate", "structure_prediction", "structural_metrics", "completed_comparators", "limitations", "provenance", "claim_boundary"],
+  "properties": {
+    "schema_version": {"const": "linkerforge.result.v1"},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "status": {"enum": ["pass", "reject", "unassessed", "failed"]},
+    "project": {"type": "object"},
+    "candidate": {
+      "type": "object",
+      "required": ["method", "evidence_quality", "linker_sequence", "linker_length", "full_sequence_length", "full_sequence_sha256"],
+      "properties": {
+        "method": {"type": "string"},
+        "evidence_quality": {"type": "string"},
+        "linker_sequence": {"type": "string", "pattern": "^[ACDEFGHIKLMNPQRSTVWY]*$"},
+        "linker_length": {"type": "integer", "minimum": 0},
+        "full_sequence_length": {"type": "integer", "minimum": 2},
+        "full_sequence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "structure_prediction": {"type": "object"},
+    "structural_metrics": {"type": "object"},
+    "references": {"type": "object"},
+    "completed_comparators": {"type": "array", "items": {"type": "object"}},
+    "limitations": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "provenance": {
+      "type": "object",
+      "required": ["application_version", "pipeline_commit", "working_tree_state", "config_sha256", "evidence_quality"],
+      "properties": {
+        "application_version": {"type": "string"},
+        "pipeline_commit": {"type": "string"},
+        "working_tree_state": {"enum": ["clean", "modified"]},
+        "config_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "evidence_quality": {"type": "string"}
+      }
+    },
+    "claim_boundary": {"type": "string", "minLength": 1}
+  }
+}

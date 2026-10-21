@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://linkerforge.org/schemas/matched-structure-comparison.v1.schema.json",
+  "title": "LinkerForge matched structure comparison v1",
+  "type": "object",
+  "required": ["schema_version", "status", "evidence_quality", "source_ids", "provenance", "analysis_config", "panel_manifest_sha256", "existing_run_manifest_sha256", "panel_config_sha256", "existing_config_sha256", "dflpred_summary_sha256", "predictor_settings", "predictor_settings_match", "records", "selection_status", "limitations", "claim_boundary"],
+  "properties": {
+    "schema_version": {"const": "linkerforge.matched-structure-comparison.v1"},
+    "status": {"const": "complete"},
+    "evidence_quality": {"type": "string", "minLength": 1},
+    "source_ids": {"type": "array", "minItems": 3, "items": {"type": "string", "minLength": 1}},
+    "provenance": {
+      "type": "object",
+      "required": ["commit_sha", "worktree_modified", "config_sha256", "versions"],
+      "properties": {
+        "commit_sha": {"type": "string", "minLength": 1},
+        "worktree_modified": {"type": "boolean"},
+        "config_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "versions": {"type": "object", "minProperties": 1}
+      }
+    },
+    "analysis_config": {"type": "object"},
+    "panel_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "existing_run_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "panel_config_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "existing_config_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "dflpred_summary_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "predictor_settings": {"type": "object"},
+    "predictor_settings_match": {"const": true},
+    "records": {"type": "array", "minItems": 2, "items": {"type": "object"}},
+    "selection_status": {"const": "no_winner_selected_thresholds_not_frozen"},
+    "limitations": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "claim_boundary": {"type": "string", "minLength": 1}
+  }
+}

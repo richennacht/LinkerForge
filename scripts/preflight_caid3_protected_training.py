@@ -127,11 +127,36 @@ def verify(manifest_path: Path) -> dict:
             "counts": counts, "limitations": manifest["limitations"]}
 
 
+def failure_report(manifest_path: Path, error: Exception) -> dict:
+    """Return a machine-readable fail-closed result without weakening the gate."""
+    protected_inputs = [
+        REFERENCE,
+        PROSPECTIVE / "manifest.json",
+        PROSPECTIVE / "sequences.fasta",
+    ]
+    return {
+        "status": "failed_closed",
+        "training_authorized": False,
+        "manifest": str(manifest_path),
+        "reason": str(error),
+        "missing_protected_inputs": [str(path) for path in protected_inputs if not path.is_file()],
+        "claim_boundary": (
+            "Missing or mismatched protected sequence inputs prohibit training. "
+            "The gate must never be bypassed or reconstructed from benchmark labels."
+        ),
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--manifest", type=Path, default=V2_DEFAULT_OUTPUT / "manifest.json")
     args = parser.parse_args()
-    print(json.dumps(verify(args.manifest), indent=2, sort_keys=True))
+    try:
+        result = verify(args.manifest)
+    except (FileNotFoundError, KeyError, OSError, ValueError) as error:
+        print(json.dumps(failure_report(args.manifest, error), indent=2, sort_keys=True))
+        raise SystemExit(2) from None
+    print(json.dumps(result, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":

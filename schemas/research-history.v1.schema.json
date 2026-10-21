@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://linkerforge.org/schemas/research-history.v1.schema.json",
+  "title": "LinkerForge tamper-evident local history v1",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["schema_version", "entry_id", "created_at", "previous_entry_sha256", "record_sha256", "entry_sha256", "record"],
+    "properties": {
+      "schema_version": {"const": "linkerforge.history-entry.v1"},
+      "entry_id": {"type": "string", "minLength": 1},
+      "created_at": {"type": "string", "format": "date-time"},
+      "previous_entry_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+      "record_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+      "entry_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+      "record": {}
+    }
+  }
+}

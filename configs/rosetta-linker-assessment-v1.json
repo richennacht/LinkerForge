@@ -1,0 +1,12 @@
+{
+  "schema_version": "linkerforge.rosetta-config.v1",
+  "protocol_status": "template_not_executed_on_this_workstation",
+  "nstruct": 100,
+  "seed": 20261020,
+  "required_score_terms": ["total_score", "fa_rep", "chainbreak", "linear_chainbreak", "description"],
+  "hard_rejection_maxima": {
+    "chainbreak": 1.0,
+    "linear_chainbreak": 1.0
+  },
+  "threshold_provenance": "provisional engineering preflight; must be frozen on development data before scientific use"
+}

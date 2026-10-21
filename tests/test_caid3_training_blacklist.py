@@ -12,6 +12,11 @@ from preflight_caid3_protected_training import V2_DEFAULT_OUTPUT, verify
 import run_caid3_protected_dfl_trial as trial_launcher
 
 
+@unittest.skipUnless(
+    REFERENCE.is_file() and (OUTPUT / "manifest.json").is_file(),
+    "requires the non-versioned protected CAID3 reference and legacy split; "
+    "the V2 firewall has self-contained tests in test_preflight_dfl_family_training_v2.py",
+)
 class Caid3BlacklistTests(unittest.TestCase):
     def test_exact_identifier_is_excluded(self):
         identifier, sequence = reference_sequences(REFERENCE)[0]

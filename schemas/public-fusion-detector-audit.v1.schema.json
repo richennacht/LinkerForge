@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://linkerforge.org/schemas/public-fusion-detector-audit.v1.schema.json",
+  "title": "Public fusion linker-detector sensitivity audit v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "detector", "detector_revision", "threshold", "input_fasta_sha256", "detector_output_sha256", "evidence_quality", "source_ids", "provenance", "results", "claim_boundary"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "detector": {"type": "string", "minLength": 1},
+    "detector_revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "threshold": {"type": "number", "minimum": 0, "maximum": 1},
+    "input_fasta_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "detector_output_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "evidence_quality": {"type": "string", "minLength": 1},
+    "source_ids": {"type": "array", "minItems": 3, "items": {"type": "string", "minLength": 1}},
+    "provenance": {
+      "type": "object",
+      "required": ["commit_sha", "worktree_modified", "config_sha256", "versions"],
+      "properties": {
+        "commit_sha": {"type": "string", "minLength": 1},
+        "worktree_modified": {"type": "boolean"},
+        "config_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "versions": {"type": "object", "minProperties": 1}
+      }
+    },
+    "results": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["construct_id", "domain_pair", "linker_id", "linker_class", "linker_length", "linker_residues_called", "domain_residues_called", "domain_call_fraction", "threshold"],
+        "properties": {
+          "construct_id": {"type": "string"},
+          "domain_pair": {"type": "string"},
+          "linker_id": {"type": "string"},
+          "linker_class": {"type": "string"},
+          "linker_length": {"type": "integer", "minimum": 0},
+          "linker_mean_score": {"type": ["number", "null"]},
+          "linker_max_score": {"type": ["number", "null"]},
+          "linker_residues_called": {"type": "integer", "minimum": 0},
+          "linker_recall": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+          "domain_residues_called": {"type": "integer", "minimum": 0},
+          "domain_call_fraction": {"type": "number", "minimum": 0, "maximum": 1},
+          "threshold": {"type": "number", "minimum": 0, "maximum": 1}
+        }
+      }
+    },
+    "claim_boundary": {"type": "string", "minLength": 1}
+  }
+}

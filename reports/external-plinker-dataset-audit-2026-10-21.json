@@ -1,0 +1,187 @@
+{
+  "schema_version": "linkerforge.external-linker-dataset-audit.v1",
+  "status": "quarantined_not_training_authorized",
+  "source_artifact": {
+    "filename": "Linker.zip",
+    "sha256": "572e2b672b5b7bda39ac7b0e8466a76de8ffdbfa8d893e1c2b3742f4cda6632f",
+    "entry_count": 9166,
+    "uncompressed_bytes": 981130558,
+    "unsafe_member_names": [],
+    "embedded_virtual_environment_entries": 8986,
+    "embedded_git_entries": 91,
+    "license_file_present": false
+  },
+  "files": {
+    "silver": {
+      "entry": "Linker - Copy/data/processed/dataset_v2.jsonl",
+      "sha256": "dcdf62f3febac83c92648545193325f8a9496d0c4ebc6445d7cdb99e958133c7",
+      "records": 7892
+    },
+    "gold": {
+      "entry": "Linker - Copy/data/processed/dataset_v1.jsonl",
+      "sha256": "afebab5b13b9a2fda043f12cf72f5c4e03f0902da44cdf6f61bc77b332c1be3f",
+      "records": 10
+    },
+    "raw": {
+      "entry": "Linker - Copy/data/processed/mined_linkers.jsonl",
+      "sha256": "f98b03d551fb9cb261e9e5f3164751caa9563417ccb443a2595fd1407e5e1979",
+      "records": 7899
+    }
+  },
+  "data_card_consistency": {
+    "claims_7903_total": true,
+    "claims_11_gold": true,
+    "observed_gold_records": 10,
+    "observed_silver_records": 7892,
+    "observed_total_gold_plus_silver": 7902,
+    "consistent": false
+  },
+  "silver_profile": {
+    "unique_accessions": 7892,
+    "unique_linker_sequences": 6702,
+    "linker_length_min": 3,
+    "linker_length_max": 40,
+    "within_linkerforge_5_to_30_residues": 5049,
+    "outside_linkerforge_5_to_30_residues": 2843,
+    "same_family_domain_pairs": 7890,
+    "cross_family_domain_pairs": 2,
+    "seven_transmembrane_family_rows": 5057,
+    "ambiguous_full_sequence_rows": 241,
+    "ambiguous_linker_rows": 80,
+    "coordinate_or_slice_errors": 0,
+    "full_length_errors": 0,
+    "rows_with_record_level_source_or_license_metadata": 0,
+    "domain_pair_counts": [
+      {
+        "domain_a": "PF00001",
+        "domain_b": "PF00001",
+        "records": 4211
+      },
+      {
+        "domain_a": "PF00004",
+        "domain_b": "PF00004",
+        "records": 2333
+      },
+      {
+        "domain_a": "PF00002",
+        "domain_b": "PF00002",
+        "records": 666
+      },
+      {
+        "domain_a": "PF00005",
+        "domain_b": "PF00005",
+        "records": 502
+      },
+      {
+        "domain_a": "PF00003",
+        "domain_b": "PF00003",
+        "records": 178
+      },
+      {
+        "domain_a": "PF00002",
+        "domain_b": "PF00003",
+        "records": 1
+      },
+      {
+        "domain_a": "PF00001",
+        "domain_b": "PF00003",
+        "records": 1
+      }
+    ]
+  },
+  "gold_profile": {
+    "records": 10,
+    "declared_boundary_mismatch_records": 10,
+    "boundary_mismatches": [
+      {
+        "pdb_id": "1G6L",
+        "declared_domain_a_end": 99,
+        "found_linker_start": 100,
+        "found_linker_end": 104,
+        "declared_domain_b_start": 100
+      },
+      {
+        "pdb_id": "1LV1",
+        "declared_domain_a_end": 99,
+        "found_linker_start": 100,
+        "found_linker_end": 104,
+        "declared_domain_b_start": 100
+      },
+      {
+        "pdb_id": "3DOX",
+        "declared_domain_a_end": 99,
+        "found_linker_start": 100,
+        "found_linker_end": 104,
+        "declared_domain_b_start": 100
+      },
+      {
+        "pdb_id": "1II5",
+        "declared_domain_a_end": 186,
+        "found_linker_start": 102,
+        "found_linker_end": 103,
+        "declared_domain_b_start": 187
+      },
+      {
+        "pdb_id": "1FTK",
+        "declared_domain_a_end": 186,
+        "found_linker_start": 131,
+        "found_linker_end": 132,
+        "declared_domain_b_start": 187
+      },
+      {
+        "pdb_id": "2IDC",
+        "declared_domain_a_end": 156,
+        "found_linker_start": 158,
+        "found_linker_end": 165,
+        "declared_domain_b_start": 157
+      },
+      {
+        "pdb_id": "2F2P",
+        "declared_domain_a_end": 80,
+        "found_linker_start": 150,
+        "found_linker_end": 154,
+        "declared_domain_b_start": 81
+      },
+      {
+        "pdb_id": "1TOL",
+        "declared_domain_a_end": 100,
+        "found_linker_start": 69,
+        "found_linker_end": 86,
+        "declared_domain_b_start": 101
+      },
+      {
+        "pdb_id": "3CTB",
+        "declared_domain_a_end": 240,
+        "found_linker_start": 317,
+        "found_linker_end": 321,
+        "declared_domain_b_start": 241
+      },
+      {
+        "pdb_id": "3HVL",
+        "declared_domain_a_end": 240,
+        "found_linker_start": 317,
+        "found_linker_end": 321,
+        "declared_domain_b_start": 241
+      }
+    ]
+  },
+  "overlap_with_existing_27766_corpus": {
+    "exact_protein_identifier_overlap": 0,
+    "unique_linker_sequence_overlap": 0
+  },
+  "fitness": {
+    "compatibility_ranker_training": false,
+    "curator_validated_linker_corpus": false,
+    "automatic_merge_into_existing_corpus": false,
+    "possible_use": "quarantined mining-method audit and reconstruction source after licensing, provenance, topology, homology, and boundary review"
+  },
+  "blockers": [
+    "No fusion compatibility outcomes, matched negatives, or success/failure labels",
+    "No homology-aware split or family-disjoint evaluation contract",
+    "Nearly all silver records join two copies of the same Pfam family",
+    "Seven-transmembrane families dominate and conflict with the frozen soluble-domain scope",
+    "Gold record count disagrees with the data card and declared boundaries disagree with located linker motifs",
+    "No archive licence file and no record-level source release, retrieval date, or licence fields"
+  ],
+  "claim_boundary": "This archive audit does not validate linker identity, compatibility, or biological function. Archived code and environments were not executed."
+}

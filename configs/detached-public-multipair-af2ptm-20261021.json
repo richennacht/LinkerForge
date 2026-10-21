@@ -1,0 +1,84 @@
+{
+  "name": "linkerforge-public-multipair-af2ptm-and-presentation-20261021",
+  "project_root": "M:\\ChatGPT\\LinkerForge 2",
+  "environment": {},
+  "stages": [
+    {
+      "name": "prepare-public-multipair-panel",
+      "executable": "M:\\ChatGPT\\LinkerForge 2\\.venv\\Scripts\\python.exe",
+      "arguments": [
+        "scripts/prepare_public_multipair_colabfold_panel.py",
+        "--source-manifest",
+        "runs/detector-audits/public-fusion-panel-20261020/panel_manifest.json",
+        "--output-dir",
+        "runs/folds/public-multipair-af2ptm-20261021",
+        "--pairs",
+        "1CRN_4PTI",
+        "1PGA_1LMB",
+        "--max-residues",
+        "220"
+      ],
+      "working_directory": "M:\\ChatGPT\\LinkerForge 2"
+    },
+    {
+      "name": "predict-fourteen-fusions-with-colabfold",
+      "executable": "M:\\ChatGPT\\LinkerForge 2\\.venv\\Scripts\\python.exe",
+      "arguments": [
+        "scripts/run_colabfold_panel_wsl.py",
+        "--fasta",
+        "runs/folds/public-multipair-af2ptm-20261021/panel.fasta",
+        "--output",
+        "runs/folds/public-multipair-af2ptm-20261021/prediction",
+        "--progress",
+        "runs/folds/public-multipair-af2ptm-20261021/progress.json",
+        "--lock",
+        "runs/folds/.linkerforge-gpu.lock",
+        "--owner",
+        "public-multipair-af2ptm-20261021",
+        "--timeout-hours",
+        "18"
+      ],
+      "working_directory": "M:\\ChatGPT\\LinkerForge 2"
+    },
+    {
+      "name": "summarize-three-pair-structure-comparison",
+      "executable": "M:\\ChatGPT\\LinkerForge 2\\.venv\\Scripts\\python.exe",
+      "arguments": [
+        "scripts/summarize_public_multipair_colabfold_panel.py",
+        "--panel-dir",
+        "runs/folds/public-multipair-af2ptm-20261021",
+        "--existing-summary",
+        "runs/folds/matched-baselines-20261020-1ubq-2gb1/comparison_summary.json",
+        "--output",
+        "runs/folds/public-multipair-af2ptm-20261021/three_pair_comparison.json",
+        "--csv-output",
+        "runs/folds/public-multipair-af2ptm-20261021/three_pair_comparison.csv",
+        "--progress",
+        "runs/folds/public-multipair-af2ptm-20261021/progress.json"
+      ],
+      "working_directory": "M:\\ChatGPT\\LinkerForge 2"
+    },
+    {
+      "name": "validate-versioned-json-schemas",
+      "executable": "M:\\ChatGPT\\LinkerForge 2\\.venv\\Scripts\\python.exe",
+      "arguments": ["scripts/validate_json_schemas.py"],
+      "working_directory": "M:\\ChatGPT\\LinkerForge 2"
+    },
+    {
+      "name": "build-and-validate-multi-protein-presentation",
+      "executable": "C:\\Users\\HARDIK\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "arguments": [
+        "scripts/update_benchmark_presentation.mjs",
+        "--summary",
+        "runs/folds/public-multipair-af2ptm-20261021/three_pair_comparison.json",
+        "--progress",
+        "runs/folds/public-multipair-af2ptm-20261021/progress.json",
+        "--base",
+        "deliverables/LinkerForge_Detailed_Architecture_Data_Provenance_4_Presenters_Final.pptx",
+        "--output",
+        "deliverables/LinkerForge_Detailed_Architecture_Data_Provenance_4_Presenters_Multi_Protein_Benchmark.pptx"
+      ],
+      "working_directory": "M:\\ChatGPT\\LinkerForge 2"
+    }
+  ]
+}

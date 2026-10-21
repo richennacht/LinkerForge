@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://linkerforge.local/schemas/linker-curation-review-manifest.v1.schema.json",
+  "title": "LinkerForge linker curation review manifest v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "status",
+    "source_dataset_id",
+    "review_target",
+    "selection",
+    "source_integrity",
+    "files",
+    "provenance",
+    "claim_boundary"
+  ],
+  "properties": {
+    "schema_version": { "const": "linkerforge.linker-curation-review-manifest.v1" },
+    "status": { "const": "awaiting_independent_dual_review" },
+    "source_dataset_id": { "const": "mined_and_natural_linkers_v1" },
+    "review_target": { "const": "linker_identity_and_evidence_not_fusion_compatibility" },
+    "selection": {
+      "type": "object",
+      "required": ["seed", "config_sha256", "selected_total", "selected_by_tier", "selected_family_clusters", "selected_strata"],
+      "properties": {
+        "seed": { "type": "string" },
+        "config_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "selected_total": { "type": "integer", "minimum": 1 },
+        "selected_by_tier": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0 } },
+        "selected_family_clusters": { "type": "integer", "minimum": 1 },
+        "selected_strata": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "source_integrity": { "type": "object" },
+    "files": { "type": "object" },
+    "provenance": { "type": "object" },
+    "claim_boundary": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,39 @@
+{
+  "schema_version": "linkerforge.fusion-ranker-preflight.v1",
+  "status": "source_inventory_only",
+  "dataset_dir": "data\\processed\\mined_and_natural_linkers_v1",
+  "manifest_sha256": "b1b8c5b34eb9a98eb627005a810f367e4364be9a75447af9740b3bff6d3e3232",
+  "records_sha256": "536ef05d13cdc215e576a869822bc7b68c48bf08069d0ed1ad0f0c5099095c9b",
+  "record_count": 27766,
+  "label_counts": {},
+  "source_inventory_counts": {
+    "natural_cath_pdb_verified": 91,
+    "natural_disprot_curated_dfl": 57,
+    "mined_provisional_dfl_candidate": 21039,
+    "mined_high_confidence_dfl_call": 6556,
+    "literature_engineered_template": 23
+  },
+  "cluster_count": 0,
+  "failures": [
+    "published composite is a provenance-stratified source inventory, not a curator-reviewed fusion-ranker dataset",
+    "model-mined candidate tiers are predictions and cannot be promoted to natural or experimental success labels",
+    "ranker-specific family-disjoint train/development/blind assignments are absent",
+    "distinctly labelled context-matched synthetic negatives are absent",
+    "manifest status is not curator_reviewed_family_disjoint_fusion_ranker_dataset"
+  ],
+  "training_authorized": false,
+  "evidence_quality": "dataset_integrity_and_eligibility_preflight_only",
+  "source_ids": [
+    "mined_and_natural_linkers_v1"
+  ],
+  "provenance": {
+    "commit_sha": "43be3ab294c9551bf7b6b32494b71a5442ef419c",
+    "worktree_modified": true,
+    "config_sha256": "c97d0ed81cb6d95423dfda67ae029f5cea664fa803c1d48bdf227f495b88f0b7",
+    "versions": {
+      "python": "3.14.5",
+      "preflight": "1.0.0"
+    }
+  },
+  "claim_boundary": "A passing data-integrity preflight does not establish biological performance; blind evaluation and experimental evidence remain separate."
+}

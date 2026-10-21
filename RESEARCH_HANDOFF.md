@@ -14,6 +14,14 @@ training firewall and spent-CAID3 rule below are unchanged.
 - There are local detector trainers, preprocessing scripts, experiment configs, tests, and retrospective reports under `scripts/`, `src/`, `configs/`, `tests/`, and `reports/`. The React frontend remains a labelled demonstration, not a deployed detector.
 - The protected SAM-like baseline, variants and three-seed repeats were evaluated on filtered development. See `reports/DFL_SAM_REPEAT_AND_LOCKED_CAID3_2026-10-17.md`. Neither the variants nor the baseline demonstrated published-method superiority. The one-time CAID3 common-27 comparison is **spent and retrospective**; never tune or select against it again.
 - Current `data/processed/caid3_protected_dfl_v1` is **not eligible for new training**: a prospective sequence-only DP94 screen found overlap with the proposed holdout. `scripts/preflight_caid3_protected_training.py` and `scripts/check_detector_autoresearch.py` fail closed. DP94 is only a candidate, not an independently validated DFL benchmark; verify its label semantics and published-method exposure before considering it.
+- The newer self-contained `data/processed/dfl_b1_v2_family_split` passes its
+  preregistered sequence/family/hash checks without opening benchmark labels.
+  This does **not** authorize a new active round on the present checkout: the
+  root protected input `artifacts/caid3-linker.fasta` is ignored and currently
+  absent, so `check_detector_autoresearch.py` correctly returns
+  `data_integrity_audit_only`. Restore the exact hash-pinned protected input
+  through its documented provenance before launching anything; never rebuild
+  it from viewed labels or relax the root-registry cross-check.
 - The DisoFLAG authors document a DFL annotation track for DP94 (line 9 of
   their released records), so it is inaccurate to call DP94 an IDR-only file.
   Its public availability, negative/unknown semantics, source overlap, and

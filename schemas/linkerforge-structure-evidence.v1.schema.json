@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://linkerforge.org/schemas/linkerforge-structure-evidence.v1.schema.json",
+  "title": "LinkerForge deterministic structure evidence v1",
+  "type": "object",
+  "required": ["schema_version", "source_ids", "inputs", "boundaries", "coordinate_pre_screen", "confidence", "reference_domain_preservation", "linked_evidence", "not_performed", "software", "provenance", "evidence_quality", "claim_boundary"],
+  "properties": {
+    "schema_version": {"const": "linkerforge.structure-evidence.v1"},
+    "source_ids": {"type": "array", "minItems": 4, "items": {"type": "string", "minLength": 1}},
+    "inputs": {"type": "object"},
+    "boundaries": {
+      "type": "object",
+      "required": ["domain_a_length", "linker_length", "domain_b_length"],
+      "properties": {
+        "domain_a_length": {"type": "integer", "minimum": 1},
+        "linker_length": {"type": "integer", "minimum": 0},
+        "domain_b_length": {"type": "integer", "minimum": 1}
+      }
+    },
+    "coordinate_pre_screen": {"type": "object"},
+    "confidence": {"type": "object"},
+    "reference_domain_preservation": {"type": "object"},
+    "linked_evidence": {"type": "object"},
+    "not_performed": {"type": "array", "items": {"type": "string"}},
+    "software": {"type": "object", "minProperties": 1},
+    "provenance": {
+      "type": "object",
+      "required": ["commit_sha", "worktree_modified", "config_sha256"],
+      "properties": {
+        "commit_sha": {"type": "string", "minLength": 1},
+        "worktree_modified": {"type": "boolean"},
+        "config_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "evidence_quality": {"const": "predicted_unvalidated"},
+    "claim_boundary": {"type": "string", "minLength": 1}
+  }
+}

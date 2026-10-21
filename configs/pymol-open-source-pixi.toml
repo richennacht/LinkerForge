@@ -1,0 +1,8 @@
+[workspace]
+channels = ["conda-forge"]
+name = "linkerforge-pymol-open-source"
+platforms = ["linux-64"]
+version = "0.1.0"
+
+[dependencies]
+pymol-open-source = "3.1.0.*"

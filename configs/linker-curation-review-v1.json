@@ -1,0 +1,23 @@
+{
+  "schema_version": "linkerforge.linker-curation-selection-config.v1",
+  "source_dataset_id": "mined_and_natural_linkers_v1",
+  "selection_seed": "linkerforge-curation-v1-2026-10-21",
+  "review_target": "linker_identity_and_evidence_not_fusion_compatibility",
+  "minimum_total_records": 500,
+  "maximum_total_records": 1500,
+  "tier_quotas": {
+    "mined_high_confidence_dfl_call": 360,
+    "mined_provisional_dfl_candidate": 440,
+    "natural_cath_pdb_verified": 91,
+    "natural_disprot_curated_dfl": 57,
+    "literature_engineered_template": 23
+  },
+  "stratify_mined_by": [
+    "authority_tier",
+    "mining_source_corpus",
+    "length_bin",
+    "classifier_score_band"
+  ],
+  "length_bins": [10, 20, 30, 45, 60],
+  "claim_boundary": "The review determines whether records support linker identity and source provenance. It does not assign fusion-compatibility, expression, activity, or biological-success labels."
+}

@@ -16,12 +16,14 @@ __pycache__/
 .mypy_cache/
 .venv/
 .venv-gpu/
+requirements/molprobity-tools/.pixi/
 data/raw/
 data/processed/
 artifacts/
 output/
 tmp/
 tools/
+/runs/
 ProtCompose_100_Paper_Evidence_Catalogue.md
 ProtCompose_12_Week_Workflow.md
 

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://linkerforge.org/schemas/public-multipair-colabfold-panel.v1.schema.json",
+  "title": "LinkerForge public multi-pair ColabFold panel v1",
+  "type": "object",
+  "required": ["schema_version", "created_at", "purpose", "evidence_quality", "records", "record_count", "planned_rankable_models", "planned_settings", "data_firewall", "provenance", "selection_policy", "claim_boundary"],
+  "properties": {
+    "schema_version": {"const": "linkerforge.public-multipair-colabfold-panel.v1"},
+    "created_at": {"type": "string", "minLength": 1},
+    "purpose": {"type": "string", "minLength": 1},
+    "evidence_quality": {"const": "descriptive_computational_sensitivity_not_biological_validation"},
+    "records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["construct_id", "prediction_id", "domain_pair", "domain_sources", "domain_a_length", "domain_b_length", "linker_id", "linker_sequence", "linker_length", "full_sequence_length", "sequence", "sequence_sha256"],
+        "properties": {
+          "construct_id": {"type": "string", "minLength": 1},
+          "prediction_id": {"type": "string", "minLength": 1},
+          "domain_pair": {"type": "string", "minLength": 1},
+          "domain_sources": {"type": "array", "minItems": 2, "items": {"type": "string", "minLength": 1}},
+          "domain_a_length": {"type": "integer", "minimum": 1},
+          "domain_b_length": {"type": "integer", "minimum": 1},
+          "linker_length": {"type": "integer", "minimum": 0},
+          "full_sequence_length": {"type": "integer", "minimum": 2},
+          "sequence": {"type": "string", "pattern": "^[ACDEFGHIKLMNPQRSTVWY]+$"},
+          "sequence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "record_count": {"type": "integer", "minimum": 1},
+    "planned_rankable_models": {"type": "integer", "minimum": 1},
+    "planned_settings": {"type": "object"},
+    "data_firewall": {
+      "type": "object",
+      "required": ["protected_benchmark_labels_read", "public_sequences_only", "used_for_model_training", "used_for_threshold_selection"],
+      "properties": {
+        "protected_benchmark_labels_read": {"const": false},
+        "public_sequences_only": {"const": true},
+        "used_for_model_training": {"const": false},
+        "used_for_threshold_selection": {"const": false}
+      }
+    },
+    "provenance": {"type": "object", "required": ["source_manifest", "source_manifest_sha256", "panel_fasta_sha256", "commit_sha", "worktree_modified", "config_sha256", "versions"]},
+    "selection_policy": {"type": "string", "minLength": 1},
+    "claim_boundary": {"type": "string", "minLength": 1}
+  }
+}

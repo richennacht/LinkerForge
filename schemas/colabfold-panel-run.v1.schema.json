@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://linkerforge.org/schemas/colabfold-panel-run.v1.schema.json",
+  "title": "LinkerForge ColabFold panel run v1",
+  "type": "object",
+  "required": ["schema_version", "status", "started_utc", "input_fasta", "input_fasta_sha256", "output", "construct_count", "models_per_construct", "planned_rankable_models", "command", "environment_overrides", "provenance", "claim_boundary"],
+  "properties": {
+    "schema_version": {"const": "linkerforge.colabfold-panel-run.v1"},
+    "status": {"enum": ["running", "complete", "failed"]},
+    "started_utc": {"type": "string", "minLength": 1},
+    "completed_utc": {"type": "string", "minLength": 1},
+    "input_fasta": {"type": "string", "minLength": 1},
+    "input_fasta_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "output": {"type": "string", "minLength": 1},
+    "construct_count": {"type": "integer", "minimum": 1},
+    "models_per_construct": {"type": "integer", "minimum": 1},
+    "planned_rankable_models": {"type": "integer", "minimum": 1},
+    "rankable_models": {"type": "integer", "minimum": 0},
+    "command": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "environment_overrides": {"type": "object"},
+    "provenance": {"type": "object", "required": ["commit_sha", "runner_sha256", "versions"]},
+    "failure_reason": {"type": "string", "minLength": 1},
+    "claim_boundary": {"type": "string", "minLength": 1}
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://linkerforge.local/schemas/exploratory-ranker-reproduction.v1.schema.json",
+  "title": "LinkerForge exploratory hand-feature ranker reproduction",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "study_status",
+    "training_authorized",
+    "model_scope",
+    "claim_boundaries",
+    "evidence_quality",
+    "source_ids",
+    "provenance",
+    "evaluation_config",
+    "dataset_id",
+    "dataset_manifest_sha256",
+    "ranker_parameters",
+    "benchmark_natural_authorities_148",
+    "benchmark_proteome_mined_high_confidence_600"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "study_status": {"const": "exploratory_reproduction_not_validation"},
+    "training_authorized": {"const": false},
+    "model_scope": {
+      "type": "object",
+      "required": ["implementation", "is_frozen_readme_esm2_geometric_gnn", "is_experimental_success_classifier"],
+      "properties": {
+        "implementation": {"const": "historical_hand_feature_pairwise_ranker"},
+        "is_frozen_readme_esm2_geometric_gnn": {"const": false},
+        "is_experimental_success_classifier": {"const": false}
+      }
+    },
+    "claim_boundaries": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "evidence_quality": {"type": "string", "minLength": 1},
+    "source_ids": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "provenance": {
+      "type": "object",
+      "required": ["commit_sha", "worktree_modified", "config_sha256", "dataset_manifest_sha256", "versions"],
+      "properties": {
+        "commit_sha": {"type": "string", "minLength": 1},
+        "worktree_modified": {"type": "boolean"},
+        "config_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "dataset_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "versions": {"type": "object", "minProperties": 1}
+      }
+    },
+    "evaluation_config": {"type": "object"},
+    "dataset_id": {"type": "string", "minLength": 1},
+    "dataset_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "ranker_parameters": {"type": "object"},
+    "benchmark_natural_authorities_148": {"type": "object"},
+    "benchmark_proteome_mined_high_confidence_600": {"type": "object"},
+    "sfgfp_2b3p_mcherry_2h5q_demos": {"type": "object"}
+  },
+  "additionalProperties": true
+}
