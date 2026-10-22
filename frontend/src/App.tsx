@@ -4,7 +4,6 @@ import {
   CheckCircle2,
   Clock3,
   Download,
-  ExternalLink,
   MessageSquare,
   Moon,
   Pencil,
@@ -30,7 +29,6 @@ import {
   getComputeStatus,
   getFoldStatus,
   inDesktop,
-  openPdbInPymol,
   startLocalFold,
   type ComputeStatus,
   type FoldStatus,
@@ -39,6 +37,7 @@ import {
   auditFusionCoordinates,
   assessProtectedSiteClearance,
   calculateDomainPreservation,
+  fetchRcsbReferenceStructure,
   parseColabFoldScoreJson,
   parseProtectedSites,
   validateDomainReferencePdb,
@@ -460,7 +459,11 @@ function ProteinViewer({
   const [mode, setMode] = useState<'fusion' | 'A' | 'B'>('fusion')
   const [fullscreen, setFullscreen] = useState(false)
   const [structures, setStructures] = useState<Record<string, { pdb: string; source: 'colabfold' | 'uploaded' }>>({})
-  const [uploadError, setUploadError] = useState<string | null>(null)
+  const [fusionError, setFusionError] = useState<string | null>(null)
+  const [referenceFeedback, setReferenceFeedback] = useState<Record<'A' | 'B', { message: string | null; error: string | null }>>({
+    A: { message: null, error: null },
+    B: { message: null, error: null },
+  })
   const [compute, setCompute] = useState<ComputeStatus | null>(null)
   const [fold, setFold] = useState<FoldStatus | null>(null)
   const [foldSequence, setFoldSequence] = useState<string | null>(null)
@@ -468,7 +471,7 @@ function ProteinViewer({
   const [foldStartedAt, setFoldStartedAt] = useState<number | null>(null)
   const [clock, setClock] = useState(0)
   const foldLaunchInFlight = useRef(false)
-  const [pymolMessage, setPymolMessage] = useState<string | null>(null)
+  const [referenceLoading, setReferenceLoading] = useState<'A' | 'B' | null>(null)
   const [manualMetrics, setManualMetrics] = useState<ColabFoldMetrics | null>(null)
   const selectedSequence = candidate?.fullSequence ?? ''
   const structure = structures[selectedSequence] ?? null
@@ -480,6 +483,12 @@ function ProteinViewer({
   const reference = references[selectedReference]
   const referenceSequence = selectedReference === 'A' ? domainASequence : domainBSequence
   const referenceLabel = selectedReference === 'A' ? domainALabel : domainBLabel
+  const selectedReferenceFeedback = referenceFeedback[selectedReference]
+  const desktopRuntime = inDesktop()
+
+  const updateReferenceFeedback = (key: 'A' | 'B', feedback: { message: string | null; error: string | null }) => {
+    setReferenceFeedback((previous) => ({ ...previous, [key]: feedback }))
+  }
 
   useEffect(() => {
     if (!inDesktop()) return
@@ -500,10 +509,10 @@ function ProteinViewer({
         validateFusionPdb(status.pdb, selectedSequence)
         setStructures((previous) => ({ ...previous, [selectedSequence]: { pdb: status.pdb!, source: 'colabfold' } }))
         setMode('fusion')
-        setUploadError(null)
+        setFusionError(null)
       }
     }).catch((cause) => {
-      if (!cancelled) setUploadError(errorMessage(cause, 'Could not restore the local fold status.'))
+      if (!cancelled) setFusionError(errorMessage(cause, 'Could not restore the local fold status.'))
     })
     return () => { cancelled = true }
   }, [selectedSequence])
@@ -518,16 +527,16 @@ function ProteinViewer({
             validateFusionPdb(status.pdb, foldSequence)
             setStructures((previous) => ({ ...previous, [foldSequence]: { pdb: status.pdb!, source: 'colabfold' } }))
             setMode('fusion')
-            setUploadError(null)
+            setFusionError(null)
           } catch (cause) {
-            setUploadError(cause instanceof Error ? cause.message : 'Predicted PDB did not match the fusion.')
+            setFusionError(cause instanceof Error ? cause.message : 'Predicted PDB did not match the fusion.')
           }
           setFoldSequence(null)
         } else if (status.phase === 'failed') {
           setFoldSequence(null)
         }
       }).catch((cause) => {
-        setUploadError(cause instanceof Error ? cause.message : 'Could not check the local fold.')
+        setFusionError(cause instanceof Error ? cause.message : 'Could not check the local fold.')
         setFoldSequence(null)
       })
     }, 2000)
@@ -542,6 +551,14 @@ function ProteinViewer({
 
   const effectiveFoldStart = foldStartedAt ?? foldStartTimeFromRunDir(fold?.runDir ?? null)
   const elapsed = effectiveFoldStart === null ? null : formatElapsedTime(clock - effectiveFoldStart)
+  const predictionRunning = foldStarting || fold?.phase === 'running'
+  const predictionStatus = predictionRunning
+    ? `Running${elapsed ? ` · ${elapsed}` : ''}`
+    : pdb
+      ? 'Structure loaded'
+      : fold?.phase === 'failed'
+        ? 'Previous run failed'
+        : 'Not started'
 
   useEffect(() => {
     onResultChange({
@@ -560,12 +577,12 @@ function ProteinViewer({
     setFoldStarting(true)
     setFoldStartedAt(Date.now())
     setClock(Date.now())
-    setUploadError(null)
+    setFusionError(null)
     try {
       const status = await startLocalFold(candidate.fullSequence, domainALength, candidate.linker.length)
       setFold(status)
       setFoldSequence(candidate.fullSequence)
-      setUploadError(null)
+      setFusionError(null)
     } catch (cause) {
       // A rapid second IPC request can be rejected after the first one has
       // already launched. Reconcile with the backend before reporting failure.
@@ -575,13 +592,13 @@ function ProteinViewer({
           setFold(current)
           setFoldSequence(candidate.fullSequence)
           setFoldStartedAt((previous) => previous ?? foldStartTimeFromRunDir(current.runDir))
-          setUploadError(null)
+          setFusionError(null)
           return
         }
       } catch {
         // Preserve the original launch error below.
       }
-      setUploadError(errorMessage(cause, 'Could not start ColabFold.'))
+      setFusionError(errorMessage(cause, 'Could not start ColabFold.'))
     } finally {
       foldLaunchInFlight.current = false
       setFoldStarting(false)
@@ -605,11 +622,10 @@ function ProteinViewer({
       validateFusionPdb(content, candidate.fullSequence)
       setStructures((previous) => ({ ...previous, [candidate.fullSequence]: { pdb: content, source: 'uploaded' } }))
       setManualMetrics(null)
-      setUploadError(null)
-      setPymolMessage(null)
+      setFusionError(null)
       setMode('fusion')
     } catch (cause) {
-      setUploadError(cause instanceof Error ? cause.message : 'Could not read the PDB file.')
+      setFusionError(cause instanceof Error ? cause.message : 'Could not read the PDB file.')
     }
   }
 
@@ -619,10 +635,10 @@ function ProteinViewer({
       if (file.size > 20_000_000) throw new Error('The local score JSON limit is 20 MB.')
       const metrics = parseColabFoldScoreJson(await file.text(), candidate.fullSequence.length, domainALength, candidate.linker.length)
       setManualMetrics(metrics)
-      setUploadError(null)
+      setFusionError(null)
     } catch (cause) {
       setManualMetrics(null)
-      setUploadError(cause instanceof Error ? cause.message : 'Could not read the ColabFold score JSON.')
+      setFusionError(cause instanceof Error ? cause.message : 'Could not read the ColabFold score JSON.')
     }
   }
 
@@ -636,26 +652,44 @@ function ProteinViewer({
         ...references,
         [selectedReference]: { ...reference, filename: file.name, pdb: content },
       })
-      setUploadError(null)
+      updateReferenceFeedback(selectedReference, {
+        message: `Loaded ${file.name} for ${referenceLabel} after an exact sequence match.`,
+        error: null,
+      })
     } catch (cause) {
-      setUploadError(cause instanceof Error ? cause.message : 'Could not read the reference PDB.')
+      updateReferenceFeedback(selectedReference, {
+        message: null,
+        error: cause instanceof Error ? cause.message : 'Could not read the reference PDB.',
+      })
     }
   }
 
-  const handleOpenInPymol = async () => {
-    if (!candidate || !pdb) return
+  const handleReferenceFetch = async () => {
+    if (!candidate) return
+    setReferenceLoading(selectedReference)
+    updateReferenceFeedback(selectedReference, { message: null, error: null })
     try {
-      const message = await openPdbInPymol({
-        pdb,
-        sequence: candidate.fullSequence,
-        domainALength,
-        linkerLength: candidate.linker.length,
+      const result = await fetchRcsbReferenceStructure(reference.sourceId, referenceSequence, referenceLabel || `Domain ${selectedReference}`)
+      onReferencesChange({
+        ...references,
+        [selectedReference]: {
+          sourceId: result.pdbId,
+          sourceKind: 'experimental',
+          filename: `${result.pdbId}-chain-${result.chainId}.pdb`,
+          pdb: result.pdb,
+        },
       })
-      setPymolMessage(message)
-      setUploadError(null)
+      updateReferenceFeedback(selectedReference, {
+        message: `Loaded PDB ${result.pdbId}, chain ${result.chainId}, for ${referenceLabel} after an exact sequence match.`,
+        error: null,
+      })
     } catch (cause) {
-      setPymolMessage(null)
-      setUploadError(cause instanceof Error ? cause.message : 'Could not open the fusion in PyMOL.')
+      updateReferenceFeedback(selectedReference, {
+        message: null,
+        error: errorMessage(cause, 'Could not retrieve the PDB entry from RCSB.'),
+      })
+    } finally {
+      setReferenceLoading(null)
     }
   }
 
@@ -693,14 +727,34 @@ function ProteinViewer({
         <button type="button" className={mode === 'B' ? 'active' : ''} onClick={() => setMode('B')}>
           {domainBLabel} <small>{references.B.pdb ? 'individual model loaded' : 'load individual model'}</small>
         </button>
-        {inDesktop() && candidate && <button type="button" className="gpu-fold-button"
-          disabled={!compute?.predictorAvailable || !msaConsent || foldStarting || fold?.phase === 'running'}
-          onClick={() => { setMode('fusion'); void handleLocalFold() }}>
-          <Play size={14} /> {foldStarting ? 'Starting ColabFold…' : fold?.phase === 'running' ? 'Folding locally…' : 'Fold full fusion on this GPU'}
-        </button>}
       </div>
       {mode === 'fusion' ? (
         <>
+          {candidate && <div className="prediction-launchpad" aria-label="Full-fusion prediction controls">
+            <div className="prediction-launchpad-copy">
+              <span>Full-fusion prediction</span>
+              <strong>{predictionStatus}</strong>
+              <small>{desktopRuntime
+                ? compute?.predictorAvailable
+                  ? `${compute.gpu ?? 'Local GPU'} · ColabFold via ${compute.predictorBackend}`
+                  : 'Local ColabFold is not currently available.'
+                : 'Browser mode cannot access the computer GPU. Export the exact FASTA or open this design in the desktop app.'}</small>
+            </div>
+            <div className="prediction-launchpad-actions">
+              {desktopRuntime && <button type="button" className="gpu-fold-button"
+                disabled={!compute?.predictorAvailable || !msaConsent || predictionRunning}
+                onClick={() => { setMode('fusion'); void handleLocalFold() }}>
+                <Play size={15} /> {foldStarting ? 'Starting ColabFold…' : fold?.phase === 'running' ? 'Prediction running…' : pdb ? 'Run prediction again' : 'Predict full fusion on this GPU'}
+              </button>}
+              <button type="button" className={desktopRuntime ? 'prediction-secondary-button' : 'gpu-fold-button'} onClick={() => downloadText('linkerforge-fusion.fasta', fusionFasta(candidate.fullSequence))}>
+                <Download size={15} /> Export FASTA for prediction
+              </button>
+              <label className="upload-pdb compact-upload">
+                Load predicted PDB
+                <input type="file" accept=".pdb,.ent,text/plain" onChange={(event) => void handlePdbUpload(event.target.files?.[0])} />
+              </label>
+            </div>
+          </div>}
           <div className="fusion-legend">
             <span><i style={{ background: '#3acf78' }} /> Domain A ({domainALength} aa)</span>
             <span><i style={{ background: '#ff4dba' }} /> Linker ({candidate?.linker.length ?? 0} aa)</span>
@@ -708,73 +762,55 @@ function ProteinViewer({
           </div>
           <div className="viewer-stage">
             <FusionStructureViewer
+              key={`fusion-${selectedSequence}`}
               pdb={pdb}
               fullSequence={selectedSequence}
               domainALength={domainALength}
               linkerLength={candidate?.linker.length ?? 0}
+              structureId={candidate?.id}
+              structureTitle={candidate ? `${domainALabel} — ${candidate.linker} — ${domainBLabel}` : undefined}
+              structureSource={structure?.source === 'colabfold' ? 'Local ColabFold prediction · sequence verified' : 'Loaded PDB · sequence verified'}
             />
           </div>
-          <div className="viewer-actions">
-            {candidate ? (
-              <>
-                <button type="button" onClick={() => downloadText('linkerforge-fusion.fasta', fusionFasta(candidate.fullSequence))}>
-                  <Download size={14} /> Export full-fusion FASTA
-                </button>
-                <label className="upload-pdb">
-                  Load predicted full-fusion PDB
-                  <input type="file" accept=".pdb,.ent,text/plain" onChange={(event) => void handlePdbUpload(event.target.files?.[0])} />
-                </label>
-                {pdb && <label className="upload-pdb">
-                  Load matching ColabFold score JSON
-                  <input type="file" accept=".json,application/json" onChange={(event) => void handleScoreUpload(event.target.files?.[0])} />
-                </label>}
-                {pdb && <button type="button" onClick={() => downloadText('linkerforge-fusion.pml', pml)}>
-                  <Download size={14} /> PyMOL colouring script
-                </button>}
-                {inDesktop() && pdb && <button type="button" disabled={!compute?.pymolAvailable}
-                  onClick={() => void handleOpenInPymol()}>
-                  <ExternalLink size={14} /> Open coloured fusion in PyMOL
-                </button>}
-              </>
-            ) : (
-              <p>Enter both protein sequences in the design studio to construct a full fusion first.</p>
-            )}
-          </div>
-          {uploadError && <p className="structure-error" role="alert">{uploadError}</p>}
-          {pymolMessage && <p className="structure-success" role="status">{pymolMessage}</p>}
+          {pdb && <div className="viewer-actions post-prediction-actions" aria-label="Loaded-structure files">
+            <span>Loaded-structure files</span>
+            <label className="upload-pdb">
+              Load matching ColabFold score JSON
+              <input type="file" accept=".json,application/json" onChange={(event) => void handleScoreUpload(event.target.files?.[0])} />
+            </label>
+            <button type="button" onClick={() => downloadText('linkerforge-fusion.pml', pml)}>
+              <Download size={14} /> Optional PyMOL script
+            </button>
+          </div>}
+          {fusionError && <p className="structure-error" role="alert">{fusionError}</p>}
           {inDesktop() && !msaConsent && <p className="structure-warning" role="status">
             Local prediction is locked until the public-MSA data disclosure is acknowledged on the Design input page.
           </p>}
           {inDesktop() && <div className="desktop-compute" aria-live="polite">
             <strong>Local compute:</strong> {compute?.gpu ?? 'Checking GPU…'} · ColabFold {compute?.predictorAvailable ? `available via ${compute.predictorBackend}` : 'not installed'}.
-            <p>PyMOL {compute?.pymolAvailable ? `available${compute.pymolPath ? ` at ${compute.pymolPath}` : ''}` : 'not installed or not detected'}.</p>
             {fold && <p>{fold.phase}: {fold.message}</p>}
             {fold?.runDir && <small>Run files: {fold.runDir}</small>}
           </div>}
-          <p className="viewer-disclaimer">A manually uploaded PDB is sequence-checked but is not assumed to be an AlphaFold result. Load its matching ColabFold rank-1 score JSON before interpreting PAE or pTM. Linker coordinates appear only when the full fusion has actually been predicted.</p>
+          <p className="viewer-disclaimer">The interactive 3D workspace runs inside LinkerForge; PyMOL is not required. Its sequence/canvas/control-panel interaction model is informed by the <a href="https://www.rcsb.org/docs/exploring-a-3d-structure/structure-3d-visualization" target="_blank" rel="noreferrer">RCSB PDB Mol* viewer documentation</a>, while the rendering and controls are LinkerForge’s own 3Dmol.js implementation. A manually uploaded PDB is sequence-checked but is not assumed to be an AlphaFold result. Load its matching ColabFold rank-1 score JSON before interpreting PAE or pTM.</p>
         </>
       ) : (
         <>
           <div className="individual-model-heading">
             <div><span>Individual domain model</span><strong>{referenceLabel}</strong></div>
-            <small>{reference.pdb ? `${reference.sourceKind} · ${reference.sourceId || reference.filename}` : 'No model loaded for this domain'}</small>
-          </div>
-          <div className="viewer-stage">
-            <FusionStructureViewer
-              pdb={reference.pdb}
-              fullSequence={referenceSequence}
-              domainALength={referenceSequence.length}
-              linkerLength={0}
-              mode="reference"
-              referenceColor={selectedReference === 'A' ? '#3acf78' : '#f66b62'}
-              ariaLabel={`${referenceLabel} individual reference structure`}
-            />
+            <small>{reference.pdb ? `${reference.sourceKind} · ${reference.sourceId}${reference.filename ? ` · ${reference.filename}` : ''}` : 'No model loaded for this domain'}</small>
           </div>
           <div className="reference-controls">
-            <label>Reference source identifier
-              <input value={reference.sourceId} placeholder="Example: PDB 1UBQ, chain A"
-                onChange={(event) => onReferencesChange({ ...references, [selectedReference]: { ...reference, sourceId: event.target.value } })} />
+            <label>PDB accession
+              <input value={reference.sourceId} placeholder="Example: 1UBQ" maxLength={4} autoCapitalize="characters"
+                onChange={(event) => {
+                  onReferencesChange({ ...references, [selectedReference]: { ...reference, sourceId: event.target.value.toUpperCase() } })
+                  updateReferenceFeedback(selectedReference, { message: null, error: null })
+                }} />
             </label>
+            <button type="button" className="pdb-fetch-button" disabled={referenceLoading === selectedReference}
+              onClick={() => void handleReferenceFetch()}>
+              {referenceLoading === selectedReference ? 'Retrieving from RCSB…' : 'Fetch PDB and show structure'}
+            </button>
             <label>Evidence type
               <select value={reference.sourceKind}
                 onChange={(event) => onReferencesChange({ ...references, [selectedReference]: { ...reference, sourceKind: event.target.value as DomainReference['sourceKind'] } })}>
@@ -782,11 +818,31 @@ function ProteinViewer({
                 <option value="predicted">Predicted structure</option>
               </select>
             </label>
-            <label className="upload-pdb">Load {referenceLabel} reference PDB
+            <label className="upload-pdb">Local PDB fallback
               <input type="file" accept=".pdb,.ent,text/plain" onChange={(event) => void handleReferenceUpload(event.target.files?.[0])} />
             </label>
           </div>
-          <p className="viewer-disclaimer">This reference belongs to the current entered domain only. Its single-chain C-alpha sequence must exactly match the domain sequence. The source identifier and experimental/predicted classification are researcher-supplied provenance; LinkerForge does not infer them.</p>
+          <div className="viewer-stage">
+            <FusionStructureViewer
+              key={`reference-${selectedReference}-${reference.sourceId}-${referenceSequence}`}
+              pdb={reference.pdb}
+              fullSequence={referenceSequence}
+              domainALength={referenceSequence.length}
+              linkerLength={0}
+              mode="reference"
+              referenceColor={selectedReference === 'A' ? '#3acf78' : '#f66b62'}
+              ariaLabel={`${referenceLabel} individual reference structure`}
+              structureId={reference.sourceId || `DOMAIN ${selectedReference}`}
+              structureTitle={referenceLabel}
+              structureSource={reference.pdb ? `${reference.sourceKind === 'experimental' ? 'RCSB PDB experimental structure' : 'Predicted/local reference'} · exact sequence match` : undefined}
+              sourceUrl={reference.sourceKind === 'experimental' && /^[A-Za-z0-9]{4}$/.test(reference.sourceId)
+                ? `https://www.rcsb.org/structure/${reference.sourceId.toUpperCase()}`
+                : undefined}
+            />
+          </div>
+          {selectedReferenceFeedback.error && <p className="structure-error" role="alert">{selectedReferenceFeedback.error}</p>}
+          {selectedReferenceFeedback.message && <p className="structure-success" role="status">{selectedReferenceFeedback.message}</p>}
+          <p className="viewer-disclaimer">Enter the four-character RCSB PDB accession only. LinkerForge downloads the public coordinate file from RCSB, finds an exact sequence-matched chain or chain segment, displays only that checked domain, and keeps a link to the authoritative RCSB source record in the viewer’s Export &amp; source panel. A local PDB remains available for private or predicted structures.</p>
         </>
       )}
     </section>

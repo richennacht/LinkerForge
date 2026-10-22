@@ -43,6 +43,13 @@ export interface PymolLaunchRequest {
   linkerLength: number
 }
 
+export interface ReferencePymolLaunchRequest {
+  pdb: string
+  sequence: string
+  label: string
+  color: string
+}
+
 export const foldStartTimeFromRunDir = (runDir: string | null) => {
   const match = runDir?.match(/(?:^|[\\/])(\d{10,13})-[^\\/]+$/)
   if (!match) return null
@@ -75,3 +82,6 @@ export const getFoldStatus = () => invoke<FoldStatus>('fold_status')
 
 export const openPdbInPymol = (request: PymolLaunchRequest) =>
   invoke<string>('open_pdb_in_pymol', { request })
+
+export const openReferenceInPymol = (request: ReferencePymolLaunchRequest) =>
+  invoke<string>('open_reference_in_pymol', { request })

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
 
@@ -8,6 +8,16 @@ function submitTestDesign(name = 'Public test fusion') {
   fireEvent.change(screen.getByLabelText(/domain b amino-acid sequence/i), { target: { value: 'HIKLMN' } })
   fireEvent.click(screen.getByRole('button', { name: /create prediction workspace/i }))
 }
+
+const domainAPdb = [
+  'ATOM      1  CA  ALA A   1       0.000   0.000   0.000  1.00 90.00           C',
+  'ATOM      2  CA  CYS A   2       3.800   0.000   0.000  1.00 90.00           C',
+  'ATOM      3  CA  ASP A   3       7.600   0.000   0.000  1.00 90.00           C',
+  'ATOM      4  CA  GLU A   4      11.400   0.000   0.000  1.00 90.00           C',
+  'ATOM      5  CA  PHE A   5      15.200   0.000   0.000  1.00 90.00           C',
+  'ATOM      6  CA  GLY A   6      19.000   0.000   0.000  1.00 90.00           C',
+  'END',
+].join('\n')
 
 describe('LinkerForge interface', () => {
   beforeEach(() => {
@@ -64,6 +74,12 @@ describe('LinkerForge interface', () => {
     expect(screen.getByRole('button', { name: /domain a.*individual model/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /domain b.*individual model/i })).toBeInTheDocument()
     expect(screen.getByLabelText(/candidate models/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/full-fusion prediction controls/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /export fasta for prediction/i })).toBeInTheDocument()
+    expect(screen.getAllByLabelText(/^load predicted pdb$/i)).toHaveLength(1)
+    expect(screen.queryByLabelText(/load predicted full-fusion pdb/i)).not.toBeInTheDocument()
+    expect(screen.getAllByRole('button', { name: /export.*fasta/i })).toHaveLength(1)
+    expect(screen.getByText(/browser mode cannot access the computer gpu/i)).toBeInTheDocument()
     expect(screen.getByText(/no full-fusion structure loaded/i)).toBeInTheDocument()
   })
 
@@ -103,7 +119,29 @@ describe('LinkerForge interface', () => {
     fireEvent.click(screen.getByRole('button', { name: /domain a.*individual model/i }))
     expect(screen.getByText(/no reference structure loaded/i)).toBeInTheDocument()
     expect(screen.queryByTitle(/sfGFP experimental structure/i)).not.toBeInTheDocument()
-    expect(screen.getByText(/does not guess a reference structure/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/PDB accession/i)).toHaveAttribute('maxlength', '4')
+    expect(screen.getByRole('button', { name: /fetch PDB and show structure/i })).toBeInTheDocument()
+    expect(screen.getByText(/exact sequence-matched chain or chain segment/i)).toBeInTheDocument()
+  })
+
+  it('keeps each individual-model success message in its own domain tab', async () => {
+    render(<App />)
+    submitTestDesign()
+    fireEvent.click(screen.getByRole('button', { name: /domain a.*individual model/i }))
+
+    const file = new File([domainAPdb], 'domain-a.pdb', { type: 'chemical/x-pdb' })
+    Object.defineProperty(file, 'text', { value: vi.fn(async () => domainAPdb) })
+    fireEvent.change(screen.getByLabelText(/local pdb fallback/i), { target: { files: [file] } })
+    await waitFor(() => expect(screen.getByText(/loaded domain-a\.pdb for domain a/i)).toBeInTheDocument())
+
+    fireEvent.click(screen.getByRole('button', { name: /full fusion model/i }))
+    expect(screen.queryByText(/loaded domain-a\.pdb for domain a/i)).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /domain b.*individual model/i }))
+    expect(screen.queryByText(/loaded domain-a\.pdb for domain a/i)).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /domain a.*individual model/i }))
+    expect(screen.getByText(/loaded domain-a\.pdb for domain a/i)).toBeInTheDocument()
   })
 
   it('keeps candidate review and evidence results accessible in the same window', () => {

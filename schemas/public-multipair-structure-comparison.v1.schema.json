@@ -25,11 +25,12 @@
   "$defs": {
     "result": {
       "type": "object",
-      "required": ["construct_id", "domain_pair", "linker_id", "linker_length", "full_sequence_length", "mean_plddt", "domain_a_mean_plddt", "domain_b_mean_plddt", "ptm", "rank_1_model", "pdb", "pdb_sha256", "score_json", "score_json_sha256", "descriptive_mean_plddt_rank"],
+      "required": ["construct_id", "domain_pair", "linker_id", "linker_sequence", "linker_length", "full_sequence_length", "mean_plddt", "domain_a_mean_plddt", "domain_b_mean_plddt", "ptm", "rank_1_model", "pdb", "pdb_sha256", "score_json", "score_json_sha256", "descriptive_mean_plddt_rank"],
       "properties": {
         "construct_id": {"type": "string", "minLength": 1},
         "domain_pair": {"type": "string", "minLength": 1},
         "linker_id": {"type": "string", "minLength": 1},
+        "linker_sequence": {"type": "string", "pattern": "^[ACDEFGHIKLMNPQRSTVWY]*$"},
         "linker_length": {"type": "integer", "minimum": 0},
         "full_sequence_length": {"type": "integer", "minimum": 2},
         "mean_plddt": {"type": "number", "minimum": 0, "maximum": 100},

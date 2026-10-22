@@ -99,7 +99,7 @@ def metrics(record: dict, prediction_dir: Path) -> dict:
     }
 
 
-def existing_rows(existing: dict) -> list[dict]:
+def existing_rows(existing: dict, linker_sequences: dict[str, str]) -> list[dict]:
     rows = []
     for row in existing["records"]:
         linker_id = ALIASES.get(row["candidate_id"], row["candidate_id"])
@@ -108,7 +108,7 @@ def existing_rows(existing: dict) -> list[dict]:
             "domain_pair": "1UBQ_2GB1",
             "domain_sources": ["PDB 1UBQ chain A", "PDB 2GB1 chain A"],
             "linker_id": linker_id,
-            "linker_sequence": None,
+            "linker_sequence": linker_sequences[linker_id],
             "linker_length": row["linker_length"],
             "full_sequence_length": 132 + row["linker_length"],
             "mean_plddt": row["mean_plddt"],
@@ -141,7 +141,21 @@ def main() -> None:
     existing_path = args.existing_summary.resolve()
     existing = json.loads(existing_path.read_text(encoding="utf-8"))
     prediction_dir = panel_dir / "prediction"
-    rows = existing_rows(existing) + [metrics(record, prediction_dir) for record in manifest["records"]]
+    existing_manifest_path = existing_path.parent / "panel_manifest.json"
+    existing_manifest = json.loads(existing_manifest_path.read_text(encoding="utf-8"))
+    linker_sequences = {
+        ALIASES.get(record["candidate_id"], record["candidate_id"]): record["linker_sequence"]
+        for record in existing_manifest["records"]
+    }
+    # The 10-aa public acceptance construct predates the matched-panel manifest.
+    linker_sequences["ggggs_10"] = "GGGGSGGGGS"
+    expected_linker_ids = {
+        ALIASES.get(row["candidate_id"], row["candidate_id"])
+        for row in existing["records"]
+    }
+    if set(linker_sequences) != expected_linker_ids:
+        raise ValueError("Existing comparison and panel manifest linker IDs do not match")
+    rows = existing_rows(existing, linker_sequences) + [metrics(record, prediction_dir) for record in manifest["records"]]
     if len(rows) != 21:
         raise ValueError(f"Expected 21 constructs across three pairs; found {len(rows)}")
     model_files = list(prediction_dir.glob("*scores_rank_*.json"))
@@ -182,6 +196,8 @@ def main() -> None:
             "panel_manifest_sha256": sha256(manifest_path),
             "existing_summary": str(existing_path),
             "existing_summary_sha256": sha256(existing_path),
+            "existing_panel_manifest": str(existing_manifest_path),
+            "existing_panel_manifest_sha256": sha256(existing_manifest_path),
             "commit_sha": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
             "worktree_modified": bool(subprocess.check_output(
                 ["git", "status", "--porcelain", "--untracked-files=no"], cwd=ROOT, text=True
