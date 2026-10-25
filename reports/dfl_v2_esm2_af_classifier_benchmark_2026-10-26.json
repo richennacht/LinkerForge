@@ -1,0 +1,84 @@
+{
+  "date": "2026-10-26",
+  "split": "v2_full_sequence_disprot_254train_109dev",
+  "dev_proteins": 109,
+  "dev_residues": 73113,
+  "dev_positives": 3241,
+  "dev_positive_rate": 0.044329,
+  "benchmark_seal": "CAID3 and DP94 never read or evaluated",
+  "models": {
+    "v2_sam_af4_onehot_recorded_baseline": {
+      "seed_ensemble_3": {
+        "AP": 0.277,
+        "AUROC": 0.839,
+        "Fmax": 0.367
+      },
+      "source": "DFL-Scratch-Project/HANDOFF.md"
+    },
+    "v4_sam_af31_onehot": {
+      "per_seed": {
+        "7": {
+          "best_epoch": 23,
+          "AP": 0.3099,
+          "AUROC": 0.8683,
+          "Fmax": 0.4103,
+          "seconds": 81.8
+        },
+        "17": {
+          "best_epoch": 25,
+          "AP": 0.2963,
+          "AUROC": 0.8728,
+          "Fmax": 0.4003,
+          "seconds": 77.8
+        },
+        "31": {
+          "best_epoch": 17,
+          "AP": 0.2906,
+          "AUROC": 0.8614,
+          "Fmax": 0.3926,
+          "seconds": 82.5
+        }
+      },
+      "seed_ensemble_3": {
+        "AP": 0.3224,
+        "AUROC": 0.8712,
+        "Fmax": 0.4092
+      }
+    },
+    "v7_sam_af31_esm2_35m_bottleneck": {
+      "per_seed": {
+        "7": {
+          "best_epoch": 6,
+          "AP": 0.3109,
+          "AUROC": 0.872,
+          "Fmax": 0.3888,
+          "seconds": 96.7
+        },
+        "17": {
+          "best_epoch": 19,
+          "AP": 0.3305,
+          "AUROC": 0.8915,
+          "Fmax": 0.4069,
+          "seconds": 98.1
+        },
+        "31": {
+          "best_epoch": 12,
+          "AP": 0.3259,
+          "AUROC": 0.8911,
+          "Fmax": 0.4029,
+          "seconds": 101.2
+        }
+      },
+      "seed_ensemble_3": {
+        "AP": 0.3378,
+        "AUROC": 0.8933,
+        "Fmax": 0.4158
+      }
+    },
+    "combined_6model_sam_af31_plus_esm2_ensemble": {
+      "AP": 0.3472,
+      "AUROC": 0.8875,
+      "Fmax": 0.416
+    }
+  }
+}
