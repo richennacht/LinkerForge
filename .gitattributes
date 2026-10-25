@@ -2,3 +2,6 @@
 datasets/dfl_b1_v2_family_split/** -text
 datasets/mined_and_natural_linkers_v1.manifest.json -text whitespace=cr-at-eol
 datasets/mined_and_natural_linkers_v1.zip -text
+scripts/benchmark_dfl_b1_v2_caid3_retrospective.py -text
+reports/DFL_B1_V2_CAID3_RETROSPECTIVE_SELECTION_2026-10-25.json -text
+reports/DFL_B1_V2_CAID3_RETROSPECTIVE_OFFICIAL_2026-10-25.csv -text

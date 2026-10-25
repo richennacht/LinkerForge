@@ -9,10 +9,21 @@ PRs #1–#7 are merged into this branch. See
 `CURRENT_DIRECTION_2026-10-18.md` and `CLASSIFIER_INFERENCE.md`. The old
 training firewall and spent-CAID3 rule below are unchanged.
 
+**25 October retrospective update:** at the user's explicit request, the fixed
+B1 V2 three-layer CNN was reproduced on its hash-pinned, CAID3-excluded split
+and evaluated once more against seven released predictors on the identical
+CAID3 common-27 residues. Official APS/AUC-ROC/Fmax were 0.353/0.845/0.423 for
+the CNN versus 0.482/0.898/0.491 for IPA-AF2-Linker. See
+`reports/DFL_B1_V2_CAID3_RETROSPECTIVE_2026-10-25.md` and its frozen selection
+manifest. This is an **additional post-hoc public retrospective**, not a new
+untouched test, a mining-precision certificate, or grounds for further CAID3
+selection/tuning. The checkpoint and downloaded evaluator inputs remain ignored
+local artifacts; the compact official comparison and hashes are committed.
+
 ## What exists, and what does not
 
 - There are local detector trainers, preprocessing scripts, experiment configs, tests, and retrospective reports under `scripts/`, `src/`, `configs/`, `tests/`, and `reports/`. The React frontend remains a labelled demonstration, not a deployed detector.
-- The protected SAM-like baseline, variants and three-seed repeats were evaluated on filtered development. See `reports/DFL_SAM_REPEAT_AND_LOCKED_CAID3_2026-10-17.md`. Neither the variants nor the baseline demonstrated published-method superiority. The one-time CAID3 common-27 comparison is **spent and retrospective**; never tune or select against it again.
+- The protected SAM-like baseline, variants and three-seed repeats were evaluated on filtered development. See `reports/DFL_SAM_REPEAT_AND_LOCKED_CAID3_2026-10-17.md`. Neither the variants nor the baseline demonstrated published-method superiority. The original CAID3 common-27 comparison and the later user-requested B1 V2 retrospective are **spent and retrospective**; never tune or select against either result.
 - Current `data/processed/caid3_protected_dfl_v1` is **not eligible for new training**: a prospective sequence-only DP94 screen found overlap with the proposed holdout. `scripts/preflight_caid3_protected_training.py` and `scripts/check_detector_autoresearch.py` fail closed. DP94 is only a candidate, not an independently validated DFL benchmark; verify its label semantics and published-method exposure before considering it.
 - The newer self-contained `data/processed/dfl_b1_v2_family_split` passes its
   preregistered sequence/family/hash checks without opening benchmark labels.
