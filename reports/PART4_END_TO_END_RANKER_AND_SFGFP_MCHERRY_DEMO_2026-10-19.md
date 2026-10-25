@@ -1,87 +1,79 @@
-# Part 4 Completion Report: Pairwise Compatibility Ranker, Hard Structural Rejection Scorecard, 6-Baseline Benchmark, and `sfGFP (2B3P) — linker — mCherry (2H5Q)` Fusion Demonstration
+# Part 4 Diagnostic Report: Hard Rejection Scorecard, Cross-Cluster Real-Decoy Ranking, Non-Oracle Generator Comparison, and Real-Coordinate `sfGFP (2B3P) — linker — mCherry (2H5Q)` Schematic Assembly
 
-> **Correction, 19 October 2026:** The ranking results below compare against generated synthetic corruptions and internal heuristics, not published predictors or experimentally measured fusion outcomes. Exported PDBs are geometric illustrations, not validated complete-fusion structures. See [the claims audit](./PAPER_CLAIMS_AUDIT_2026-10-19.md).
+> **Audit & Remediation Note (2026-10-19):** This revision (`schema_version: 2.0.0`) replaces circular baseline comparisons and procedural PDB coordinates with four non-circular evaluations (`src/linkerforge/pipeline/evaluation.py`) and real experimental crystal coordinates downloaded from RCSB (`data/raw/pdb/2B3P.pdb` and `data/raw/pdb/2H5Q.pdb` in `src/linkerforge/pipeline/fusion_demo.py`). Missing geometry or SASA fields are reported in `not_evaluated` rather than filled with invented defaults, and `PairwiseCompatibilityRanker` is trained from zero initialization (`init="zero"`) without hand-seeded weights.
 
 **Date:** 2026-10-19  
-**Dataset Authority:** `mined_and_natural_linkers_v1` (`27,766` total linker records; `6,727` verified natural + literature + high-confidence proteome-mined authorities indexed; `manifest.json` SHA-256 `b1b8c5b34eb9a98eb627005a810f367e4364be9a75447af9740b3bff6d3e3232`)  
-**Module:** `src/linkerforge/pipeline/ranker.py`  
+**Dataset Authority:** `mined_and_natural_linkers_v1` (`manifest.json` SHA-256 `b1b8c5b34eb9a98eb627005a810f367e4364be9a75447af9740b3bff6d3e3232`)  
+**Modules:** `src/linkerforge/pipeline/ranker.py`, `src/linkerforge/pipeline/evaluation.py`, `src/linkerforge/pipeline/fusion_demo.py`  
 **Evaluation Script:** `scripts/evaluate_part4_end_to_end_pipeline.py`  
 **JSON Artifact:** `reports/part4_end_to_end_ranker_and_sfgfp_mcherry_2026-10-19.json`  
-**3D Structure & PyMOL Artifacts:** `reports/structures/sfgfp_mcherry_flexible.{pdb,pml}`, `reports/structures/sfgfp_mcherry_rigid.{pdb,pml}`, `reports/structures/sfgfp_mcherry_tev_cleavable.{pdb,pml}`
+**Schematic Structure Artifacts:** `reports/structures/sfgfp_mcherry_flexible_non_cleavable.{pdb,pml}`, `reports/structures/sfgfp_mcherry_rigid_non_cleavable.{pdb,pml}`, `reports/structures/sfgfp_mcherry_flexible_cleavable_factor_xa.{pdb,pml}`
 
 ---
 
-## 1. Architectural Compliance (`ARCHITECTURE_HANDOFF.md` §7 & §8)
+## 1. Deterministic Hard Structural Rejection Scorecard on Real Linkers (`scorecard_on_real_linkers`)
 
-1. **Deterministic Hard Structural Rejection Scorecard (`evaluate_hard_rejection_scorecard`):**
-   - Evaluates 6 explicit physical & sequence rules before ranking:
-     1. `physical_span_closure_pass`: Checks $L \times 3.8\text{ Å} \ge d_{\text{path}}$ (physical virtual $C_\alpha$ ceiling).
-     2. `domain_clash_clearance_pass`: Checks steric detour ratio $\le 2.2$, forbids $0\text{-aa}$ direct fusion when $d_{\text{path}} > 3.8\text{ Å}$, and flags $>2.2\times$ entropic loop excess.
-     3. `anchor_accessibility_pass`: Requires both flanking domain attachment ports to have relative solvent accessibility $\text{rSASA} \ge 0.15$.
-     4. `hydrophobic_stretch_pass`: Requires hydrophobic fraction (`FILVWM`) $< 0.50$ and maximum contiguous hydrophobic run $< 5$ residues.
-     5. `prohibited_cleavage_pass`: Enforces absence of unintended protease sites when `cleavable=False` and presence of requested protease recognition site when `cleavable=True`.
-     6. `composite_rigid_cleavable_pass`: Enforces that protease sites are flanked by flexible `GS` spacers rather than buried inside a rigid `EAAAK` $\alpha$-helix (`Hubbard et al. 1994`; `Chen et al. 2013`).
-   - **Strict Scope Compliance (`SPEC.md` §5.8 / `ARCHITECTURE_HANDOFF.md` §8):** Never reports a calibrated "fusion success probability".
+Evaluates the 6 deterministic necessary-condition rules (`physical_span_closure_pass` using $(L+1)\times 3.8\text{ Å} \ge d_{\text{path}}$, `domain_clash_clearance_pass`, `anchor_accessibility_pass`, `hydrophobic_stretch_pass`, `prohibited_cleavage_pass`, `composite_rigid_cleavable_pass`) across all `27,766` records in `mined_and_natural_linkers_v1`, evaluating geometry rules only when real 3D coordinates exist (`n_with_real_geometry = 91` on `natural_cath_pdb_verified`):
 
-2. **Six Synthetic Negative Corruptions (`generate_synthetic_negatives`):**
-   - `too_short_by_50pct`: Truncates linker length by $50\%$ so physical span closure fails.
-   - `too_long_by_200pct`: Triples linker length ($+200\%$) inducing excessive entropic loop penalty.
-   - `rigid_helical_where_flexible_needed`: Substitutes rigid `(EAAAK)_n` helical rod when flexible coil is required (or vice versa).
-   - `all_hydrophobic_core`: Substitutes `FILVWM`-rich hydrophobic core (`LVLFLILVWMF...`) inducing collapse/aggregation.
-   - `charge_clash_with_junction_anchors`: Constructs an uncompensated homopolymeric charge block (`KKKK...` or `EEEE...`) clashing with flanking port electrostatics.
-   - `protease_site_buried_in_rigid_helix`: Embeds `ENLYFQS` directly inside an unbroken `EAAAK` $\alpha$-helix (`EAAAKEAAAKENLYFQSEAAAKEAAAK`) without flexible `GS` spacers.
-
-3. **Learned Pairwise Compatibility Ranker (`PairwiseCompatibilityRanker`):**
-   - Trained with margin-regularized pairwise logistic ranking loss over 12 interpretable geometric, biophysical, and junction-compatibility features on cluster-disjoint (`homology_cluster_id`) splits from `mined_and_natural_linkers_v1`.
+| Dataset Tier | Total Records | Real 3D Geometry | All Evaluated Rules Pass | Rule Failures |
+| :--- | :---: | :---: | :---: | :--- |
+| `natural_cath_pdb_verified` | `91` | `91` | **`90 / 91` (`98.90%`)** | `physical_span_closure_pass: 1` |
+| `natural_disprot_curated_dfl` | `57` | `0` | **`57 / 57` (`100.00%`)** | None |
+| `literature_engineered_template` | `23` | `0` | **`21 / 23` (`91.30%`)** | `hydrophobic_stretch_pass: 1`, `prohibited_cleavage_pass: 1` |
+| `mined_high_confidence_dfl_call` | `6,556` | `0` | **`6,546 / 6,556` (`99.85%`)** | `hydrophobic_stretch_pass: 10` |
+| `mined_provisional_dfl_candidate` | `21,039` | `0` | **`20,981 / 21,039` (`99.72%`)** | `hydrophobic_stretch_pass: 54`, `prohibited_cleavage_pass: 4` |
 
 ---
 
-## 2. Cluster-Disjoint 5-Fold Cross-Validation Results
+## 2. Non-Circular Cross-Cluster Real-Decoy Ranking Benchmark (`decoy_ranking`)
 
-### 2.1 Natural / Mined Linkers vs. 6 Synthetic Negative Corruptions
+To test whether `PairwiseCompatibilityRanker` (fit from `init="zero"` on 5 `homology_cluster_id`-disjoint folds) captures genuine sequence–flank compatibility beyond length and rigidity, each held-out true linker is ranked against **19 real linkers from other homology clusters** matched on exact length ($\pm 1\text{ aa}$ fallback) and rigidity class (`mean_candidates_per_query = 20.0`, chance `Hit@1 = 0.0500`, `Hit@5 = 0.2500`, `MRR = 0.1799`):
 
-| Benchmark Cohort | Evaluated Records | Top-1 Natural Rank Accuracy | Mean Reciprocal Rank (MRR) | vs. `too_short_by_50pct` | vs. `too_long_by_200pct` | vs. `rigid_helical_wrong` | vs. `all_hydrophobic_core` | vs. `charge_clash` | vs. `buried_protease` |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Verified Natural Authorities (`148`)** | `148` | **`99.32%`** | **`0.9966`** | `100.00%` | `100.00%` | `99.32%` | `100.00%` | `100.00%` | `100.00%` |
-| **Proteome-Mined High-Confidence (`600`)** | `600` | **`98.67%`** | **`0.9931`** | `100.00%` | `100.00%` | `98.67%` | `100.00%` | `99.83%` | `100.00%` |
+### 2.1 Verified Natural Linker Queries vs. Cross-Cluster Real Decoys (`148` queries)
 
-### 2.2 Six Required Baselines Comparison (`148` Verified Natural Authorities)
+| Ranking Method | Hit@1 (95% Cluster CI) | Hit@5 (95% Cluster CI) | MRR (95% Cluster CI) |
+| :--- | :---: | :---: | :---: |
+| **`linkerforge_ranker` (`init="zero"`, 5-fold OOF)** | **`0.2635` (`[0.1875, 0.3355]`)** | **`0.5811` (`[0.4902, 0.6624]`)** | **`0.4260` (`[0.3515, 0.4933]`)** |
+| `flank_conditioned_nn` (flank Kidera/charge NN) | `0.0878` (`[0.0376, 0.1384]`) | `0.2568` (`[0.1793, 0.3241]`) | `0.2039` (`[0.1553, 0.2483]`) |
+| `random` | `0.0608` (`[0.0268, 0.1027]`) | `0.3108` (`[0.2414, 0.3741]`) | `0.1994` (`[0.1628, 0.2398]`) |
+| `training_composition_prior` | `0.0541` (`[0.0178, 0.0942]`) | `0.2568` (`[0.1688, 0.3423]`) | `0.1851` (`[0.1390, 0.2276]`) |
+| Exact Uniform Chance (1 in 20) | `0.0500` | `0.2500` | `0.1799` |
 
-| Baseline / Method | Hard-Rejection Pass Rate | Mean Compatibility Score | Length Within $\pm 2\text{ aa}$ | Rigidity Axis Alignment | Win Rate vs. 6 Synthetic Negatives |
+### 2.2 High-Confidence Mined Queries vs. Unsampled Cross-Cluster Real Decoys (`598` evaluated queries)
+
+| Ranking Method | Hit@1 (95% Cluster CI) | Hit@5 (95% Cluster CI) | MRR (95% Cluster CI) |
+| :--- | :---: | :---: | :---: |
+| **`linkerforge_ranker` (`init="zero"`, 5-fold OOF)** | **`0.1405` (`[0.1041, 0.1844]`)** | **`0.4398` (`[0.3724, 0.5092]`)** | **`0.2996` (`[0.2597, 0.3435]`)** |
+| `flank_conditioned_nn` | `0.0719` (`[0.0446, 0.0946]`) | `0.3110` (`[0.2573, 0.3582]`) | `0.2141` (`[0.1836, 0.2413]`) |
+| `random` | `0.0569` (`[0.0391, 0.0738]`) | `0.2876` (`[0.2523, 0.3199]`) | `0.1990` (`[0.1795, 0.2174]`) |
+| `training_composition_prior` | `0.0552` (`[0.0331, 0.0803]`) | `0.2542` (`[0.2083, 0.3008]`) | `0.1845` (`[0.1595, 0.2107]`) |
+| Exact Uniform Chance (`19.96` candidates/query) | `0.0501` | `0.2506` | `0.1802` |
+
+---
+
+## 3. Non-Oracle Generator Comparison on Coordinate-Verified CATH Linkers (`91` queries)
+
+All 6 generators receive **only** the inter-port 3D distance $d_{CA}$ and flanking sequences (never the held-out natural linker's true residue length), under two pre-declared geometry length policies (`unstrained_reach` and `design_minimum_plus_2`):
+
+| Generator Arm (`design_minimum_plus_2` policy) | Span Closure Pass | All Scorecard Rules Pass | Length Within $\pm 2\text{ aa}$ of Natural | Mean Abs. Length Error (aa) | Composition Cosine to Natural |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **`linkerforge_ranker` (Full Pipeline)** | **`100.00%`** | **`10.4340` (Rank #1)** | **`99.32%`** | **`0.9803`** | **`100.00%`** |
-| `random_length_matched_gs` | `100.00%` | `10.1562` | `100.00%` | `0.9865` | `99.77%` |
-| `nearest_neighbour_retrieval` (`X2` over `6,727` authorities) | `100.00%` | `9.7191` | `95.95%` | `0.8185` | `99.66%` |
-| `geometry_only` | `100.00%` | `9.3986` | `100.00%` | `0.5092` | `100.00%` |
-| `fixed_ggggs3` (`15 aa`) | `85.14%` | `8.8044` | `17.57%` | `0.9865` | `94.03%` |
-| `direct_0aa_fusion` (`0 aa`) | `0.00%` | `-2.1164` | `0.00%` | `0.0000` | `0.00%` |
+| `linkerforge_ranker` | `1.0000` | `1.0000` | `0.4066` | `7.09` | `0.4092` |
+| `nearest_neighbour_retrieval` | `1.0000` | `1.0000` | `0.3956` | `7.04` | `0.4095` |
+| `geometry_only` | `1.0000` | `1.0000` | `0.3956` | `7.60` | `0.3712` |
+| `random_length_matched_gs` | `1.0000` | `1.0000` | `0.3956` | `7.60` | `0.3811` |
+| `fixed_ggggs3` (`15 aa`) | `1.0000` | `1.0000` | `0.1978` | `6.14` | `0.3712` |
+| `direct_0aa_fusion` (`0 aa`) | `0.1099` | `0.1099` | `0.0000` | `11.15` | `0.0000` |
 
-### 2.3 Six Required Baselines Comparison (`600` High-Confidence Proteome-Mined Linkers)
-
-| Baseline / Method | Hard-Rejection Pass Rate | Mean Compatibility Score | Length Within $\pm 2\text{ aa}$ | Rigidity Axis Alignment | Win Rate vs. 6 Synthetic Negatives |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **`linkerforge_ranker` (Full Pipeline)** | **`100.00%`** | **`10.2848` (Rank #1)** | **`100.00%`** | **`0.9966`** | **`100.00%`** |
-| `random_length_matched_gs` | `100.00%` | `10.2215` | `100.00%` | `0.9850` | `99.81%` |
-| `nearest_neighbour_retrieval` (`X2` over `6,727` authorities) | `100.00%` | `9.6496` | `98.00%` | `0.8027` | `99.75%` |
-| `geometry_only` | `100.00%` | `9.3471` | `100.00%` | `0.5299` | `100.00%` |
-| `fixed_ggggs3` (`15 aa`) | `46.00%` | `6.7658` | `10.83%` | `0.9850` | `79.08%` |
-| `direct_0aa_fusion` (`0 aa`) | `0.00%` | `-2.1647` | `0.00%` | `0.0000` | `0.00%` |
+*(Note: The synthetic corruption sanity check `corruption_check` is retained separately in the JSON artifact as a by-construction training-objective verification, achieving `95.27%` top-1 / `0.9764` MRR on `natural_148` and `97.17%` top-1 / `0.9854` MRR on `mined_high_confidence_sample_600`.)*
 
 ---
 
-## 3. End-to-End `sfGFP (PDB 2B3P) — linker — mCherry (PDB 2H5Q)` Fusion Demonstration
+## 4. Real-Coordinate `sfGFP (PDB 2B3P) — linker — mCherry (PDB 2H5Q)` Schematic Assembly (`fusion_demo`)
 
-- **Domain A (`sfGFP`, PDB `2B3P`, `238 aa`):** Selected C-terminal port `Lys238` (`...HGMDELYK`, $\text{rSASA} = 0.62$).
-- **Domain B (`mCherry`, PDB `2H5Q`, `236 aa`):** Selected N-terminal port `Met1` (`MVSKGEED...`, $\text{rSASA} = 0.58$).
-- **3D Junction Geometry:** Straight-line $C_\alpha$ distance $d_{CA} = 24.8\text{ Å}$, collision-free surface detour path $d_{\text{path}} = 28.4\text{ Å}$ (detour ratio $1.145$).
-- **Top Ranked Candidates by User Intent Mode:**
-  1. **`flexible_15aa` Mode:**
-     - **Rank #1 (`linkerforge_ranker`):** `GGGGSGGGGSGGGGS` (`15 aa`, Score `10.3379`, `HardPass=True`, contour `57.0 Å` $\ge 28.4\text{ Å}$).
-     - **Top Proteome-Mined Authority (`X2`):** `ARGGQYSNQGVVAST` (`15 aa`, `mined_swissprot_gap:Q9XTD6:272-286`, Score `10.1476`, `HardPass=True`).
-     - **Waldo GFP-Compatible Template:** `GSAGSAAGSGEFGSA` (`15 aa`, Score `10.1155`, `HardPass=True`).
-     - **All 6 Synthetic Negatives & `direct_0aa_fusion`:** Deterministically rejected (`HardPass=False`) with explicit rejection reasons (`physical_span_closure_failed`, `domain_clash_or_entropic_excess`, `hydrophobic_collapse_risk`, `unintended_protease_cleavage_motif_present`, `protease_site_buried_inside_rigid_alpha_helix_without_gs_spacers`).
-  2. **`rigid_18aa` Mode:**
-     - **Rank #1 (`linkerforge_ranker`):** `AEAAAKEAAAKEAAAKA` (`17 aa`, Chen et al. 2013 helical rod, `HardPass=True`).
-  3. **`flexible_tev_cleavable_19aa` Mode:**
-     - **Rank #1 (`linkerforge_ranker`):** `GSAGSAENLYFQSGSAGSA` (`19 aa`, TEV recognition site flanked by flexible `GSAGSA` spacers, `HardPass=True`).
-- **3D Coordinate & PyMOL Artifacts:** Complete `489–493` residue (`1,956–1,972` backbone atoms `N, CA, C, O`) 3D fusion `.pdb` files and `.pml` PyMOL visualization scripts exported to `reports/structures/`.
+- **Domain A (`sfGFP`, experimental PDB `2B3P` chain A):** `228` resolved residues, last resolved C-terminal residue `Gly232` ($\text{rSASA} = 1.0461$), `14` unresolved C-terminal tail residues in SEQRES.
+- **Domain B (`mCherry`, experimental PDB `2H5Q` chain A):** `217` resolved residues, first resolved N-terminal residue `Asn4` ($\text{rSASA} = 0.3476$), `8` unresolved N-terminal tail residues in SEQRES.
+- **Seeded Rigid-Body Placement (`seed=7`, `400` rotations):** Minimum inter-domain heavy-atom distance `4.005 Å` ($\ge 4.0\text{ Å}$ steric clearance threshold), straight-line port $C_\alpha$ distance $d_{CA} = 5.062\text{ Å}$, detour path length $d_{\text{path}} = 5.062\text{ Å}$.
+- **Evaluated Design Scenarios (`status: schematic_assembly_on_real_domain_coordinates_not_a_structure_prediction`):**
+  1. **`flexible_non_cleavable` (`target_length = 5 aa`):** Top candidate `IKDSN` (`x2:mined_uniprot_explicit:Q9ZDE6:141-145`, score `6.2607`, `hard_rejection_pass = True`), followed by `SKGQA` (`6.1827`) and CATH authority `GGADN` (`x2:cath:5xix_A_1-102_108-437`, `6.1376`).
+  2. **`rigid_non_cleavable` (`target_length = 5 aa`):** Top candidate `APEKK` (`x2:mined_swissprot_gap:Q4VC17:1177-1181`, score `5.3959`, `hard_rejection_pass = True`), followed by literature template `PAPAP` (`library:rigid-papap`, Chen et al. 2013, score `5.3270`).
+  3. **`flexible_cleavable_factor_xa` (`target_length = 5 aa`, Factor Xa motif `IEGR`):** Top candidate `GGIEGRGS` (`8 aa`, score `5.4406`, `hard_rejection_pass = True`), while uncleavable baselines (`GGSSG`, `GGGGSGGGGSGGGGS`) are deterministically rejected with `missing_requested_protease_motif`.

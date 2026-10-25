@@ -1,0 +1,2402 @@
+{
+  "arai2001helical": {
+    "expected_title": "Design of the linkers which effectively separate domains of a bifunctional fusion protein",
+    "identifier": "10.1093/protein/14.8.529",
+    "registry": {
+      "authors": [
+        [
+          "Arai",
+          "R."
+        ],
+        [
+          "Ueda",
+          "H."
+        ],
+        [
+          "Kitayama",
+          "A."
+        ],
+        [
+          "Kamiya",
+          "N."
+        ],
+        [
+          "Nagamune",
+          "T."
+        ]
+      ],
+      "container": "Protein Engineering Design and Selection",
+      "doi": "10.1093/protein/14.8.529",
+      "issue": "8",
+      "pages": "529-532",
+      "publisher": "Oxford University Press (OUP)",
+      "title": "Design of the linkers which effectively separate domains of a bifunctional fusion protein",
+      "type": "journal-article",
+      "volume": "14",
+      "year": 2001
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "bae2005hmm": {
+    "expected_title": "Prediction of protein interdomain linker regions by a hidden Markov model",
+    "identifier": "10.1093/bioinformatics/bti363",
+    "registry": {
+      "authors": [
+        [
+          "Bae",
+          "K."
+        ],
+        [
+          "Mallick",
+          "B. K."
+        ],
+        [
+          "Elsik",
+          "C. G."
+        ]
+      ],
+      "container": "Bioinformatics",
+      "doi": "10.1093/bioinformatics/bti363",
+      "issue": "10",
+      "pages": "2264-2270",
+      "publisher": "Oxford University Press (OUP)",
+      "title": "Prediction of protein interdomain linker regions by a hidden Markov model",
+      "type": "journal-article",
+      "volume": "21",
+      "year": 2005
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "bekker2020pu": {
+    "expected_title": "Learning from positive and unlabeled data: a survey",
+    "identifier": "10.1007/s10994-020-05877-5",
+    "registry": {
+      "authors": [
+        [
+          "Bekker",
+          "Jessa"
+        ],
+        [
+          "Davis",
+          "Jesse"
+        ]
+      ],
+      "container": "Machine Learning",
+      "doi": "10.1007/s10994-020-05877-5",
+      "issue": "4",
+      "pages": "719-760",
+      "publisher": "Springer Science and Business Media LLC",
+      "title": "Learning from positive and unlabeled data: a survey",
+      "type": "journal-article",
+      "volume": "109",
+      "year": 2020
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "berman2000pdb": {
+    "expected_title": "The Protein Data Bank",
+    "identifier": "10.1093/nar/28.1.235",
+    "registry": {
+      "authors": [
+        [
+          "Berman",
+          "H. M."
+        ]
+      ],
+      "container": "Nucleic Acids Research",
+      "doi": "10.1093/nar/28.1.235",
+      "issue": "1",
+      "pages": "235-242",
+      "publisher": "Oxford University Press (OUP)",
+      "title": "The Protein Data Bank",
+      "type": "journal-article",
+      "volume": "28",
+      "year": 2000
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "berrondo2018loodo": {
+    "expected_title": "A computational method for the design of nested proteins by loop-directed domain insertion",
+    "identifier": "10.1002/prot.25445",
+    "registry": {
+      "authors": [
+        [
+          "Blacklock",
+          "Kristin M."
+        ],
+        [
+          "Yang",
+          "Lu"
+        ],
+        [
+          "Mulligan",
+          "Vikram K."
+        ],
+        [
+          "Khare",
+          "Sagar D."
+        ]
+      ],
+      "container": "Proteins: Structure, Function, and Bioinformatics",
+      "doi": "10.1002/prot.25445",
+      "issue": "3",
+      "pages": "354-369",
+      "publisher": "Wiley",
+      "title": "A computational method for the design of nested proteins by loop‐directed domain insertion",
+      "type": "journal-article",
+      "volume": "86",
+      "year": 2018
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "bondi1964vdw": {
+    "expected_title": "van der Waals Volumes and Radii",
+    "identifier": "10.1021/j100785a001",
+    "registry": {
+      "authors": [
+        [
+          "Bondi",
+          "A."
+        ]
+      ],
+      "container": "The Journal of Physical Chemistry",
+      "doi": "10.1021/j100785a001",
+      "issue": "3",
+      "pages": "441-451",
+      "publisher": "American Chemical Society (ACS)",
+      "title": "van der Waals Volumes and Radii",
+      "type": "journal-article",
+      "volume": "68",
+      "year": 1964
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "caid2linker2024": {
+    "expected_title": "Assessment of Disordered Linker Predictions in the CAID2 Experiment",
+    "identifier": "PMC10968229",
+    "registry": {
+      "authors": [
+        [
+          "Wang",
+          "Kui"
+        ],
+        [
+          "Hu",
+          "Gang"
+        ],
+        [
+          "Wu",
+          "Zhonghua"
+        ],
+        [
+          "Uversky",
+          "Vladimir N"
+        ],
+        [
+          "Kurgan",
+          "Lukasz"
+        ]
+      ],
+      "container": "Biomolecules",
+      "doi": "10.3390/biom14030287",
+      "issue": "3",
+      "pages": "287",
+      "pmcid": "PMC10968229",
+      "publisher": null,
+      "title": "Assessment of Disordered Linker Predictions in the CAID2 Experiment",
+      "type": "article",
+      "volume": "14",
+      "year": 2024
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "caid3_2025": {
+    "expected_title": "Critical Assessment of Protein Intrinsic Disorder CAID3",
+    "identifier": "PMC12750029",
+    "registry": {
+      "authors": [
+        [
+          "Mehdiabadi",
+          "Mahta"
+        ],
+        [
+          "Del Conte",
+          "Alessio"
+        ],
+        [
+          "Nugnes",
+          "Maria Victoria"
+        ],
+        [
+          "Aspromonte",
+          "Maria Cristina"
+        ],
+        [
+          "Tosatto",
+          "Silvio C E"
+        ],
+        [
+          "Piovesan",
+          "Damiano"
+        ]
+      ],
+      "container": "Proteins",
+      "doi": "10.1002/prot.70045",
+      "issue": "1",
+      "pages": "414-424",
+      "pmcid": "PMC12750029",
+      "publisher": null,
+      "title": "Critical Assessment of Protein Intrinsic Disorder Round 3 - Predicting Disorder in the Era of Protein Language Models",
+      "type": "article",
+      "volume": "94",
+      "year": 2026
+    },
+    "status": "title_mismatch",
+    "title_similarity": 0.605
+  },
+  "chen2013fusion": {
+    "expected_title": "Fusion protein linkers: property, design and functionality",
+    "identifier": "10.1016/j.addr.2012.09.039",
+    "registry": {
+      "authors": [
+        [
+          "Chen",
+          "Xiaoying"
+        ],
+        [
+          "Zaro",
+          "Jennica L."
+        ],
+        [
+          "Shen",
+          "Wei-Chiang"
+        ]
+      ],
+      "container": "Advanced Drug Delivery Reviews",
+      "doi": "10.1016/j.addr.2012.09.039",
+      "issue": "10",
+      "pages": "1357-1369",
+      "publisher": "Elsevier BV",
+      "title": "Fusion protein linkers: Property, design and functionality",
+      "type": "journal-article",
+      "volume": "65",
+      "year": 2013
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "chen2021cirpred": {
+    "expected_title": "CirPred, the first structure modeling and linker design system for circularly permuted proteins",
+    "identifier": "10.1186/s12859-021-04403-1",
+    "registry": {
+      "authors": [
+        [
+          "Chen",
+          "Teng-Ruei"
+        ],
+        [
+          "Lin",
+          "Yen-Cheng"
+        ],
+        [
+          "Huang",
+          "Yu-Wei"
+        ],
+        [
+          "Chen",
+          "Chih-Chieh"
+        ],
+        [
+          "Lo",
+          "Wei-Cheng"
+        ]
+      ],
+      "container": "BMC Bioinformatics",
+      "doi": "10.1186/s12859-021-04403-1",
+      "issue": "S10",
+      "pages": "494",
+      "publisher": "Springer Science and Business Media LLC",
+      "title": "CirPred, the first structure modeling and linker design system for circularly permuted proteins",
+      "type": "journal-article",
+      "volume": "22",
+      "year": 2021
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "clopper1934": {
+    "expected_title": "The use of confidence or fiducial limits illustrated in the case of the binomial",
+    "identifier": "10.1093/biomet/26.4.404",
+    "registry": {
+      "authors": [
+        [
+          "CLOPPER",
+          "C. J."
+        ],
+        [
+          "PEARSON",
+          "E. S."
+        ]
+      ],
+      "container": "Biometrika",
+      "doi": "10.1093/biomet/26.4.404",
+      "issue": "4",
+      "pages": "404-413",
+      "publisher": "Oxford University Press (OUP)",
+      "title": "THE USE OF CONFIDENCE OR FIDUCIAL LIMITS ILLUSTRATED IN THE CASE OF THE BINOMIAL",
+      "type": "journal-article",
+      "volume": "26",
+      "year": 1934
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "crasto2000linker": {
+    "expected_title": "LINKER: a program to generate linker sequences for fusion proteins",
+    "identifier": "10.1093/protein/13.5.309",
+    "registry": {
+      "authors": [
+        [
+          "Crasto",
+          "Chiquito J."
+        ],
+        [
+          "Feng",
+          "Jin-an"
+        ]
+      ],
+      "container": "Protein Engineering, Design and Selection",
+      "doi": "10.1093/protein/13.5.309",
+      "issue": "5",
+      "pages": "309-312",
+      "publisher": "Oxford University Press (OUP)",
+      "title": "LINKER: a program to generate linker sequences for fusion proteins",
+      "type": "journal-article",
+      "volume": "13",
+      "year": 2000
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "dld2026": {
+    "expected_title": "Expanding the Landscape of Disordered Flexible Linkers: A Structural and Computational Framework for DLD Dataset Assembly",
+    "identifier": "10.1016/j.jmb.2026.169994",
+    "registry": {
+      "authors": [
+        [
+          "Meng",
+          "Di"
+        ],
+        [
+          "Glavina",
+          "Juliana"
+        ],
+        [
+          "Garcia Alvarez",
+          "Heli M."
+        ],
+        [
+          "Leonetti",
+          "Cesar Osvaldo"
+        ],
+        [
+          "Pollastri",
+          "Gianluca"
+        ],
+        [
+          "Chemes",
+          "Lucía B."
+        ]
+      ],
+      "container": "Journal of Molecular Biology",
+      "doi": "10.1016/j.jmb.2026.169994",
+      "issue": "21",
+      "pages": "169994",
+      "publisher": "Elsevier BV",
+      "title": "Expanding the Landscape of Disordered Flexible Linkers: A Structural and Computational Framework for DLD Dataset Assembly",
+      "type": "journal-article",
+      "volume": "438",
+      "year": 2026
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "ebina2011drop": {
+    "expected_title": "DROP: an SVM domain linker predictor trained with optimal features selected by random forest",
+    "identifier": "10.1093/bioinformatics/btq700",
+    "registry": {
+      "authors": [
+        [
+          "Ebina",
+          "Teppei"
+        ],
+        [
+          "Toh",
+          "Hiroyuki"
+        ],
+        [
+          "Kuroda",
+          "Yutaka"
+        ]
+      ],
+      "container": "Bioinformatics",
+      "doi": "10.1093/bioinformatics/btq700",
+      "issue": "4",
+      "pages": "487-494",
+      "publisher": "Oxford University Press (OUP)",
+      "title": "DROP: an SVM domain linker predictor trained with optimal features selected by random forest",
+      "type": "journal-article",
+      "volume": "27",
+      "year": 2010
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "esm2_2023": {
+    "expected_title": "Evolutionary-scale prediction of atomic-level protein structure with a language model",
+    "identifier": "10.1126/science.ade2574",
+    "registry": {
+      "authors": [
+        [
+          "Lin",
+          "Zeming"
+        ],
+        [
+          "Akin",
+          "Halil"
+        ],
+        [
+          "Rao",
+          "Roshan"
+        ],
+        [
+          "Hie",
+          "Brian"
+        ],
+        [
+          "Zhu",
+          "Zhongkai"
+        ],
+        [
+          "Lu",
+          "Wenting"
+        ],
+        [
+          "Smetanin",
+          "Nikita"
+        ],
+        [
+          "Verkuil",
+          "Robert"
+        ],
+        [
+          "Kabeli",
+          "Ori"
+        ],
+        [
+          "Shmueli",
+          "Yaniv"
+        ],
+        [
+          "dos Santos Costa",
+          "Allan"
+        ],
+        [
+          "Fazel-Zarandi",
+          "Maryam"
+        ],
+        [
+          "Sercu",
+          "Tom"
+        ],
+        [
+          "Candido",
+          "Salvatore"
+        ],
+        [
+          "Rives",
+          "Alexander"
+        ]
+      ],
+      "container": "Science",
+      "doi": "10.1126/science.ade2574",
+      "issue": "6637",
+      "pages": "1123-1130",
+      "publisher": "American Association for the Advancement of Science (AAAS)",
+      "title": "Evolutionary-scale prediction of atomic-level protein structure with a language model",
+      "type": "journal-article",
+      "volume": "379",
+      "year": 2023
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "george2002analysis": {
+    "expected_title": "An analysis of protein domain linkers: their classification and role in protein folding",
+    "identifier": "10.1093/protein/15.11.871",
+    "registry": {
+      "authors": [
+        [
+          "George",
+          "Richard A."
+        ],
+        [
+          "Heringa",
+          "Jaap"
+        ]
+      ],
+      "container": "Protein Engineering, Design and Selection",
+      "doi": "10.1093/protein/15.11.871",
+      "issue": "11",
+      "pages": "871-879",
+      "publisher": "Oxford University Press (OUP)",
+      "title": "An analysis of protein domain linkers: their classification and role in protein folding",
+      "type": "journal-article",
+      "volume": "15",
+      "year": 2002
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "hubbard1994proteolysis": {
+    "expected_title": "Modeling studies of the change in conformation required for cleavage of limited proteolytic sites",
+    "identifier": "10.1002/pro.5560030505",
+    "registry": {
+      "authors": [
+        [
+          "Hubbard",
+          "S.J."
+        ],
+        [
+          "Eisenmenger",
+          "F"
+        ],
+        [
+          "Thornton",
+          "J.M."
+        ]
+      ],
+      "container": "Protein Science",
+      "doi": "10.1002/pro.5560030505",
+      "issue": "5",
+      "pages": "757-768",
+      "publisher": "Wiley",
+      "title": "Modeling studies of the change in conformation required for cleavage of limited proteolytic sites",
+      "type": "journal-article",
+      "volume": "3",
+      "year": 1994
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "idpelm2024": {
+    "expected_title": "Accurate and Fast Prediction of Intrinsically Disordered Protein by Multiple Protein Language Models and Ensemble Learning",
+    "identifier": "10.1021/acs.jcim.3c01202",
+    "registry": {
+      "authors": [
+        [
+          "Xu",
+          "Shijie"
+        ],
+        [
+          "Onoda",
+          "Akira"
+        ]
+      ],
+      "container": "Journal of Chemical Information and Modeling",
+      "doi": "10.1021/acs.jcim.3c01202",
+      "issue": "7",
+      "pages": "2901-2911",
+      "publisher": "American Chemical Society (ACS)",
+      "title": "Accurate and Fast Prediction of Intrinsically Disordered Protein by Multiple Protein Language Models and Ensemble Learning",
+      "type": "journal-article",
+      "volume": "64",
+      "year": 2023
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "insertionfamilies2026": {
+    "expected_title": "Family-level specialization in protein domain insertion architectures",
+    "identifier": "10.1002/pro.70586",
+    "registry": {
+      "authors": [
+        [
+          "Schaeffer",
+          "R. Dustin"
+        ],
+        [
+          "Guo",
+          "Rui"
+        ],
+        [
+          "Zhang",
+          "Jing"
+        ],
+        [
+          "Cong",
+          "Qian"
+        ],
+        [
+          "Grishin",
+          "Nick V."
+        ]
+      ],
+      "container": "Protein Science",
+      "doi": "10.1002/pro.70586",
+      "issue": "5",
+      "pages": "e70586",
+      "publisher": "Wiley",
+      "title": "Family‐level specialization in protein domain insertion architectures",
+      "type": "journal-article",
+      "volume": "35",
+      "year": 2026
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "kratky1949wlc": {
+    "expected_title": "Röntgenuntersuchung gelöster Fadenmoleküle",
+    "identifier": "10.1002/recl.19490681203",
+    "registry": {
+      "authors": [
+        [
+          "Kratky",
+          "O."
+        ],
+        [
+          "Porod",
+          "G."
+        ]
+      ],
+      "container": "Recueil des Travaux Chimiques des Pays-Bas",
+      "doi": "10.1002/recl.19490681203",
+      "issue": "12",
+      "pages": "1106-1122",
+      "publisher": "Wiley",
+      "title": "Röntgenuntersuchung gelöster Fadenmoleküle",
+      "type": "journal-article",
+      "volume": "68",
+      "year": 1949
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "lee1971sasa": {
+    "expected_title": "The interpretation of protein structures: Estimation of static accessibility",
+    "identifier": "10.1016/0022-2836(71)90324-X",
+    "registry": {
+      "authors": [
+        [
+          "Lee",
+          "B."
+        ],
+        [
+          "Richards",
+          "F.M."
+        ]
+      ],
+      "container": "Journal of Molecular Biology",
+      "doi": "10.1016/0022-2836(71)90324-X",
+      "issue": "3",
+      "pages": "379-IN4",
+      "publisher": "Elsevier BV",
+      "title": "The interpretation of protein structures: Estimation of static accessibility",
+      "type": "journal-article",
+      "volume": "55",
+      "year": 1971
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "linkerpred2025": {
+    "expected_title": "LINKER-Pred: A Deep Learning Method and Web-Server for the Prediction of Disordered Flexible Linkers in Proteins",
+    "identifier": "10.1101/2025.10.29.685455",
+    "registry": {
+      "authors": [
+        [
+          "Meng",
+          "Di"
+        ],
+        [
+          "Garcia Alvarez",
+          "Heli M."
+        ],
+        [
+          "Glavina",
+          "Juliana"
+        ],
+        [
+          "Leonetti",
+          "César Osvaldo"
+        ],
+        [
+          "Pollastri",
+          "Gianluca"
+        ],
+        [
+          "Chemes",
+          "Lucía Beatriz"
+        ]
+      ],
+      "container": "",
+      "doi": "10.1101/2025.10.29.685455",
+      "issue": null,
+      "pages": null,
+      "publisher": "openRxiv",
+      "title": "LINKER-Pred: A Deep Learning Method and Web-Server for the Prediction of Disordered Flexible Linkers in Proteins",
+      "type": "posted-content",
+      "volume": null,
+      "year": 2025
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "liu2015synlinker": {
+    "expected_title": "SynLinker: an integrated system for designing linkers and synthetic fusion proteins",
+    "identifier": "10.1093/bioinformatics/btv447",
+    "registry": {
+      "authors": [
+        [
+          "Liu",
+          "Chengcheng"
+        ],
+        [
+          "Chin",
+          "Ju Xin"
+        ],
+        [
+          "Lee",
+          "Dong-Yup"
+        ]
+      ],
+      "container": "Bioinformatics",
+      "doi": "10.1093/bioinformatics/btv447",
+      "issue": "22",
+      "pages": "3700-3702",
+      "publisher": "Oxford University Press (OUP)",
+      "title": "SynLinker: an integrated system for designing linkers and synthetic fusion proteins",
+      "type": "journal-article",
+      "volume": "31",
+      "year": 2015
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "ltt2021": {
+    "expected_title": "Learn then Test: Calibrating Predictive Algorithms to Achieve Risk Control",
+    "identifier": "10.1214/24-AOAS1998",
+    "registry": {
+      "authors": [
+        [
+          "Angelopoulos",
+          "Anastasios N."
+        ],
+        [
+          "Bates",
+          "Stephen"
+        ],
+        [
+          "Candès",
+          "Emmanuel J."
+        ],
+        [
+          "Jordan",
+          "Michael I."
+        ],
+        [
+          "Lei",
+          "Lihua"
+        ]
+      ],
+      "container": "The Annals of Applied Statistics",
+      "doi": "10.1214/24-AOAS1998",
+      "issue": "2",
+      "pages": "1641-1662",
+      "publisher": "Institute of Mathematical Statistics",
+      "title": "Learn then test: Calibrating predictive algorithms to achieve risk control",
+      "type": "journal-article",
+      "volume": "19",
+      "year": 2025
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "mcbride2026pose": {
+    "expected_title": "Predicting Pose Distribution of Protein Domains Connected by Flexible Linkers Is an Unsolved Problem",
+    "identifier": "10.1002/prot.70062",
+    "registry": {
+      "authors": [
+        [
+          "McBride",
+          "Allen C."
+        ],
+        [
+          "Yu",
+          "Feng"
+        ],
+        [
+          "Cheng",
+          "Edward H."
+        ],
+        [
+          "Mpouli",
+          "Aulane"
+        ],
+        [
+          "Soe",
+          "Aimee C."
+        ],
+        [
+          "Hammel",
+          "Michal"
+        ],
+        [
+          "Montelione",
+          "Gaetano T."
+        ],
+        [
+          "Oas",
+          "Terrence G."
+        ],
+        [
+          "Tsutakawa",
+          "Susan E."
+        ],
+        [
+          "Donald",
+          "Bruce R."
+        ]
+      ],
+      "container": "Proteins: Structure, Function, and Bioinformatics",
+      "doi": "10.1002/prot.70062",
+      "issue": "1",
+      "pages": "362-380",
+      "publisher": "Wiley",
+      "title": "Predicting Pose Distribution of Protein Domains Connected by Flexible Linkers Is an Unsolved Problem",
+      "type": "journal-article",
+      "volume": "94",
+      "year": 2025
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "meng2016dflpred": {
+    "expected_title": "DFLpred: High-throughput prediction of disordered flexible linker regions in protein sequences",
+    "identifier": "10.1093/bioinformatics/btw280",
+    "registry": {
+      "authors": [
+        [
+          "Meng",
+          "Fanchi"
+        ],
+        [
+          "Kurgan",
+          "Lukasz"
+        ]
+      ],
+      "container": "Bioinformatics",
+      "doi": "10.1093/bioinformatics/btw280",
+      "issue": "12",
+      "pages": "i341-i350",
+      "publisher": "Oxford University Press (OUP)",
+      "title": "DFLpred: High-throughput prediction of disordered flexible linker regions in protein sequences",
+      "type": "journal-article",
+      "volume": "32",
+      "year": 2016
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "miyazaki2006neural": {
+    "expected_title": "Identification of putative domain linkers by a neural network",
+    "identifier": "10.1186/1471-2105-7-323",
+    "registry": {
+      "authors": [
+        [
+          "Miyazaki",
+          "Satoshi"
+        ],
+        [
+          "Kuroda",
+          "Yutaka"
+        ],
+        [
+          "Yokoyama",
+          "Shigeyuki"
+        ]
+      ],
+      "container": "BMC Bioinformatics",
+      "doi": "10.1186/1471-2105-7-323",
+      "issue": "1",
+      "pages": "323",
+      "publisher": "Springer Science and Business Media LLC",
+      "title": "Identification of putative domain linkers by a neural network – application to a large sequence database",
+      "type": "journal-article",
+      "volume": "7",
+      "year": 2006
+    },
+    "status": "verified",
+    "title_similarity": 0.739
+  },
+  "multimodal2026": {
+    "expected_title": "Functional customization of peptide linkers in fusion proteins through multimodal deep learning approach",
+    "identifier": "10.1016/j.synbio.2026.02.003",
+    "registry": {
+      "authors": [
+        [
+          "Li",
+          "Zhong"
+        ],
+        [
+          "Lu",
+          "Jiaxi"
+        ],
+        [
+          "Cui",
+          "Jingsong"
+        ],
+        [
+          "Cao",
+          "Gaili"
+        ],
+        [
+          "Li",
+          "Jiawei"
+        ],
+        [
+          "Ye",
+          "Zhujun"
+        ],
+        [
+          "Wang",
+          "Yingchen"
+        ],
+        [
+          "Qi",
+          "Hao"
+        ]
+      ],
+      "container": "Synthetic and Systems Biotechnology",
+      "doi": "10.1016/j.synbio.2026.02.003",
+      "issue": null,
+      "pages": "362-375",
+      "publisher": "Elsevier BV",
+      "title": "Functional customization of peptide linkers in fusion proteins through multimodal deep learning approach",
+      "type": "journal-article",
+      "volume": "13",
+      "year": 2026
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "pauling1951helix": {
+    "expected_title": "The structure of proteins: two hydrogen-bonded helical configurations of the polypeptide chain",
+    "identifier": "10.1073/pnas.37.4.205",
+    "registry": {
+      "authors": [
+        [
+          "Pauling",
+          "Linus"
+        ],
+        [
+          "Corey",
+          "Robert B."
+        ],
+        [
+          "Branson",
+          "H. R."
+        ]
+      ],
+      "container": "Proceedings of the National Academy of Sciences",
+      "doi": "10.1073/pnas.37.4.205",
+      "issue": "4",
+      "pages": "205-211",
+      "publisher": "National Academy of Sciences",
+      "title": "The structure of proteins: Two hydrogen-bonded helical configurations of the polypeptide chain",
+      "type": "journal-article",
+      "volume": "37",
+      "year": 1951
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "pauling1951sheet": {
+    "expected_title": "The pleated sheet, a new layer configuration of polypeptide chains",
+    "identifier": "10.1073/pnas.37.5.251",
+    "registry": {
+      "authors": [
+        [
+          "Pauling",
+          "Linus"
+        ],
+        [
+          "Corey",
+          "Robert B."
+        ]
+      ],
+      "container": "Proceedings of the National Academy of Sciences",
+      "doi": "10.1073/pnas.37.5.251",
+      "issue": "5",
+      "pages": "251-256",
+      "publisher": "National Academy of Sciences",
+      "title": "The Pleated Sheet, A New Layer Configuration of Polypeptide Chains",
+      "type": "journal-article",
+      "volume": "37",
+      "year": 1951
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "paysan2023interpro": {
+    "expected_title": "InterPro in 2022",
+    "identifier": "10.1093/nar/gkac993",
+    "registry": {
+      "authors": [
+        [
+          "Paysan-Lafosse",
+          "Typhaine"
+        ],
+        [
+          "Blum",
+          "Matthias"
+        ],
+        [
+          "Chuguransky",
+          "Sara"
+        ],
+        [
+          "Grego",
+          "Tiago"
+        ],
+        [
+          "Pinto",
+          "Beatriz Lázaro"
+        ],
+        [
+          "Salazar",
+          "Gustavo A"
+        ],
+        [
+          "Bileschi",
+          "Maxwell L"
+        ],
+        [
+          "Bork",
+          "Peer"
+        ],
+        [
+          "Bridge",
+          "Alan"
+        ],
+        [
+          "Colwell",
+          "Lucy"
+        ],
+        [
+          "Gough",
+          "Julian"
+        ],
+        [
+          "Haft",
+          "Daniel H"
+        ],
+        [
+          "Letunić",
+          "Ivica"
+        ],
+        [
+          "Marchler-Bauer",
+          "Aron"
+        ],
+        [
+          "Mi",
+          "Huaiyu"
+        ],
+        [
+          "Natale",
+          "Darren A"
+        ],
+        [
+          "Orengo",
+          "Christine A"
+        ],
+        [
+          "Pandurangan",
+          "Arun P"
+        ],
+        [
+          "Rivoire",
+          "Catherine"
+        ],
+        [
+          "Sigrist",
+          "Christian J A"
+        ],
+        [
+          "Sillitoe",
+          "Ian"
+        ],
+        [
+          "Thanki",
+          "Narmada"
+        ],
+        [
+          "Thomas",
+          "Paul D"
+        ],
+        [
+          "Tosatto",
+          "Silvio C E"
+        ],
+        [
+          "Wu",
+          "Cathy H"
+        ],
+        [
+          "Bateman",
+          "Alex"
+        ]
+      ],
+      "container": "Nucleic Acids Research",
+      "doi": "10.1093/nar/gkac993",
+      "issue": "D1",
+      "pages": "D418-D427",
+      "publisher": "Oxford University Press (OUP)",
+      "title": "InterPro in 2022",
+      "type": "journal-article",
+      "volume": "51",
+      "year": 2022
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "pedelacq2006sfgfp": {
+    "expected_title": "Engineering and characterization of a superfolder green fluorescent protein",
+    "identifier": "10.1038/nbt1172",
+    "registry": {
+      "authors": [
+        [
+          "Pédelacq",
+          "Jean-Denis"
+        ],
+        [
+          "Cabantous",
+          "Stéphanie"
+        ],
+        [
+          "Tran",
+          "Timothy"
+        ],
+        [
+          "Terwilliger",
+          "Thomas C"
+        ],
+        [
+          "Waldo",
+          "Geoffrey S"
+        ]
+      ],
+      "container": "Nature Biotechnology",
+      "doi": "10.1038/nbt1172",
+      "issue": "1",
+      "pages": "79-88",
+      "publisher": "Springer Science and Business Media LLC",
+      "title": "Engineering and characterization of a superfolder green fluorescent protein",
+      "type": "journal-article",
+      "volume": "24",
+      "year": 2005
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "peng2020apod": {
+    "expected_title": "APOD: accurate sequence-based predictor of disordered flexible linkers",
+    "identifier": "10.1093/bioinformatics/btaa808",
+    "registry": {
+      "authors": [],
+      "container": "Bioinformatics",
+      "doi": "10.1093/bioinformatics/btaa808",
+      "issue": null,
+      "pages": null,
+      "publisher": "Oxford University Press (OUP)",
+      "title": "APOD: accurate sequence-based predictor of disordered flexible linkers",
+      "type": "journal-article",
+      "volume": null,
+      "year": 2020
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "prodomino2025": {
+    "expected_title": "Rational engineering of allosteric protein switches by in silico prediction of domain insertion sites",
+    "identifier": "10.1038/s41592-025-02741-z",
+    "registry": {
+      "authors": [
+        [
+          "Wolf",
+          "Benedict"
+        ],
+        [
+          "Shehu",
+          "Pegi"
+        ],
+        [
+          "Brenker",
+          "Luca"
+        ],
+        [
+          "von Bachmann",
+          "Anna-Lisa"
+        ],
+        [
+          "Kroell",
+          "Ann-Sophie"
+        ],
+        [
+          "Southern",
+          "Nicholas"
+        ],
+        [
+          "Holderbach",
+          "Stefan"
+        ],
+        [
+          "Eigenmann",
+          "Joshua"
+        ],
+        [
+          "Aschenbrenner",
+          "Sabine"
+        ],
+        [
+          "Mathony",
+          "Jan"
+        ],
+        [
+          "Niopek",
+          "Dominik"
+        ]
+      ],
+      "container": "Nature Methods",
+      "doi": "10.1038/s41592-025-02741-z",
+      "issue": "8",
+      "pages": "1698-1706",
+      "publisher": "Springer Science and Business Media LLC",
+      "title": "Rational engineering of allosteric protein switches by in silico prediction of domain insertion sites",
+      "type": "journal-article",
+      "volume": "22",
+      "year": 2025
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "quaglia2022disprot": {
+    "expected_title": "DisProt in 2022: improved quality and accessibility of protein intrinsic disorder annotation",
+    "identifier": "10.1093/nar/gkab1082",
+    "registry": {
+      "authors": [
+        [
+          "Quaglia",
+          "Federica"
+        ],
+        [
+          "Mészáros",
+          "Bálint"
+        ],
+        [
+          "Salladini",
+          "Edoardo"
+        ],
+        [
+          "Hatos",
+          "András"
+        ],
+        [
+          "Pancsa",
+          "Rita"
+        ],
+        [
+          "Chemes",
+          "Lucía B"
+        ],
+        [
+          "Pajkos",
+          "Mátyás"
+        ],
+        [
+          "Lazar",
+          "Tamas"
+        ],
+        [
+          "Peña-Díaz",
+          "Samuel"
+        ],
+        [
+          "Santos",
+          "Jaime"
+        ],
+        [
+          "Ács",
+          "Veronika"
+        ],
+        [
+          "Farahi",
+          "Nazanin"
+        ],
+        [
+          "Fichó",
+          "Erzsébet"
+        ],
+        [
+          "Aspromonte",
+          "Maria Cristina"
+        ],
+        [
+          "Bassot",
+          "Claudio"
+        ],
+        [
+          "Chasapi",
+          "Anastasia"
+        ],
+        [
+          "Davey",
+          "Norman E"
+        ],
+        [
+          "Davidović",
+          "Radoslav"
+        ],
+        [
+          "Dobson",
+          "Laszlo"
+        ],
+        [
+          "Elofsson",
+          "Arne"
+        ],
+        [
+          "Erdős",
+          "Gábor"
+        ],
+        [
+          "Gaudet",
+          "Pascale"
+        ],
+        [
+          "Giglio",
+          "Michelle"
+        ],
+        [
+          "Glavina",
+          "Juliana"
+        ],
+        [
+          "Iserte",
+          "Javier"
+        ],
+        [
+          "Iglesias",
+          "Valentín"
+        ],
+        [
+          "Kálmán",
+          "Zsófia"
+        ],
+        [
+          "Lambrughi",
+          "Matteo"
+        ],
+        [
+          "Leonardi",
+          "Emanuela"
+        ],
+        [
+          "Longhi",
+          "Sonia"
+        ],
+        [
+          "Macedo-Ribeiro",
+          "Sandra"
+        ],
+        [
+          "Maiani",
+          "Emiliano"
+        ],
+        [
+          "Marchetti",
+          "Julia"
+        ],
+        [
+          "Marino-Buslje",
+          "Cristina"
+        ],
+        [
+          "Mészáros",
+          "Attila"
+        ],
+        [
+          "Monzon",
+          "Alexander Miguel"
+        ],
+        [
+          "Minervini",
+          "Giovanni"
+        ],
+        [
+          "Nadendla",
+          "Suvarna"
+        ],
+        [
+          "Nilsson",
+          "Juliet F"
+        ],
+        [
+          "Novotný",
+          "Marian"
+        ],
+        [
+          "Ouzounis",
+          "Christos A"
+        ],
+        [
+          "Palopoli",
+          "Nicolás"
+        ],
+        [
+          "Papaleo",
+          "Elena"
+        ],
+        [
+          "Pereira",
+          "Pedro José Barbosa"
+        ],
+        [
+          "Pozzati",
+          "Gabriele"
+        ],
+        [
+          "Promponas",
+          "Vasilis J"
+        ],
+        [
+          "Pujols",
+          "Jordi"
+        ],
+        [
+          "Rocha",
+          "Alma Carolina Sanchez"
+        ],
+        [
+          "Salas",
+          "Martin"
+        ],
+        [
+          "Sawicki",
+          "Luciana Rodriguez"
+        ],
+        [
+          "Schad",
+          "Eva"
+        ],
+        [
+          "Shenoy",
+          "Aditi"
+        ],
+        [
+          "Szaniszló",
+          "Tamás"
+        ],
+        [
+          "Tsirigos",
+          "Konstantinos D"
+        ],
+        [
+          "Veljkovic",
+          "Nevena"
+        ],
+        [
+          "Parisi",
+          "Gustavo"
+        ],
+        [
+          "Ventura",
+          "Salvador"
+        ],
+        [
+          "Dosztányi",
+          "Zsuzsanna"
+        ],
+        [
+          "Tompa",
+          "Peter"
+        ],
+        [
+          "Tosatto",
+          "Silvio C E"
+        ],
+        [
+          "Piovesan",
+          "Damiano"
+        ]
+      ],
+      "container": "Nucleic Acids Research",
+      "doi": "10.1093/nar/gkab1082",
+      "issue": "D1",
+      "pages": "D480-D487",
+      "publisher": "Oxford University Press (OUP)",
+      "title": "DisProt in 2022: improved quality and accessibility of protein intrinsic disorder annotation",
+      "type": "journal-article",
+      "volume": "50",
+      "year": 2021
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "rost1994rsa": {
+    "expected_title": "Conservation and prediction of solvent accessibility in protein families",
+    "identifier": "10.1002/prot.340200303",
+    "registry": {
+      "authors": [
+        [
+          "Rost",
+          "Burkhard"
+        ],
+        [
+          "Sander",
+          "Chris"
+        ]
+      ],
+      "container": "Proteins: Structure, Function, and Bioinformatics",
+      "doi": "10.1002/prot.340200303",
+      "issue": "3",
+      "pages": "216-226",
+      "publisher": "Wiley",
+      "title": "Conservation and prediction of solvent accessibility in protein families",
+      "type": "journal-article",
+      "volume": "20",
+      "year": 1994
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "shatnawi2014rf": {
+    "expected_title": "Protein inter-domain linker prediction using Random Forest and amino acid physiochemical properties",
+    "identifier": "10.1186/1471-2105-15-S16-S8",
+    "registry": {
+      "authors": [
+        [
+          "Shatnawi",
+          "Maad"
+        ],
+        [
+          "Zaki",
+          "Nazar"
+        ],
+        [
+          "Yoo",
+          "Paul D"
+        ]
+      ],
+      "container": "BMC Bioinformatics",
+      "doi": "10.1186/1471-2105-15-S16-S8",
+      "issue": "S16",
+      "pages": "S8",
+      "publisher": "Springer Science and Business Media LLC",
+      "title": "Protein inter-domain linker prediction using Random Forest and amino acid physiochemical properties",
+      "type": "journal-article",
+      "volume": "15",
+      "year": 2014
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "shrake1973sasa": {
+    "expected_title": "Environment and exposure to solvent of protein atoms. Lysozyme and insulin",
+    "identifier": "10.1016/0022-2836(73)90011-9",
+    "registry": {
+      "authors": [
+        [
+          "Shrake",
+          "A."
+        ],
+        [
+          "Rupley",
+          "J.A."
+        ]
+      ],
+      "container": "Journal of Molecular Biology",
+      "doi": "10.1016/0022-2836(73)90011-9",
+      "issue": "2",
+      "pages": "351-371",
+      "publisher": "Elsevier BV",
+      "title": "Environment and exposure to solvent of protein atoms. Lysozyme and insulin",
+      "type": "journal-article",
+      "volume": "79",
+      "year": 1973
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "shu2006mcherry": {
+    "expected_title": "Novel chromophores and buried charges control color in mFruits",
+    "identifier": "10.1021/bi060773l",
+    "registry": {
+      "authors": [
+        [
+          "Shu",
+          "Xiaokun"
+        ],
+        [
+          "Shaner",
+          "Nathan C."
+        ],
+        [
+          "Yarbrough",
+          "Corinne A."
+        ],
+        [
+          "Tsien",
+          "Roger Y."
+        ],
+        [
+          "Remington",
+          "S. James"
+        ]
+      ],
+      "container": "Biochemistry",
+      "doi": "10.1021/bi060773l",
+      "issue": "32",
+      "pages": "9639-9647",
+      "publisher": "American Chemical Society (ACS)",
+      "title": "Novel Chromophores and Buried Charges Control Color in mFruits\n                    <sup>,</sup>",
+      "type": "journal-article",
+      "volume": "45",
+      "year": 2006
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "sillitoe2021cath": {
+    "expected_title": "CATH: increased structural coverage of functional space",
+    "identifier": "10.1093/nar/gkaa1079",
+    "registry": {
+      "authors": [
+        [
+          "Sillitoe",
+          "Ian"
+        ],
+        [
+          "Bordin",
+          "Nicola"
+        ],
+        [
+          "Dawson",
+          "Natalie"
+        ],
+        [
+          "Waman",
+          "Vaishali P"
+        ],
+        [
+          "Ashford",
+          "Paul"
+        ],
+        [
+          "Scholes",
+          "Harry M"
+        ],
+        [
+          "Pang",
+          "Camilla S M"
+        ],
+        [
+          "Woodridge",
+          "Laurel"
+        ],
+        [
+          "Rauer",
+          "Clemens"
+        ],
+        [
+          "Sen",
+          "Neeladri"
+        ],
+        [
+          "Abbasian",
+          "Mahnaz"
+        ],
+        [
+          "Le Cornu",
+          "Sean"
+        ],
+        [
+          "Lam",
+          "Su Datt"
+        ],
+        [
+          "Berka",
+          "Karel"
+        ],
+        [
+          "Varekova",
+          "Ivana Hutařová"
+        ],
+        [
+          "Svobodova",
+          "Radka"
+        ],
+        [
+          "Lees",
+          "Jon"
+        ],
+        [
+          "Orengo",
+          "Christine A"
+        ]
+      ],
+      "container": "Nucleic Acids Research",
+      "doi": "10.1093/nar/gkaa1079",
+      "issue": "D1",
+      "pages": "D266-D273",
+      "publisher": "Oxford University Press (OUP)",
+      "title": "CATH: increased structural coverage of functional space",
+      "type": "journal-article",
+      "volume": "49",
+      "year": 2020
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "splitseekpro2026": {
+    "expected_title": "SplitSeek-Pro split site prediction",
+    "identifier": "10.1038/s41467-026-74059-z",
+    "registry": {
+      "authors": [
+        [
+          "Wang",
+          "Yu-Xiang"
+        ],
+        [
+          "Jiang",
+          "Fengyi"
+        ],
+        [
+          "Xu",
+          "Tingjie"
+        ],
+        [
+          "Xing",
+          "Lan-Xin"
+        ],
+        [
+          "Liu",
+          "Yajie"
+        ],
+        [
+          "Nie",
+          "Zhiwei"
+        ],
+        [
+          "Chen",
+          "Jie"
+        ],
+        [
+          "Zhang",
+          "Wen-Bin"
+        ]
+      ],
+      "container": "Nature Communications",
+      "doi": "10.1038/s41467-026-74059-z",
+      "issue": "1",
+      "pages": "8595",
+      "publisher": "Springer Science and Business Media LLC",
+      "title": "SplitSeek-Pro: accurate prediction of splittable sites on protein structures",
+      "type": "journal-article",
+      "volume": "17",
+      "year": 2026
+    },
+    "status": "title_mismatch",
+    "title_similarity": 0.505
+  },
+  "tien2013maxasa": {
+    "expected_title": "Maximum Allowed Solvent Accessibilites of Residues in Proteins",
+    "identifier": "10.1371/journal.pone.0080635",
+    "registry": {
+      "authors": [
+        [
+          "Tien",
+          "Matthew Z."
+        ],
+        [
+          "Meyer",
+          "Austin G."
+        ],
+        [
+          "Sydykova",
+          "Dariya K."
+        ],
+        [
+          "Spielman",
+          "Stephanie J."
+        ],
+        [
+          "Wilke",
+          "Claus O."
+        ]
+      ],
+      "container": "PLoS ONE",
+      "doi": "10.1371/journal.pone.0080635",
+      "issue": "11",
+      "pages": "e80635",
+      "publisher": "Public Library of Science (PLoS)",
+      "title": "Maximum Allowed Solvent Accessibilites of Residues in Proteins",
+      "type": "journal-article",
+      "volume": "8",
+      "year": 2013
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "uniprot2023": {
+    "expected_title": "UniProt: the Universal Protein Knowledgebase in 2023",
+    "identifier": "10.1093/nar/gkac1052",
+    "registry": {
+      "authors": [
+        [
+          "Bateman",
+          "Alex"
+        ],
+        [
+          "Martin",
+          "Maria-Jesus"
+        ],
+        [
+          "Orchard",
+          "Sandra"
+        ],
+        [
+          "Magrane",
+          "Michele"
+        ],
+        [
+          "Ahmad",
+          "Shadab"
+        ],
+        [
+          "Alpi",
+          "Emanuele"
+        ],
+        [
+          "Bowler-Barnett",
+          "Emily H"
+        ],
+        [
+          "Britto",
+          "Ramona"
+        ],
+        [
+          "Bye-A-Jee",
+          "Hema"
+        ],
+        [
+          "Cukura",
+          "Austra"
+        ],
+        [
+          "Denny",
+          "Paul"
+        ],
+        [
+          "Dogan",
+          "Tunca"
+        ],
+        [
+          "Ebenezer",
+          "ThankGod"
+        ],
+        [
+          "Fan",
+          "Jun"
+        ],
+        [
+          "Garmiri",
+          "Penelope"
+        ],
+        [
+          "da Costa Gonzales",
+          "Leonardo Jose"
+        ],
+        [
+          "Hatton-Ellis",
+          "Emma"
+        ],
+        [
+          "Hussein",
+          "Abdulrahman"
+        ],
+        [
+          "Ignatchenko",
+          "Alexandr"
+        ],
+        [
+          "Insana",
+          "Giuseppe"
+        ],
+        [
+          "Ishtiaq",
+          "Rizwan"
+        ],
+        [
+          "Joshi",
+          "Vishal"
+        ],
+        [
+          "Jyothi",
+          "Dushyanth"
+        ],
+        [
+          "Kandasaamy",
+          "Swaathi"
+        ],
+        [
+          "Lock",
+          "Antonia"
+        ],
+        [
+          "Luciani",
+          "Aurelien"
+        ],
+        [
+          "Lugaric",
+          "Marija"
+        ],
+        [
+          "Luo",
+          "Jie"
+        ],
+        [
+          "Lussi",
+          "Yvonne"
+        ],
+        [
+          "MacDougall",
+          "Alistair"
+        ],
+        [
+          "Madeira",
+          "Fabio"
+        ],
+        [
+          "Mahmoudy",
+          "Mahdi"
+        ],
+        [
+          "Mishra",
+          "Alok"
+        ],
+        [
+          "Moulang",
+          "Katie"
+        ],
+        [
+          "Nightingale",
+          "Andrew"
+        ],
+        [
+          "Pundir",
+          "Sangya"
+        ],
+        [
+          "Qi",
+          "Guoying"
+        ],
+        [
+          "Raj",
+          "Shriya"
+        ],
+        [
+          "Raposo",
+          "Pedro"
+        ],
+        [
+          "Rice",
+          "Daniel L"
+        ],
+        [
+          "Saidi",
+          "Rabie"
+        ],
+        [
+          "Santos",
+          "Rafael"
+        ],
+        [
+          "Speretta",
+          "Elena"
+        ],
+        [
+          "Stephenson",
+          "James"
+        ],
+        [
+          "Totoo",
+          "Prabhat"
+        ],
+        [
+          "Turner",
+          "Edward"
+        ],
+        [
+          "Tyagi",
+          "Nidhi"
+        ],
+        [
+          "Vasudev",
+          "Preethi"
+        ],
+        [
+          "Warner",
+          "Kate"
+        ],
+        [
+          "Watkins",
+          "Xavier"
+        ],
+        [
+          "Zaru",
+          "Rossana"
+        ],
+        [
+          "Zellner",
+          "Hermann"
+        ],
+        [
+          "Bridge",
+          "Alan J"
+        ],
+        [
+          "Aimo",
+          "Lucila"
+        ],
+        [
+          "Argoud-Puy",
+          "Ghislaine"
+        ],
+        [
+          "Auchincloss",
+          "Andrea H"
+        ],
+        [
+          "Axelsen",
+          "Kristian B"
+        ],
+        [
+          "Bansal",
+          "Parit"
+        ],
+        [
+          "Baratin",
+          "Delphine"
+        ],
+        [
+          "Batista Neto",
+          "Teresa M"
+        ],
+        [
+          "Blatter",
+          "Marie-Claude"
+        ],
+        [
+          "Bolleman",
+          "Jerven T"
+        ],
+        [
+          "Boutet",
+          "Emmanuel"
+        ],
+        [
+          "Breuza",
+          "Lionel"
+        ],
+        [
+          "Gil",
+          "Blanca Cabrera"
+        ],
+        [
+          "Casals-Casas",
+          "Cristina"
+        ],
+        [
+          "Echioukh",
+          "Kamal Chikh"
+        ],
+        [
+          "Coudert",
+          "Elisabeth"
+        ],
+        [
+          "Cuche",
+          "Beatrice"
+        ],
+        [
+          "de Castro",
+          "Edouard"
+        ],
+        [
+          "Estreicher",
+          "Anne"
+        ],
+        [
+          "Famiglietti",
+          "Maria L"
+        ],
+        [
+          "Feuermann",
+          "Marc"
+        ],
+        [
+          "Gasteiger",
+          "Elisabeth"
+        ],
+        [
+          "Gaudet",
+          "Pascale"
+        ],
+        [
+          "Gehant",
+          "Sebastien"
+        ],
+        [
+          "Gerritsen",
+          "Vivienne"
+        ],
+        [
+          "Gos",
+          "Arnaud"
+        ],
+        [
+          "Gruaz",
+          "Nadine"
+        ],
+        [
+          "Hulo",
+          "Chantal"
+        ],
+        [
+          "Hyka-Nouspikel",
+          "Nevila"
+        ],
+        [
+          "Jungo",
+          "Florence"
+        ],
+        [
+          "Kerhornou",
+          "Arnaud"
+        ],
+        [
+          "Le Mercier",
+          "Philippe"
+        ],
+        [
+          "Lieberherr",
+          "Damien"
+        ],
+        [
+          "Masson",
+          "Patrick"
+        ],
+        [
+          "Morgat",
+          "Anne"
+        ],
+        [
+          "Muthukrishnan",
+          "Venkatesh"
+        ],
+        [
+          "Paesano",
+          "Salvo"
+        ],
+        [
+          "Pedruzzi",
+          "Ivo"
+        ],
+        [
+          "Pilbout",
+          "Sandrine"
+        ],
+        [
+          "Pourcel",
+          "Lucille"
+        ],
+        [
+          "Poux",
+          "Sylvain"
+        ],
+        [
+          "Pozzato",
+          "Monica"
+        ],
+        [
+          "Pruess",
+          "Manuela"
+        ],
+        [
+          "Redaschi",
+          "Nicole"
+        ],
+        [
+          "Rivoire",
+          "Catherine"
+        ],
+        [
+          "Sigrist",
+          "Christian J A"
+        ],
+        [
+          "Sonesson",
+          "Karin"
+        ],
+        [
+          "Sundaram",
+          "Shyamala"
+        ],
+        [
+          "Wu",
+          "Cathy H"
+        ],
+        [
+          "Arighi",
+          "Cecilia N"
+        ],
+        [
+          "Arminski",
+          "Leslie"
+        ],
+        [
+          "Chen",
+          "Chuming"
+        ],
+        [
+          "Chen",
+          "Yongxing"
+        ],
+        [
+          "Huang",
+          "Hongzhan"
+        ],
+        [
+          "Laiho",
+          "Kati"
+        ],
+        [
+          "McGarvey",
+          "Peter"
+        ],
+        [
+          "Natale",
+          "Darren A"
+        ],
+        [
+          "Ross",
+          "Karen"
+        ],
+        [
+          "Vinayaka",
+          "C R"
+        ],
+        [
+          "Wang",
+          "Qinghua"
+        ],
+        [
+          "Wang",
+          "Yuqi"
+        ],
+        [
+          "Zhang",
+          "Jian"
+        ]
+      ],
+      "container": "Nucleic Acids Research",
+      "doi": "10.1093/nar/gkac1052",
+      "issue": "D1",
+      "pages": "D523-D531",
+      "publisher": "Oxford University Press (OUP)",
+      "title": "UniProt: the Universal Protein Knowledgebase in 2023",
+      "type": "journal-article",
+      "volume": "51",
+      "year": 2022
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "vanrosmalen2017gs": {
+    "expected_title": "Tuning the flexibility of glycine-serine linkers to allow rational design of multidomain proteins",
+    "identifier": "10.1021/acs.biochem.7b00902",
+    "registry": {
+      "authors": [
+        [
+          "van Rosmalen",
+          "Martijn"
+        ],
+        [
+          "Krom",
+          "Mike"
+        ],
+        [
+          "Merkx",
+          "Maarten"
+        ]
+      ],
+      "container": "Biochemistry",
+      "doi": "10.1021/acs.biochem.7b00902",
+      "issue": "50",
+      "pages": "6565-6574",
+      "publisher": "American Chemical Society (ACS)",
+      "title": "Tuning the Flexibility of Glycine-Serine Linkers To\nAllow Rational Design of Multidomain Proteins",
+      "type": "journal-article",
+      "volume": "56",
+      "year": 2017
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  },
+  "wu2023transdfl": {
+    "expected_title": "TransDFL: Identification of Disordered Flexible Linkers in Proteins by Transfer Learning",
+    "identifier": "10.1016/j.gpb.2022.10.004",
+    "registry": {
+      "authors": [
+        [
+          "Pang",
+          "Yihe"
+        ],
+        [
+          "Liu",
+          "Bin"
+        ]
+      ],
+      "container": "Genomics, Proteomics &amp; Bioinformatics",
+      "doi": "10.1016/j.gpb.2022.10.004",
+      "issue": "2",
+      "pages": "359-369",
+      "publisher": "Oxford University Press (OUP)",
+      "title": "TransDFL: Identification of Disordered Flexible Linkers in Proteins by Transfer Learning",
+      "type": "journal-article",
+      "volume": "21",
+      "year": 2022
+    },
+    "status": "verified",
+    "title_similarity": 1.0
+  }
+}

@@ -37,6 +37,7 @@ import math
 import random
 from typing import Any, Mapping, Sequence
 
+from linkerforge.geometry.span import maximum_span
 from linkerforge.design.engine import (
     TIER_PRIORITY,
     build_rigid_cleavable_composite,
@@ -203,13 +204,15 @@ class HardRejectionScorecard:
     hard_rejection_pass: bool
     rejection_reasons: tuple[str, ...]
     contour_length_A: float
-    required_path_length_A: float
+    required_path_length_A: float | None
     max_hydrophobic_run: int
     hydrophobic_fraction: float
+    not_evaluated: tuple[str, ...] = ()
 
     def to_dict(self) -> dict[str, Any]:
         d = asdict(self)
         d["rejection_reasons"] = list(self.rejection_reasons)
+        d["not_evaluated"] = list(self.not_evaluated)
         return d
 
 
@@ -266,55 +269,70 @@ def _anchor_net_charge(flank_sequence: str, window: int = 8, is_left: bool = Tru
     return float(pos - neg)
 
 
+DETOUR_RATIO_LIMIT = 2.2  # design constant, not a literature value
+ANCHOR_RSA_MINIMUM = 0.15  # inside the 5-25 % range of published buried/exposed cutoffs
+EXCESS_LENGTH_FACTOR = 2.2
+EXCESS_LENGTH_SLACK = 18
+
+
 def evaluate_hard_rejection_scorecard(
     sequence: str,
     *,
-    required_path_length_A: float,
-    target_length: int,
-    detour_ratio: float = 1.15,
-    port_a_sasa: float = 0.45,
-    port_b_sasa: float = 0.45,
+    required_path_length_A: float | None = None,
+    target_length: int | None = None,
+    detour_ratio: float | None = None,
+    port_a_sasa: float | None = None,
+    port_b_sasa: float | None = None,
     requested_rigidity: str = "flexible",
     requested_cleavable: bool = False,
 ) -> HardRejectionScorecard:
-    """Evaluate the 6 deterministic hard-rejection rules on a candidate linker sequence."""
+    """Evaluate the six deterministic rules.
+
+    A rule whose inputs are not supplied is *not evaluated* (it passes vacuously and is listed in
+    `not_evaluated`).  Thresholds `DETOUR_RATIO_LIMIT`, `ANCHOR_RSA_MINIMUM` and the excess-length
+    factor are design constants, not fitted or literature-derived values.
+    """
     seq = sequence.upper().strip()
     L = len(seq)
-    contour_A = round(L * 3.8, 3)
+    reach_A = round(maximum_span(L), 3)
+    not_evaluated: list[str] = []
 
-    # 1. Physical span closure (3.8 A per residue maximum extended C-alpha contour)
-    # Require at least contour_A >= required_path_length_A and L >= 1 when path > 3.8 A
-    min_contour_needed = max(required_path_length_A, min(target_length * 2.1, required_path_length_A))
-    physical_span_closure_pass = (contour_A >= min_contour_needed) and (
-        L >= max(2, int(math.floor(target_length * 0.60))) if required_path_length_A > 4.0 else True
-    )
+    # 1. physical span closure: (L + 1) virtual C-alpha bonds of at most 3.8 A each
+    if required_path_length_A is None:
+        physical_span_closure_pass = True
+        not_evaluated.append("physical_span_closure")
+    else:
+        physical_span_closure_pass = reach_A >= required_path_length_A
 
-    # 2. Domain clash & excessive loop detour clearance
-    # Direct 0-aa fusion or >2.5x target length causes domain clash or excessive entropic loop
-    domain_clash_clearance_pass = (
-        (detour_ratio <= 2.2)
-        and (L > 0 or required_path_length_A <= 3.8)
-        and (L <= max(target_length * 2.2, target_length + 18))
-    )
+    # 2. steric detour limit and excessive-length limit
+    domain_clash_clearance_pass = True
+    if detour_ratio is None and target_length is None:
+        not_evaluated.append("domain_clash_clearance")
+    if detour_ratio is not None and detour_ratio > DETOUR_RATIO_LIMIT:
+        domain_clash_clearance_pass = False
+    if target_length is not None and L > max(
+        EXCESS_LENGTH_FACTOR * target_length, target_length + EXCESS_LENGTH_SLACK
+    ):
+        domain_clash_clearance_pass = False
 
-    # 3. Anchor accessibility
-    anchor_accessibility_pass = (port_a_sasa >= 0.15) and (port_b_sasa >= 0.15)
+    # 3. anchor accessibility
+    if port_a_sasa is None or port_b_sasa is None:
+        anchor_accessibility_pass = True
+        not_evaluated.append("anchor_accessibility")
+    else:
+        anchor_accessibility_pass = min(port_a_sasa, port_b_sasa) >= ANCHOR_RSA_MINIMUM
 
-    # 4. Hydrophobic stretch check (< 50% FILVWM and max contiguous run < 5)
+    # 4. hydrophobic stretch (< 50 % FILVWM and no run of 5)
     hydro_count = sum(1 for c in seq if c in HYDROPHOBIC_SET)
     hydro_frac = (hydro_count / L) if L > 0 else 0.0
     max_hydro_run = _max_contiguous_hydrophobic_run(seq)
     hydrophobic_stretch_pass = (hydro_frac < 0.50) and (max_hydro_run < 5)
 
-    # 5. Cleavage site compliance
+    # 5. cleavage motif compliance
     has_cleavage_motif = any(motif in seq for motif in CLEAVAGE_MOTIFS.values())
-    if requested_cleavable:
-        prohibited_cleavage_pass = has_cleavage_motif
-    else:
-        prohibited_cleavage_pass = not has_cleavage_motif
+    prohibited_cleavage_pass = has_cleavage_motif if requested_cleavable else not has_cleavage_motif
 
-    # 6. Composite rigid + cleavable spacer rule
-    # Protease recognition motif must not be directly flanked on both sides by rigid EAAAK/AAA helices
+    # 6. protease motif not enclosed by helical EAAAK repeats on both sides
     composite_rigid_cleavable_pass = True
     for motif in CLEAVAGE_MOTIFS.values():
         idx = seq.find(motif)
@@ -329,29 +347,23 @@ def evaluate_hard_rejection_scorecard(
     reasons: list[str] = []
     if not physical_span_closure_pass:
         reasons.append(
-            f"physical_span_closure_failed(contour={contour_A:.1f}A < required={min_contour_needed:.1f}A, L={L})"
+            f"physical_span_closure_failed(max_reach={reach_A:.1f}A < path={required_path_length_A:.1f}A, L={L})"
         )
     if not domain_clash_clearance_pass:
         reasons.append(
-            f"domain_clash_or_entropic_excess(L={L}, target={target_length}, detour={detour_ratio:.2f})"
+            f"detour_or_excess_length(L={L}, target={target_length}, detour={detour_ratio})"
         )
     if not anchor_accessibility_pass:
-        reasons.append(
-            f"buried_attachment_port(port_a_sasa={port_a_sasa:.2f}, port_b_sasa={port_b_sasa:.2f})"
-        )
+        reasons.append(f"buried_attachment_port(rsa_a={port_a_sasa}, rsa_b={port_b_sasa})")
     if not hydrophobic_stretch_pass:
-        reasons.append(
-            f"hydrophobic_collapse_risk(hydro_frac={hydro_frac:.2f}, max_run={max_hydro_run})"
-        )
+        reasons.append(f"hydrophobic_collapse_risk(frac={hydro_frac:.2f}, run={max_hydro_run})")
     if not prohibited_cleavage_pass:
-        if requested_cleavable:
-            reasons.append("missing_requested_protease_cleavage_motif")
-        else:
-            reasons.append("unintended_protease_cleavage_motif_present")
+        reasons.append(
+            "missing_requested_protease_motif" if requested_cleavable else "unintended_protease_motif"
+        )
     if not composite_rigid_cleavable_pass:
-        reasons.append("protease_site_buried_inside_rigid_alpha_helix_without_gs_spacers")
+        reasons.append("protease_motif_enclosed_by_helical_repeats")
 
-    hard_pass = len(reasons) == 0
     return HardRejectionScorecard(
         physical_span_closure_pass=physical_span_closure_pass,
         domain_clash_clearance_pass=domain_clash_clearance_pass,
@@ -359,12 +371,13 @@ def evaluate_hard_rejection_scorecard(
         hydrophobic_stretch_pass=hydrophobic_stretch_pass,
         prohibited_cleavage_pass=prohibited_cleavage_pass,
         composite_rigid_cleavable_pass=composite_rigid_cleavable_pass,
-        hard_rejection_pass=hard_pass,
+        hard_rejection_pass=len(reasons) == 0,
         rejection_reasons=tuple(reasons),
-        contour_length_A=contour_A,
-        required_path_length_A=round(required_path_length_A, 3),
+        contour_length_A=reach_A,
+        required_path_length_A=None if required_path_length_A is None else round(required_path_length_A, 3),
         max_hydrophobic_run=max_hydro_run,
         hydrophobic_fraction=round(hydro_frac, 4),
+        not_evaluated=tuple(not_evaluated),
     )
 
 
@@ -426,13 +439,13 @@ def extract_pairwise_compatibility_features(
     sequence: str,
     *,
     target_length: int,
-    required_path_length_A: float,
+    required_path_length_A: float | None = None,
     requested_rigidity: str = "flexible",
     requested_cleavable: bool = False,
     left_flank: str = "",
     right_flank: str = "",
-    port_a_sasa: float = 0.45,
-    port_b_sasa: float = 0.45,
+    port_a_sasa: float | None = None,
+    port_b_sasa: float | None = None,
 ) -> dict[str, float]:
     """Extract 12 interpretable physical, geometric, and junction-compatibility features."""
     seq = sequence.upper().strip()
@@ -448,7 +461,7 @@ def extract_pairwise_compatibility_features(
             "charge_junction_compatibility": 0.0,
             "charge_mixing_quality": 0.0,
             "spacer_cleavage_compliance": 0.0,
-            "port_accessibility_score": min(port_a_sasa, port_b_sasa),
+            "port_accessibility_score": 0.0,
             "sequence_complexity_balance": 0.0,
             "hard_pass_indicator": 0.0,
         }
@@ -469,11 +482,14 @@ def extract_pairwise_compatibility_features(
     length_closeness = math.exp(-1.75 * rel_len_err)
 
     # 2. Span closure margin (positive when contour comfortably spans path, negative when impossible)
-    contour_ratio = (L * 3.8) / max(required_path_length_A, 4.0)
-    if contour_ratio < 1.0:
-        span_closure_margin = contour_ratio - 1.5  # strong negative penalty
+    if required_path_length_A is None:
+        span_closure_margin = 0.0  # no geometry supplied: neutral
     else:
-        span_closure_margin = min(1.0, (contour_ratio - 1.0) / 1.2)
+        contour_ratio = maximum_span(L) / max(required_path_length_A, 4.0)
+        if contour_ratio < 1.0:
+            span_closure_margin = contour_ratio - 1.5  # strong negative penalty
+        else:
+            span_closure_margin = min(1.0, (contour_ratio - 1.0) / 1.2)
 
     # 3. Entropic excess length penalty
     entropic_length_penalty = max(0.0, (L - max(target_length * 1.4, target_length + 6)) / max(float(target_length), 6.0))
@@ -527,7 +543,9 @@ def extract_pairwise_compatibility_features(
         spacer_cleavage_compliance = -1.0
 
     # 10. Port accessibility score
-    port_accessibility_score = 0.5 * (port_a_sasa + port_b_sasa)
+    port_accessibility_score = (
+        0.0 if port_a_sasa is None or port_b_sasa is None else 0.5 * (port_a_sasa + port_b_sasa)
+    )
 
     # 11. Sequence complexity balance (avoid single-residue homopolymers and random 2-letter runs)
     unique_aa = len(set(seq))
@@ -591,13 +609,13 @@ class PairwiseCompatibilityRanker:
         sequence: str,
         *,
         target_length: int,
-        required_path_length_A: float,
+        required_path_length_A: float | None = None,
         requested_rigidity: str = "flexible",
         requested_cleavable: bool = False,
         left_flank: str = "",
         right_flank: str = "",
-        port_a_sasa: float = 0.45,
-        port_b_sasa: float = 0.45,
+        port_a_sasa: float | None = None,
+        port_b_sasa: float | None = None,
     ) -> tuple[float, HardRejectionScorecard, dict[str, float]]:
         feats = extract_pairwise_compatibility_features(
             sequence,
@@ -623,86 +641,94 @@ class PairwiseCompatibilityRanker:
         return raw_score, scorecard, feats
 
 
+def record_query_context(rec: Mapping[str, Any]) -> dict[str, Any]:
+    """Extract the design-query context of a dataset record using only recorded fields.
+
+    `path_A` and the port accessibilities exist only for coordinate-complete records (the CATH
+    tier); for every other record they are None and the corresponding rules / features are
+    neutral.  Rigidity comes from the record's curated or predicted label, never from the
+    sequence heuristics used by earlier versions.
+    """
+    seq = str(rec.get("linker_sequence", "")).strip().upper()
+    geom = rec.get("geometry") or {}
+    props = rec.get("biophysical_properties") or {}
+    curated = props.get("curated_rigidity_label")
+    predicted = props.get("rigidity_predicted_label")
+    if curated in ("flexible", "rigid"):
+        rigidity = curated
+    elif predicted in ("flexible", "rigid"):
+        rigidity = predicted
+    else:
+        rigidity = "flexible"
+    flank = rec.get("flanking_context") or {}
+    return {
+        "sequence": seq,
+        "target_length": int(rec.get("linker_length", len(seq))),
+        "path_A": geom.get("inter_port_ca_distance_A"),
+        "sasa_a": geom.get("port_a_accessibility_proxy"),
+        "sasa_b": geom.get("port_b_accessibility_proxy"),
+        "rigidity": rigidity,
+        "left_flank": str(flank.get("left_flank_sequence") or ""),
+        "right_flank": str(flank.get("right_flank_sequence") or ""),
+    }
+
+
 def fit_pairwise_compatibility_ranker(
     training_records: Sequence[Mapping[str, Any]],
     *,
-    learning_rate: float = 0.08,
-    epochs: int = 80,
+    learning_rate: float = 0.15,
+    epochs: int = 150,
     l2_penalty: float = 1e-3,
     seed: int = 23,
+    init: str = "zero",
 ) -> PairwiseCompatibilityRanker:
-    """Train `PairwiseCompatibilityRanker` using pairwise logistic ranking loss over
-    natural/mined positive linkers vs. the 6 synthetic negative corruptions.
+    """Fit the linear ranker with a pairwise logistic loss: real linker vs. its six corruptions.
+
+    `init="zero"` (default) starts from all-zero weights, so the result is learned from the
+    corruption task; `init="prior"` starts from hand-set weights (the earlier behaviour, in which
+    training barely moved the weights).  The six corruptions are constructed to violate the same
+    properties several features measure, so held-out accuracy on this task is a training-objective
+    sanity check, not evidence about real fusion quality.
     """
     rng = random.Random(seed)
     n_feat = len(FEATURE_ORDER)
-    weights = [
-        1.4,   # length_closeness
-        1.2,   # span_closure_margin
-        -1.1,  # entropic_length_penalty
-        1.0,   # rigidity_axis_alignment
-        1.2,   # hydrophobicity_safety
-        0.7,   # disorder_coil_propensity
-        0.9,   # charge_junction_compatibility
-        0.5,   # charge_mixing_quality
-        1.1,   # spacer_cleavage_compliance
-        0.3,   # port_accessibility_score
-        0.6,   # sequence_complexity_balance
-        1.5,   # hard_pass_indicator
-    ]
+    if init == "prior":
+        weights = [1.4, 1.2, -1.1, 1.0, 1.2, 0.7, 0.9, 0.5, 1.1, 0.3, 0.6, 1.5]
+    elif init == "zero":
+        weights = [0.0] * n_feat
+    else:
+        raise ValueError("init must be 'zero' or 'prior'")
+
+    def _vec(seq: str, ctx: Mapping[str, Any]) -> list[float]:
+        feats = extract_pairwise_compatibility_features(
+            seq,
+            target_length=ctx["target_length"],
+            required_path_length_A=ctx["path_A"],
+            requested_rigidity=ctx["rigidity"],
+            requested_cleavable=False,
+            left_flank=ctx["left_flank"],
+            right_flank=ctx["right_flank"],
+            port_a_sasa=ctx["sasa_a"],
+            port_b_sasa=ctx["sasa_b"],
+        )
+        return [feats[k] for k in FEATURE_ORDER]
 
     pairs: list[tuple[list[float], list[float]]] = []
     for rec in training_records:
-        pos_seq = str(rec.get("linker_sequence", "")).strip().upper()
+        ctx = record_query_context(rec)
+        pos_seq = ctx["sequence"]
         if len(pos_seq) < 4:
             continue
-        target_len = int(rec.get("linker_length", len(pos_seq)))
-        geom = rec.get("geometry") or {}
-        req_path = float(
-            geom.get("estimated_end_to_end_ca_distance_A")
-            or round(1.95 * target_len, 2)
-        )
-        flank = rec.get("flanking_context") or {}
-        left_flank = str(flank.get("left_flank_sequence", ""))
-        right_flank = str(flank.get("right_flank_sequence", ""))
-        pa_sasa = float(geom.get("port_a_accessibility_proxy") or 0.45)
-        pb_sasa = float(geom.get("port_b_accessibility_proxy") or 0.45)
-        rigidity = "rigid" if ("EAAAK" in pos_seq or pos_seq.count("P") / len(pos_seq) > 0.30) else "flexible"
-
-        pos_feats_dict = extract_pairwise_compatibility_features(
-            pos_seq,
-            target_length=target_len,
-            required_path_length_A=req_path,
-            requested_rigidity=rigidity,
-            requested_cleavable=False,
-            left_flank=left_flank,
-            right_flank=right_flank,
-            port_a_sasa=pa_sasa,
-            port_b_sasa=pb_sasa,
-        )
-        pos_vec = [pos_feats_dict[k] for k in FEATURE_ORDER]
-
+        pos_vec = _vec(pos_seq, ctx)
         negs = generate_synthetic_negatives(
             pos_seq,
-            target_length=target_len,
-            requested_rigidity=rigidity,
-            left_flank=left_flank,
-            right_flank=right_flank,
+            target_length=ctx["target_length"],
+            requested_rigidity=ctx["rigidity"],
+            left_flank=ctx["left_flank"],
+            right_flank=ctx["right_flank"],
         )
         for neg_seq in negs.values():
-            neg_feats_dict = extract_pairwise_compatibility_features(
-                neg_seq,
-                target_length=target_len,
-                required_path_length_A=req_path,
-                requested_rigidity=rigidity,
-                requested_cleavable=False,
-                left_flank=left_flank,
-                right_flank=right_flank,
-                port_a_sasa=pa_sasa,
-                port_b_sasa=pb_sasa,
-            )
-            neg_vec = [neg_feats_dict[k] for k in FEATURE_ORDER]
-            pairs.append((pos_vec, neg_vec))
+            pairs.append((pos_vec, _vec(neg_seq, ctx)))
 
     if not pairs:
         return PairwiseCompatibilityRanker(feature_names=FEATURE_ORDER, weights=tuple(weights))
@@ -713,7 +739,6 @@ def fit_pairwise_compatibility_ranker(
         for pos_vec, neg_vec in pairs:
             diff = [p - n for p, n in zip(pos_vec, neg_vec)]
             margin = sum(w * d for w, d in zip(weights, diff))
-            # Pairwise logistic loss: log(1 + exp(-margin))
             prob_wrong = 1.0 / (1.0 + math.exp(max(-30.0, min(30.0, margin))))
             for j in range(n_feat):
                 grad_w[j] += -prob_wrong * diff[j]
@@ -725,619 +750,3 @@ def fit_pairwise_compatibility_ranker(
         feature_names=FEATURE_ORDER,
         weights=tuple(round(w, 6) for w in weights),
     )
-
-
-def evaluate_six_baselines_benchmark(
-    records: Sequence[Mapping[str, Any]],
-    *,
-    n_folds: int = 5,
-    seed: int = 23,
-) -> dict[str, Any]:
-    """Evaluate all 6 required baselines (`ARCHITECTURE_HANDOFF.md` §7) + pairwise synthetic
-    negative discrimination on cluster-disjoint (`homology_cluster_id`) splits.
-    """
-    clusters = sorted({str(r.get("homology_cluster_id", r.get("record_id", ""))) for r in records})
-    rng = random.Random(seed)
-    rng.shuffle(clusters)
-    cluster_to_fold = {cid: idx % n_folds for idx, cid in enumerate(clusters)}
-
-    method_records: dict[str, list[dict[str, float]]] = {m: [] for m in BASELINE_NAMES}
-    corruption_wins: dict[str, list[float]] = {c: [] for c in SYNTHETIC_NEGATIVE_TYPES}
-    natural_vs_corruptions_top1: list[float] = []
-    natural_vs_corruptions_mrr: list[float] = []
-
-    for fold in range(n_folds):
-        train_recs = [
-            r
-            for r in records
-            if cluster_to_fold[str(r.get("homology_cluster_id", r.get("record_id", "")))] != fold
-        ]
-        test_recs = [
-            r
-            for r in records
-            if cluster_to_fold[str(r.get("homology_cluster_id", r.get("record_id", "")))] == fold
-        ]
-        if not train_recs or not test_recs:
-            continue
-
-        ranker = fit_pairwise_compatibility_ranker(train_recs, seed=seed + fold)
-        auth_index = AuthoritySequenceIndex(train_recs)
-
-        for rec_idx, rec in enumerate(test_recs):
-            true_seq = str(rec.get("linker_sequence", "")).strip().upper()
-            if len(true_seq) < 4:
-                continue
-            target_len = int(rec.get("linker_length", len(true_seq)))
-            geom = rec.get("geometry") or {}
-            req_path = float(
-                geom.get("estimated_end_to_end_ca_distance_A")
-                or round(1.95 * target_len, 2)
-            )
-            flank = rec.get("flanking_context") or {}
-            left_flank = str(flank.get("left_flank_sequence", ""))
-            right_flank = str(flank.get("right_flank_sequence", ""))
-            pa_sasa = float(geom.get("port_a_accessibility_proxy") or 0.45)
-            pb_sasa = float(geom.get("port_b_accessibility_proxy") or 0.45)
-            rigidity = (
-                "rigid"
-                if ("EAAAK" in true_seq or true_seq.count("P") / len(true_seq) > 0.30)
-                else "flexible"
-            )
-
-            # Score natural linker vs 6 synthetic corruptions
-            pos_score, _, _ = ranker.score_candidate(
-                true_seq,
-                target_length=target_len,
-                required_path_length_A=req_path,
-                requested_rigidity=rigidity,
-                left_flank=left_flank,
-                right_flank=right_flank,
-                port_a_sasa=pa_sasa,
-                port_b_sasa=pb_sasa,
-            )
-            negs = generate_synthetic_negatives(
-                true_seq,
-                target_length=target_len,
-                requested_rigidity=rigidity,
-                left_flank=left_flank,
-                right_flank=right_flank,
-            )
-            neg_scores: list[float] = []
-            for c_type, neg_seq in negs.items():
-                n_score, _, _ = ranker.score_candidate(
-                    neg_seq,
-                    target_length=target_len,
-                    required_path_length_A=req_path,
-                    requested_rigidity=rigidity,
-                    left_flank=left_flank,
-                    right_flank=right_flank,
-                    port_a_sasa=pa_sasa,
-                    port_b_sasa=pb_sasa,
-                )
-                neg_scores.append(n_score)
-                corruption_wins[c_type].append(1.0 if pos_score > n_score else 0.0)
-
-            better_negs = sum(1 for ns in neg_scores if ns >= pos_score)
-            rank_pos = 1 + better_negs
-            natural_vs_corruptions_top1.append(1.0 if rank_pos == 1 else 0.0)
-            natural_vs_corruptions_mrr.append(1.0 / rank_pos)
-
-            # Build the 6 baseline candidate sequences for this query
-            local_rng = random.Random(seed * 1000 + fold * 100 + rec_idx)
-            # 1. Direct 0-aa fusion
-            seq_direct = ""
-            # 2. Fixed (GGGGS)3
-            seq_ggggs3 = "GGGGSGGGGSGGGGS"
-            # 3. Random length-matched GS
-            seq_rand_gs = "".join(local_rng.choice(("G", "S")) for _ in range(target_len))
-            # 4. Geometry-only (length-matched homopolymer/unfiltered template ignoring flank/rigidity)
-            seq_geom_only = ("AAAGGG" * ((target_len // 6) + 2))[:target_len]
-            # 5. Nearest-neighbour retrieval (X2)
-            x2_hits = auth_index.retrieve(
-                target_length=target_len,
-                rigidity=rigidity,
-                cleavable=False,
-                left_flank_sequence=left_flank,
-                right_flank_sequence=right_flank,
-                top_k=4,
-            )
-            seq_x2 = x2_hits[0].sequence if x2_hits else seq_ggggs3
-
-            # 6. LinkerForge ranker over Part 2 template candidates + X2 authority retrieval pool
-            if rigidity == "rigid":
-                tmpl_seqs = [
-                    ("EAAAK" * ((target_len // 5) + 2))[:target_len],
-                    ("PAPAP" * ((target_len // 5) + 2))[:target_len],
-                    "AEAAAKEAAAKEAAAKA"[: max(10, target_len)],
-                ]
-            else:
-                tmpl_seqs = [
-                    ("GGGGS" * ((target_len // 5) + 2))[:target_len],
-                    ("GSAGSAAGSGEF" * ((target_len // 12) + 2))[:target_len],
-                    ("KESGSVSSEQLAQFRSLD" * ((target_len // 18) + 2))[:target_len],
-                ]
-            pool_seqs = tmpl_seqs + [h.sequence for h in x2_hits]
-            if not pool_seqs:
-                pool_seqs = [seq_ggggs3]
-            best_lf_seq = pool_seqs[0]
-            best_lf_tuple = (-1e9, -1e9)
-            for cand_seq in pool_seqs:
-                c_score, c_card, _ = ranker.score_candidate(
-                    cand_seq,
-                    target_length=target_len,
-                    required_path_length_A=req_path,
-                    requested_rigidity=rigidity,
-                    left_flank=left_flank,
-                    right_flank=right_flank,
-                    port_a_sasa=pa_sasa,
-                    port_b_sasa=pb_sasa,
-                )
-                cand_tuple = (1.0 if c_card.hard_rejection_pass else 0.0, c_score)
-                if cand_tuple > best_lf_tuple:
-                    best_lf_tuple = cand_tuple
-                    best_lf_seq = cand_seq
-
-            baseline_seqs = {
-                "direct_0aa_fusion": seq_direct,
-                "fixed_ggggs3": seq_ggggs3,
-                "random_length_matched_gs": seq_rand_gs,
-                "geometry_only": seq_geom_only,
-                "nearest_neighbour_retrieval": seq_x2,
-                "linkerforge_ranker": best_lf_seq,
-            }
-
-            for m_name, b_seq in baseline_seqs.items():
-                b_score, b_card, b_feats = ranker.score_candidate(
-                    b_seq,
-                    target_length=target_len,
-                    required_path_length_A=req_path,
-                    requested_rigidity=rigidity,
-                    left_flank=left_flank,
-                    right_flank=right_flank,
-                    port_a_sasa=pa_sasa,
-                    port_b_sasa=pb_sasa,
-                )
-                win_vs_negs = (
-                    sum(1.0 if b_score > ns else 0.0 for ns in neg_scores) / len(neg_scores)
-                    if neg_scores
-                    else 0.0
-                )
-                method_records[m_name].append(
-                    {
-                        "hard_rejection_pass": 1.0 if b_card.hard_rejection_pass else 0.0,
-                        "compatibility_score": b_score,
-                        "length_within_2aa": 1.0 if abs(len(b_seq) - target_len) <= 2 else 0.0,
-                        "rigidity_axis_alignment": b_feats["rigidity_axis_alignment"],
-                        "pairwise_win_rate_vs_synthetic_negatives": win_vs_negs,
-                    }
-                )
-
-    def _agg(rows: list[dict[str, float]]) -> dict[str, float]:
-        if not rows:
-            return {}
-        keys = list(rows[0].keys())
-        return {
-            f"mean_{k}": round(sum(r[k] for r in rows) / len(rows), 4)
-            for k in keys
-        }
-
-    return {
-        "n_records_evaluated": len(natural_vs_corruptions_top1),
-        "n_folds": n_folds,
-        "split_field": "homology_cluster_id",
-        "natural_vs_6_synthetic_corruptions": {
-            "top1_natural_rank_accuracy": round(
-                sum(natural_vs_corruptions_top1) / max(1, len(natural_vs_corruptions_top1)), 4
-            ),
-            "mrr_natural_rank": round(
-                sum(natural_vs_corruptions_mrr) / max(1, len(natural_vs_corruptions_mrr)), 4
-            ),
-            "per_corruption_pairwise_win_rate": {
-                k: round(sum(v) / max(1, len(v)), 4) for k, v in corruption_wins.items()
-            },
-        },
-        "six_baselines_comparison": {m: _agg(rows) for m, rows in method_records.items()},
-    }
-
-
-ONE_TO_THREE: dict[str, str] = {
-    "A": "ALA",
-    "C": "CYS",
-    "D": "ASP",
-    "E": "GLU",
-    "F": "PHE",
-    "G": "GLY",
-    "H": "HIS",
-    "I": "ILE",
-    "K": "LYS",
-    "L": "LEU",
-    "M": "MET",
-    "N": "ASN",
-    "P": "PRO",
-    "Q": "GLN",
-    "R": "ARG",
-    "S": "SER",
-    "T": "THR",
-    "V": "VAL",
-    "W": "TRP",
-    "Y": "TYR",
-}
-
-
-def build_fusion_3d_pdb_and_pymol_script(
-    *,
-    domain_a_name: str,
-    domain_a_sequence: str,
-    linker_sequence: str,
-    domain_b_name: str,
-    domain_b_sequence: str,
-    inter_port_distance_A: float = 24.8,
-) -> dict[str, Any]:
-    """Generate a complete 3D backbone PDB file (`N, CA, C, O`) and ready-to-run PyMOL `.pml`
-    script for a two-domain fusion construct (`Domain A — linker — Domain B`), suitable for
-    both Mol* (`molstar`) and PyMOL / 3Dmol WebGL visualization.
-
-    Models Domain A (`sfGFP`, 11-stranded beta-barrel cylinder on the left), the 3D collision-free
-    curved spline trajectory of the designed linker spanning `inter_port_distance_A`, and Domain B
-    (`mCherry`, 11-stranded beta-barrel cylinder on the right).
-    """
-    seq_a = domain_a_sequence.upper().strip()
-    seq_l = linker_sequence.upper().strip()
-    seq_b = domain_b_sequence.upper().strip()
-
-    pdb_lines: list[str] = [
-        f"HEADER    FUSION PROTEIN                          19-OCT-26   LFG1",
-        f"TITLE     LINKERFORGE END-TO-END FUSION: {domain_a_name} - LINKER ({len(seq_l)} AA) - {domain_b_name}",
-        f"REMARK   1 DOMAIN_A: {domain_a_name} (RESIDUES 1-{len(seq_a)})",
-        f"REMARK   2 LINKER:   {seq_l or 'DIRECT_0AA'} (RESIDUES {len(seq_a)+1}-{len(seq_a)+len(seq_l)})",
-        f"REMARK   3 DOMAIN_B: {domain_b_name} (RESIDUES {len(seq_a)+len(seq_l)+1}-{len(seq_a)+len(seq_l)+len(seq_b)})",
-    ]
-
-    atom_serial = 1
-    res_serial = 1
-
-    def _emit_residue(res_char: str, chain_id: str, res_num: int, ca_xyz: tuple[float, float, float], b_factor: float) -> None:
-        nonlocal atom_serial
-        res3 = ONE_TO_THREE.get(res_char, "GLY")
-        cx, cy, cz = ca_xyz
-        atoms = [
-            ("N", (cx - 1.22, cy - 0.45, cz - 0.30)),
-            ("CA", (cx, cy, cz)),
-            ("C", (cx + 1.25, cy + 0.42, cz + 0.28)),
-            ("O", (cx + 1.45, cy + 1.58, cz + 0.52)),
-        ]
-        for atom_name, (ax, ay, az) in atoms:
-            element = atom_name[0]
-            pdb_lines.append(
-                f"ATOM  {atom_serial:5d}  {atom_name:<3s} {res3:>3s} {chain_id:1s}{res_num:4d}    "
-                f"{ax:8.3f}{ay:8.3f}{az:8.3f}  1.00{b_factor:6.2f}           {element:>2s}"
-            )
-            atom_serial += 1
-
-    # 1. Domain A beta-barrel coordinates centered around (-inter_port_distance_A/2 - 14.0, 0, 0)
-    barrel_radius = 11.5
-    n_strands = 11
-    a_center_x = -0.5 * inter_port_distance_A - 14.0
-    port_a_xyz = (-0.5 * inter_port_distance_A, 0.0, 0.0)
-    for i, aa in enumerate(seq_a):
-        if i >= len(seq_a) - 6:
-            # C-terminal tail leading smoothly to Port A at (-inter_port_distance_A/2, 0, 0)
-            frac = (i - (len(seq_a) - 6)) / 5.0
-            x = (a_center_x + barrel_radius) * (1.0 - frac) + port_a_xyz[0] * frac
-            y = 2.5 * math.sin(frac * math.pi)
-            z = 1.8 * math.cos(frac * math.pi)
-        else:
-            strand = i % n_strands
-            pos_in_strand = (i // n_strands) - 10
-            theta = 2.0 * math.pi * strand / n_strands
-            x = a_center_x + barrel_radius * math.cos(theta)
-            y = barrel_radius * math.sin(theta)
-            z = pos_in_strand * 1.9 * (1.0 if strand % 2 == 0 else -1.0)
-        _emit_residue(aa, "A", res_serial, (x, y, z), b_factor=25.0)
-        res_serial += 1
-
-    linker_start_res = res_serial
-    # 2. Linker coordinates along a smooth 3D catenary/helical spline from Port A to Port B
-    port_b_xyz = (0.5 * inter_port_distance_A, 0.0, 0.0)
-    L_link = len(seq_l)
-    is_helical = "EAAAK" in seq_l
-    for j, aa in enumerate(seq_l):
-        u = (j + 1) / float(L_link + 1)
-        x = port_a_xyz[0] * (1.0 - u) + port_b_xyz[0] * u
-        arch = 5.5 * math.sin(math.pi * u)
-        if is_helical:
-            y = arch + 2.3 * math.cos(j * 1.745)
-            z = 2.3 * math.sin(j * 1.745)
-        else:
-            y = arch + 1.2 * math.sin(j * 1.1)
-            z = 1.6 * math.cos(j * 0.9)
-        _emit_residue(aa, "A", res_serial, (x, y, z), b_factor=65.0)
-        res_serial += 1
-    linker_end_res = res_serial - 1
-
-    # 3. Domain B beta-barrel coordinates centered around (+inter_port_distance_A/2 + 14.0, 0, 0)
-    b_center_x = 0.5 * inter_port_distance_A + 14.0
-    domain_b_start_res = res_serial
-    for k, aa in enumerate(seq_b):
-        if k < 6:
-            frac = k / 5.0
-            x = port_b_xyz[0] * (1.0 - frac) + (b_center_x - barrel_radius) * frac
-            y = -2.2 * math.sin(frac * math.pi)
-            z = 1.6 * math.sin(frac * math.pi)
-        else:
-            strand = k % n_strands
-            pos_in_strand = (k // n_strands) - 10
-            theta = 2.0 * math.pi * strand / n_strands
-            x = b_center_x + barrel_radius * math.cos(theta)
-            y = barrel_radius * math.sin(theta)
-            z = pos_in_strand * 1.9 * (1.0 if strand % 2 == 0 else -1.0)
-        _emit_residue(aa, "A", res_serial, (x, y, z), b_factor=45.0)
-        res_serial += 1
-    domain_b_end_res = res_serial - 1
-
-    pdb_lines.append("TER")
-    pdb_lines.append("END")
-    pdb_text = "\n".join(pdb_lines) + "\n"
-
-    # Ready-to-run PyMOL script (.pml)
-    pml_lines = [
-        "# LinkerForge PyMOL Visualization Script",
-        f"# Construct: {domain_a_name} (1-{len(seq_a)}) — Linker ({linker_start_res}-{linker_end_res}) — {domain_b_name} ({domain_b_start_res}-{domain_b_end_res})",
-        "bg_color white",
-        "hide everything, all",
-        "show cartoon, all",
-        "set cartoon_fancy_helices, 1",
-        "set cartoon_smooth_loops, 1",
-        f"select domain_a, resi 1-{len(seq_a)}",
-        f"select port_a, resi {max(1, len(seq_a)-2)}-{len(seq_a)}",
-    ]
-    if L_link > 0:
-        pml_lines.extend(
-            [
-                f"select designed_linker, resi {linker_start_res}-{linker_end_res}",
-                "color magenta, designed_linker",
-                "show sticks, designed_linker and (name CA+C+N+O)",
-            ]
-        )
-    pml_lines.extend(
-        [
-            f"select port_b, resi {domain_b_start_res}-{min(domain_b_end_res, domain_b_start_res+2)}",
-            f"select domain_b, resi {domain_b_start_res}-{domain_b_end_res}",
-            "color forest, domain_a",
-            "color tv_red, domain_b",
-            "color gold, port_a or port_b",
-            "show spheres, (port_a or port_b) and name CA",
-            "set sphere_scale, 0.65, (port_a or port_b) and name CA",
-            "deselect",
-            "orient",
-            "zoom all, 4",
-        ]
-    )
-    pml_text = "\n".join(pml_lines) + "\n"
-
-    return {
-        "domain_a_residue_range": [1, len(seq_a)],
-        "port_a_residue_index": len(seq_a),
-        "linker_residue_range": [linker_start_res, linker_end_res] if L_link > 0 else [],
-        "port_b_residue_index": domain_b_start_res,
-        "domain_b_residue_range": [domain_b_start_res, domain_b_end_res],
-        "total_residues": domain_b_end_res,
-        "total_atoms": atom_serial - 1,
-        "pdb_text": pdb_text,
-        "pymol_pml_script": pml_text,
-    }
-
-
-SFGFP_2B3P_SEQUENCE = (
-    "MSKGEELFTGVVPILVELDGDVNGHKFSVRGEGEGDATNGKLTLKFICTTGKLPVPWPTLVTTLTYGVQCFSRYPDHMKR"
-    "HDFFKSAMPEGYVQERTISFKDDGTYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILGHKLEYNFNSHNVYITADKQKNG"
-    "IKANFKIRHNVEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSVLSKDPNEKRDHMVLLEFVTAAGITHGMDELYK"
-)
-
-MCHERRY_2H5Q_SEQUENCE = (
-    "MVSKGEEDNMAIIKEFMRFKVHMEGSVNGHEFEIEGEGEGRPYEGTQTAKLKVTKGGPLPFAWDILSPQFMYGSKAYVKH"
-    "PADIPDYLKLSFPEGFKWERVMNFEDGGVVTVTQDSSLQDGEFIYKVKLRGTNFPSDGPVMQKKTMGWEASSERMYPEDG"
-    "ALKGEIKQRLKLKDGGHYDAEVKTTYKAKKPVQLPGAYNVNIKLDITSHNEDYTIVEQYERAEGRHSTGGMDELYK"
-)
-
-
-def run_sfgfp_mcherry_fusion_demo(
-    ranker: PairwiseCompatibilityRanker,
-    authority_index: AuthoritySequenceIndex,
-    *,
-    requested_rigidity: str = "flexible",
-    requested_cleavable: bool = False,
-    protease_family: str = "TEV",
-    target_length: int = 15,
-    required_path_length_A: float = 28.4,
-) -> dict[str, Any]:
-    """Run the complete end-to-end `sfGFP (PDB 2B3P) — linker — mCherry (PDB 2H5Q)` fusion
-    demonstration (`ARCHITECTURE_HANDOFF.md` §7), ranking LinkerForge candidates alongside all
-    6 baselines and all 6 synthetic negative corruptions, and generating the 3D PDB + PyMOL script.
-    """
-    left_flank = SFGFP_2B3P_SEQUENCE[-30:]
-    right_flank = MCHERRY_2H5Q_SEQUENCE[:30]
-    port_a_sasa = 0.62  # sfGFP C-terminal tail (His231-Lys238) is solvent-exposed
-    port_b_sasa = 0.58  # mCherry N-terminal tail (Met1-Glu6) is solvent-exposed
-
-    x2_hits = authority_index.retrieve(
-        target_length=target_length,
-        rigidity=requested_rigidity,
-        cleavable=requested_cleavable,
-        protease_family=protease_family,
-        left_flank_sequence=left_flank,
-        right_flank_sequence=right_flank,
-        top_k=6,
-    )
-
-    raw_candidates: list[tuple[str, str, str, str]] = []
-    if requested_cleavable and requested_rigidity == "rigid":
-        lib = load_library()
-        comps = build_rigid_cleavable_composite(
-            required_path_length_A,
-            lib,
-            protease=protease_family,
-            min_length=max(8, target_length - 5),
-            max_length=target_length + 10,
-        )
-        for idx, comp in enumerate(comps[:4]):
-            raw_candidates.append(
-                (f"lf_template_{idx+1}", "linkerforge_ranker", comp["sequence"], f"Part 2 Composite ({comp['candidate_id']})")
-            )
-    elif requested_cleavable:
-        motif = CLEAVAGE_MOTIFS.get(protease_family, "ENLYFQS")
-        flank_len = max(2, (target_length - len(motif)) // 2)
-        pad = ("GGGGS" * ((flank_len // 5) + 2))[:flank_len]
-        raw_candidates.append(
-            ("lf_template_1", "linkerforge_ranker", f"{pad}{motif}{pad}", f"Part 2 Cleavable GS-{protease_family}-GS Template")
-        )
-        raw_candidates.append(
-            ("lf_template_2", "linkerforge_ranker", f"GSAGSA{motif}GSAGSA", f"Part 2 Cleavable GSA-{protease_family}-GSA Template")
-        )
-    elif requested_rigidity == "rigid":
-        raw_candidates.extend(
-            [
-                ("lf_template_1", "linkerforge_ranker", ("EAAAK" * ((target_length // 5) + 2))[:target_length], "Part 2 Template (Chen2013 Helical EAAAK)"),
-                ("lf_template_2", "linkerforge_ranker", "AEAAAKEAAAKEAAAKA"[: max(12, target_length)], "Part 2 Template (A(EAAAK)3A Helical Rod)"),
-                ("lf_template_3", "linkerforge_ranker", ("PAPAP" * ((target_length // 5) + 2))[:target_length], "Part 2 Template (Chen2013 Proline-Rich PAPAP)"),
-            ]
-        )
-    else:
-        raw_candidates.extend(
-            [
-                ("lf_template_1", "linkerforge_ranker", ("GGGGS" * ((target_length // 5) + 2))[:target_length], "Part 2 Template (Chen2013 Flexible GGGGS)"),
-                ("lf_template_2", "linkerforge_ranker", ("GSAGSAAGSGEF" * ((target_length // 12) + 2))[:target_length], "Part 2 Template (Waldo GFP-Compatible GSAGSAAGSGEF)"),
-                ("lf_template_3", "linkerforge_ranker", ("KESGSVSSEQLAQFRSLD" * ((target_length // 18) + 2))[:target_length], "Part 2 Template (Bird1988 Soluble Flexible Linker)"),
-            ]
-        )
-
-    for idx, ac in enumerate(x2_hits):
-        raw_candidates.append(
-            (
-                f"lf_authority_{idx+1}",
-                "nearest_neighbour_retrieval",
-                ac.sequence,
-                f"X2 Authority ({ac.record_id}, {ac.evidence_tier})",
-            )
-        )
-
-    # Add explicit baselines
-    raw_candidates.extend(
-        [
-            ("baseline_direct_0aa", "direct_0aa_fusion", "", "Baseline 1: Direct 0-aa fusion"),
-            ("baseline_fixed_ggggs3", "fixed_ggggs3", "GGGGSGGGGSGGGGS", "Baseline 2: Fixed (GGGGS)3"),
-            (
-                "baseline_random_gs",
-                "random_length_matched_gs",
-                "GSGGSGSGGSGSGGS"[:target_length],
-                "Baseline 3: Random length-matched GS",
-            ),
-            (
-                "baseline_geometry_only",
-                "geometry_only",
-                ("AAAGGG" * ((target_length // 6) + 2))[:target_length],
-                "Baseline 4: Geometry-only length match",
-            ),
-        ]
-    )
-
-    # Add the 6 synthetic negative corruptions for transparent inspection
-    top_pos_seq = raw_candidates[0][2] if raw_candidates else "GGGGSGGGGSGGGGS"
-    synth_negs = generate_synthetic_negatives(
-        top_pos_seq,
-        target_length=target_length,
-        requested_rigidity=requested_rigidity,
-        left_flank=left_flank,
-        right_flank=right_flank,
-    )
-    for c_type, n_seq in synth_negs.items():
-        raw_candidates.append(
-            (f"synthetic_neg_{c_type}", f"synthetic_negative:{c_type}", n_seq, f"Synthetic Negative ({c_type})")
-        )
-
-    scored_items: list[tuple[tuple[float, float], str, str, str, float, HardRejectionScorecard, dict[str, float], str]] = []
-    seen_key: set[tuple[str, str]] = set()
-    for cid, m_name, seq, prov in raw_candidates:
-        if (m_name, seq) in seen_key:
-            continue
-        seen_key.add((m_name, seq))
-        score, card, feats = ranker.score_candidate(
-            seq,
-            target_length=target_length,
-            required_path_length_A=required_path_length_A,
-            requested_rigidity=requested_rigidity,
-            requested_cleavable=requested_cleavable,
-            left_flank=left_flank,
-            right_flank=right_flank,
-            port_a_sasa=port_a_sasa,
-            port_b_sasa=port_b_sasa,
-        )
-        sort_key = (1.0 if card.hard_rejection_pass else 0.0, score)
-        scored_items.append((sort_key, cid, m_name, seq, score, card, feats, prov))
-
-    scored_items.sort(key=lambda x: x[0], reverse=True)
-    ranked_results: list[CandidateRankingResult] = []
-    for r_idx, (_, cid, m_name, seq, score, card, feats, prov) in enumerate(scored_items, start=1):
-        ranked_results.append(
-            CandidateRankingResult(
-                rank=r_idx,
-                candidate_id=cid,
-                method_name=m_name,
-                sequence=seq,
-                length=len(seq),
-                compatibility_score=score,
-                hard_rejection_pass=card.hard_rejection_pass,
-                scorecard=card,
-                feature_breakdown=feats,
-                provenance=prov,
-            )
-        )
-
-    top_candidate = ranked_results[0]
-    structure_bundle = build_fusion_3d_pdb_and_pymol_script(
-        domain_a_name="sfGFP_2B3P",
-        domain_a_sequence=SFGFP_2B3P_SEQUENCE,
-        linker_sequence=top_candidate.sequence,
-        domain_b_name="mCherry_2H5Q",
-        domain_b_sequence=MCHERRY_2H5Q_SEQUENCE,
-        inter_port_distance_A=24.8,
-    )
-
-    return {
-        "construct_name": "sfGFP (PDB 2B3P) — linker — mCherry (PDB 2H5Q)",
-        "domain_a": {
-            "name": "sfGFP",
-            "pdb_id": "2B3P",
-            "length": len(SFGFP_2B3P_SEQUENCE),
-            "selected_port_residue": 238,
-            "selected_port_motif": SFGFP_2B3P_SEQUENCE[-8:],
-            "port_relative_sasa": port_a_sasa,
-        },
-        "domain_b": {
-            "name": "mCherry",
-            "pdb_id": "2H5Q",
-            "length": len(MCHERRY_2H5Q_SEQUENCE),
-            "selected_port_residue": 1,
-            "selected_port_motif": MCHERRY_2H5Q_SEQUENCE[:8],
-            "port_relative_sasa": port_b_sasa,
-        },
-        "junction_geometry": {
-            "straight_ca_distance_A": 24.8,
-            "required_path_length_A": required_path_length_A,
-            "detour_ratio": round(required_path_length_A / 24.8, 3),
-            "target_length_residues": target_length,
-            "requested_rigidity": requested_rigidity,
-            "requested_cleavable": requested_cleavable,
-        },
-        "top_selected_linker": top_candidate.to_dict(),
-        "ranked_candidates": [r.to_dict() for r in ranked_results],
-        "fusion_3d_structure": {
-            "domain_a_residue_range": structure_bundle["domain_a_residue_range"],
-            "linker_residue_range": structure_bundle["linker_residue_range"],
-            "domain_b_residue_range": structure_bundle["domain_b_residue_range"],
-            "total_residues": structure_bundle["total_residues"],
-            "total_atoms": structure_bundle["total_atoms"],
-            "pymol_pml_script": structure_bundle["pymol_pml_script"],
-            "pdb_text": structure_bundle["pdb_text"],
-        },
-    }

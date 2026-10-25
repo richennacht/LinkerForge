@@ -1,17 +1,12 @@
-"""Evaluate Part 4 (Component 5): Pairwise Compatibility Ranker, Hard Structural Rejection
-Scorecard, 6 Required Baselines, and the sfGFP (2B3P) — linker — mCherry (2H5Q) Fusion Demo.
+"""Evaluate Part 4 with non-circular tests and a demonstration on real coordinates.
 
-Runs:
-  1. 5-fold cluster-disjoint (`homology_cluster_id`) cross-validation of
-     `PairwiseCompatibilityRanker` and the 6 required baselines (`direct_0aa_fusion`,
-     `fixed_ggggs3`, `random_length_matched_gs`, `geometry_only`,
-     `nearest_neighbour_retrieval`, `linkerforge_ranker`) on the 148 natural linker
-     authorities (`91` CATH + `57` DisProt) and on 600 high-confidence proteome-mined
-     linkers (`mined_high_confidence_dfl_call`) from `mined_and_natural_linkers_v1`.
-  2. End-to-end `sfGFP (PDB 2B3P) — linker — mCherry (PDB 2H5Q)` fusion demonstration
-     across `flexible`, `rigid`, and `flexible+cleavable (TEV)` user modes, exporting
-     the ranked candidate table, deterministic hard-rejection scorecard, and 3D `.pdb` +
-     PyMOL `.pml` scripts under `reports/structures/`.
+Writes `reports/part4_end_to_end_ranker_and_sfgfp_mcherry_2026-10-19.json`.
+Sections:
+  scorecard_on_real_linkers      rule sensitivity on real linkers (geometry rules: CATH tier only)
+  corruption_check               constructed corruptions (by construction; NOT evidence of quality)
+  decoy_ranking                  true linker vs length/rigidity-matched real linkers (chance 1/(K+1))
+  generator_comparison           six design strategies on 91 coordinate-complete natural linkers
+  fusion_demo                    schematic assembly on real 2B3P / 2H5Q coordinates
 """
 
 from __future__ import annotations
@@ -19,6 +14,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import random
 from pathlib import Path
 import sys
 
@@ -31,141 +27,131 @@ from linkerforge.dataset_v1 import (  # noqa: E402
     load_linker_records,
 )
 from linkerforge.pipeline import (  # noqa: E402
+    LENGTH_POLICIES,
     AuthoritySequenceIndex,
-    evaluate_six_baselines_benchmark,
+    corruption_check,
+    decoy_ranking_benchmark,
     fit_pairwise_compatibility_ranker,
-    run_sfgfp_mcherry_fusion_demo,
+    generator_comparison_on_cath,
+    run_fusion_demo,
+    scorecard_on_real_linkers,
 )
+from linkerforge.properties import load_library  # noqa: E402
+
+MINED_SAMPLE = 600
+FINAL_MINED_SAMPLE = 2000
+SAMPLE_SEED = 20261019
 
 
-def run_evaluation(dataset_dir: Path, out_path: Path) -> dict:
+def run(dataset_dir: Path, out_path: Path) -> dict:
     manifest = load_dataset_manifest(dataset_dir)
     manifest_sha = hashlib.sha256((dataset_dir / "manifest.json").read_bytes()).hexdigest()
+    cath = list(load_linker_records(dataset_dir, tiers=["natural_cath_pdb_verified"]))
+    disprot = list(load_linker_records(dataset_dir, tiers=["natural_disprot_curated_dfl"]))
+    natural = cath + disprot
+    mined_hi = list(load_linker_records(dataset_dir, tiers=["mined_high_confidence_dfl_call"]))
+    mined_prov = list(load_linker_records(dataset_dir, tiers=["mined_provisional_dfl_candidate"]))
+    templates = list(load_linker_records(dataset_dir, tiers=["literature_engineered_template"]))
 
-    natural_records = load_linker_records(
-        dataset_dir,
-        tiers=["natural_cath_pdb_verified", "natural_disprot_curated_dfl"],
-    )
-    mined_hi = load_linker_records(
-        dataset_dir,
-        tiers=["mined_high_confidence_dfl_call"],
-    )
-    templates = load_linker_records(
-        dataset_dir,
-        tiers=["literature_engineered_template"],
-    )
+    rng = random.Random(SAMPLE_SEED)
+    shuffled = mined_hi[:]
+    rng.shuffle(shuffled)
+    mined_eval = shuffled[:MINED_SAMPLE]
+    mined_decoys = shuffled[MINED_SAMPLE:]
+    mined_final = shuffled[:FINAL_MINED_SAMPLE]
 
-    # 1. Held-out cluster-disjoint evaluation on 148 natural authorities
-    bench_natural = evaluate_six_baselines_benchmark(
-        natural_records,
-        n_folds=5,
-        seed=23,
-    )
-
-    # 2. Held-out cluster-disjoint evaluation on 600 proteome-mined high-confidence linkers
-    bench_mined = evaluate_six_baselines_benchmark(
-        mined_hi[:600],
-        n_folds=5,
-        seed=23,
+    print("1/5 rule sensitivity on real linkers", flush=True)
+    sens = scorecard_on_real_linkers(
+        {
+            "natural_cath_pdb_verified": cath,
+            "natural_disprot_curated_dfl": disprot,
+            "literature_engineered_template": templates,
+            "mined_high_confidence_dfl_call": mined_hi,
+            "mined_provisional_dfl_candidate": mined_prov,
+        }
     )
 
-    # Fit full production ranker and authority index on natural + high-confidence mined authorities
-    full_train = list(natural_records) + list(mined_hi[:1200]) + list(templates)
-    ranker = fit_pairwise_compatibility_ranker(full_train, seed=23)
-    full_auth_index = AuthoritySequenceIndex(
-        list(natural_records) + list(mined_hi) + list(templates)
-    )
+    print("2/5 constructed corruptions (by construction)", flush=True)
+    corr = {
+        "natural_148": corruption_check(natural),
+        "mined_high_confidence_sample_600": corruption_check(mined_eval),
+    }
 
-    # 3. sfGFP (2B3P) — linker — mCherry (2H5Q) end-to-end demonstrations
-    demo_flexible = run_sfgfp_mcherry_fusion_demo(
+    print("3/5 decoy ranking", flush=True)
+    decoy = {
+        "natural_148_queries_vs_mined_decoys": decoy_ranking_benchmark(natural, mined_hi),
+        "mined_sample_600_queries_vs_unsampled_mined_decoys": decoy_ranking_benchmark(
+            mined_eval, mined_decoys
+        ),
+    }
+
+    print("4/5 generator comparison", flush=True)
+    gen = {p: generator_comparison_on_cath(natural, length_policy=p) for p in LENGTH_POLICIES}
+
+    print("5/5 fusion demo on real coordinates", flush=True)
+    ranker = fit_pairwise_compatibility_ranker(natural + mined_final + templates)
+    index = AuthoritySequenceIndex(natural + mined_hi + templates)
+    demo = run_fusion_demo(
         ranker,
-        full_auth_index,
-        requested_rigidity="flexible",
-        requested_cleavable=False,
-        target_length=15,
-        required_path_length_A=28.4,
+        index,
+        load_library(),
+        pdb_dir=ROOT / "data" / "raw" / "pdb",
+        out_dir=ROOT / "reports" / "structures",
     )
-    demo_rigid = run_sfgfp_mcherry_fusion_demo(
-        ranker,
-        full_auth_index,
-        requested_rigidity="rigid",
-        requested_cleavable=False,
-        target_length=18,
-        required_path_length_A=28.4,
-    )
-    demo_cleavable = run_sfgfp_mcherry_fusion_demo(
-        ranker,
-        full_auth_index,
-        requested_rigidity="flexible",
-        requested_cleavable=True,
-        protease_family="TEV",
-        target_length=19,
-        required_path_length_A=28.4,
-    )
-
-    # Write 3D PDB and PyMOL .pml files for the top sfGFP-mCherry constructs
-    struct_dir = out_path.parent / "structures"
-    struct_dir.mkdir(parents=True, exist_ok=True)
-    for mode_key, demo_obj in [
-        ("sfgfp_mcherry_flexible", demo_flexible),
-        ("sfgfp_mcherry_rigid", demo_rigid),
-        ("sfgfp_mcherry_tev_cleavable", demo_cleavable),
-    ]:
-        pdb_file = struct_dir / f"{mode_key}.pdb"
-        pml_file = struct_dir / f"{mode_key}.pml"
-        pdb_file.write_text(demo_obj["fusion_3d_structure"]["pdb_text"], encoding="utf-8")
-        pml_file.write_text(demo_obj["fusion_3d_structure"]["pymol_pml_script"], encoding="utf-8")
-        # Keep JSON concise by storing line counts and relative artifact paths alongside preview
-        demo_obj["fusion_3d_structure"]["pdb_artifact_relpath"] = f"reports/structures/{mode_key}.pdb"
-        demo_obj["fusion_3d_structure"]["pml_artifact_relpath"] = f"reports/structures/{mode_key}.pml"
-        del demo_obj["fusion_3d_structure"]["pdb_text"]
 
     payload = {
-        "schema_version": "1.0.0",
+        "schema_version": "2.0.0",
         "dataset_id": manifest["dataset_id"],
         "dataset_manifest_sha256": manifest_sha,
-        "authority_index_size": len(natural_records) + len(mined_hi) + len(templates),
-        "ranker_parameters": {
+        "sampling": {
+            "seed": SAMPLE_SEED,
+            "mined_high_confidence_available": len(mined_hi),
+            "mined_eval_sample": len(mined_eval),
+            "mined_final_ranker_sample": len(mined_final),
+        },
+        "ranker": {
             "feature_names": list(ranker.feature_names),
             "weights": list(ranker.weights),
+            "initialisation": "zero",
             "outputs_fusion_success_probability": False,
         },
-        "benchmark_natural_authorities_148": bench_natural,
-        "benchmark_proteome_mined_high_confidence_600": bench_mined,
-        "sfgfp_2b3p_mcherry_2h5q_demos": {
-            "flexible_15aa": demo_flexible,
-            "rigid_18aa": demo_rigid,
-            "flexible_tev_cleavable_19aa": demo_cleavable,
-        },
+        "scorecard_on_real_linkers": sens,
+        "corruption_check": corr,
+        "decoy_ranking": decoy,
+        "generator_comparison": gen,
+        "fusion_demo": demo,
     }
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    out_path.write_text(json.dumps(payload, indent=2, sort_keys=True, default=str) + "\n", encoding="utf-8")
     return payload
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--dataset-dir", type=Path, default=DEFAULT_DATASET_DIR)
-    parser.add_argument(
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--dataset-dir", type=Path, default=DEFAULT_DATASET_DIR)
+    ap.add_argument(
         "--out",
         type=Path,
         default=ROOT / "reports" / "part4_end_to_end_ranker_and_sfgfp_mcherry_2026-10-19.json",
     )
-    args = parser.parse_args()
-    res = run_evaluation(args.dataset_dir, args.out)
-    b_nat = res["benchmark_natural_authorities_148"]
-    print("Part 4 Natural Authorities (148) vs 6 Synthetic Corruptions:")
-    print(
-        f"  Top-1 Natural Rank = {b_nat['natural_vs_6_synthetic_corruptions']['top1_natural_rank_accuracy']:.4f} "
-        f"| MRR = {b_nat['natural_vs_6_synthetic_corruptions']['mrr_natural_rank']:.4f}"
-    )
-    print("Part 4 Six Baselines Comparison (Natural Authorities 148):")
-    for m, stats in b_nat["six_baselines_comparison"].items():
-        print(
-            f"  {m:30s} | HardPass={stats['mean_hard_rejection_pass']:.4f} "
-            f"| Score={stats['mean_compatibility_score']:.4f} "
-            f"| WinVsNegs={stats['mean_pairwise_win_rate_vs_synthetic_negatives']:.4f}"
-        )
+    args = ap.parse_args()
+    res = run(args.dataset_dir, args.out)
+    print("\nRULE SENSITIVITY")
+    for tier, v in res["scorecard_on_real_linkers"].items():
+        print(f"  {tier:36s} n={v['n_records']:6d} all-rules-pass={v['all_rules_pass_rate']}")
+    for k, v in res["decoy_ranking"].items():
+        print(f"\nDECOY {k}: n={v['n_queries']} skipped={v['n_skipped_too_few_decoys']} chance={v['chance']}")
+        for a, m in v["arms"].items():
+            print(f"  {a:28s} hit@1={m['hit_at_1']['mean']} mrr={m['mrr']['mean']} ci={m['mrr']['ci95']}")
+    for p, v in res["generator_comparison"].items():
+        print(f"\nGENERATORS ({p}) n={v['n_queries']}")
+        for g, m in v["methods"].items():
+            print(
+                f"  {g:28s} closure={m['span_closure_pass']['mean']} rules={m['all_rules_pass']['mean']} "
+                f"len<=2={m['length_within_2aa_of_natural']['mean']} cos={m['composition_cosine_to_natural']['mean']}"
+            )
+    d = res["fusion_demo"]
+    print("\nDEMO placement:", d["placement"])
 
 
 if __name__ == "__main__":

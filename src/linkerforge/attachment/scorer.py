@@ -1,30 +1,30 @@
-"""Two-Tower Attachment-Site Scorer and Closed-Form Geometric Site-Pair Re-Ranker.
+"""Position-controlled attachment-site scorer and closed-form geometric site-pair re-ranker.
 
 Implements Component 4 (`ARCHITECTURE_HANDOFF.md` section 6):
-  1. Two-Tower Single-Domain Attachment Scorer (`TwoTowerAttachmentScorer`):
-     - Scores each residue of Domain A and Domain B independently for linker
-       attachment / loop interruption tolerance.
-     - Keeps `rigidity` and `cleavability` tick-boxes strictly out of the
-       single-domain tolerance encoder so one trained tolerance scorer serves
-       all downstream design modes.
-     - Combines local backbone flexibility / loop propensity features (learned
-       via regularized logistic + 2-layer MLP scoring on single-domain boundary
-       tolerance examples) with 3D Shrake-Rupley relative solvent accessibility
-       (`rASA`) and local C-alpha curvature when 3D structure coordinates are
-       supplied.
-  2. Closed-Form Geometric Site-Pair Re-Ranker (`rank_attachment_site_pairs`):
-     - Combines the factorized two-tower tolerance scores `(s_A(i), s_B(j))`
-       with Component 3's deterministic 3D geometry calculator (`evaluate_junction`,
-       `required_length`, `verdict_for_requested_length`, `implied_chain_topology`).
-     - Supports both `end_to_end_tandem` (1 polypeptide tether) and
-       `internal_insertion_two_tether` (2 polypeptide tethers leaving and
-       re-entering the host domain).
-  3. Held-Out Domain-Family Benchmark (`evaluate_attachment_scorer_benchmark`):
-     - Evaluates single-domain attachment-site recovery on cluster-disjoint
-       folds (`homology_cluster_id`), reporting AUROC, Average Precision (APS),
-       Precision at fixed 10% and 20% coverage, and Top-1 / Top-3 / Top-5 port
-       recovery accuracy against random, sequence-only, SASA-only, and terminal
-       distance baselines.
+  1. `TwoTowerAttachmentScorer` -- a regularized logistic model over ten
+     *position-free* local sequence features (loop/turn propensity, hydrophilicity,
+     backbone-flexibility scales, Gly/Pro/Ser/Asn/Asp, bulky-hydrophobic and charged
+     fractions, loop contrast).  The two positional features of the 12-slot feature
+     vector (`term_prox`, `rel_interior`) are retained in the vector for API
+     compatibility but their weights are fixed to zero, because training or
+     evaluating with them lets a model recover the label from residue position alone.
+     `rigidity` / `cleavability` tick-boxes never enter the encoder.
+  2. `score_residue_with_structure` -- a hand-set (NOT learned) heuristic that mixes
+     the sequence score with Shrake-Rupley relative accessibility and a coarse C-alpha
+     curvature class when coordinates are supplied.  Its weights (0.52 / 0.38 / +-0.2)
+     are design constants and have no held-out validation.
+  3. `rank_attachment_site_pairs` -- combines the per-site scores with the
+     deterministic junction geometry from `linkerforge.geometry`.
+  4. `evaluate_attachment_scorer_benchmark` -- a position-matched control: for every
+     linker-flanking sequence window, residues adjacent to the linker (positives) are
+     compared with residues at the same offset from the opposite truncation edge of the
+     same window (negatives), so residue position carries no information.  Evaluation is
+     cluster-disjoint (`homology_cluster_id`) with cluster-bootstrap confidence
+     intervals.  `diagnose_original_task_leakage` reproduces the earlier benchmark
+     design to document why its near-perfect scores were uninformative.
+
+Scope: positives mean "adjacent to a natural inter-domain linker".  This is NOT an
+experimentally measured insertion/attachment tolerance label.
 """
 
 from __future__ import annotations
@@ -307,6 +307,42 @@ class TwoTowerAttachmentScorer:
         return max(0.01, min(0.99, combined))
 
 
+POSITION_FREE_FEATURE_INDICES: tuple[int, ...] = (0, 1, 2, 3, 4, 5, 6, 7, 8, 10)
+POSITIONAL_FEATURE_INDICES: tuple[int, ...] = (9, 11)
+MIN_WINDOW_LENGTH = 25
+EDGE_OFFSETS: tuple[int, ...] = (0, 1, 2)
+
+_FALLBACK_WEIGHTS = (0.35, 0.30, 0.25, 0.20, 0.35, 0.20, 0.40, -0.45, 0.15, 0.0, 0.25, 0.0)
+
+
+def matched_offset_positions(sequence_length: int, *, linker_side: str) -> tuple[list[int], list[int]]:
+    """Return (positive, negative) 0-based positions with identical edge offsets.
+
+    `linker_side="c_terminal"`: the linker follows the end of this window (left flank), so
+    positives are the last residues and negatives the first residues.  `"n_terminal"` is the
+    mirror image (right flank).  Both sets sit at offsets 0, 1, 2 from a truncation edge of
+    the same window, so position-dependent window clipping affects them identically.
+    """
+    n = sequence_length
+    near_edge = [n - 1 - k for k in EDGE_OFFSETS]
+    far_edge = list(EDGE_OFFSETS)
+    if linker_side == "c_terminal":
+        return near_edge, far_edge
+    if linker_side == "n_terminal":
+        return far_edge, near_edge
+    raise ValueError(f"linker_side must be 'c_terminal' or 'n_terminal', got {linker_side!r}")
+
+
+def _flank_windows(row: dict[str, Any]) -> list[tuple[str, str]]:
+    flank = row.get("flanking_context") or {}
+    out: list[tuple[str, str]] = []
+    for key, side in (("left_flank_sequence", "c_terminal"), ("right_flank_sequence", "n_terminal")):
+        seq = str(flank.get(key) or "").strip().upper()
+        if len(seq) >= MIN_WINDOW_LENGTH:
+            out.append((side, seq))
+    return out
+
+
 def fit_two_tower_attachment_scorer(
     training_records: Sequence[dict[str, Any]],
     *,
@@ -314,55 +350,25 @@ def fit_two_tower_attachment_scorer(
     lr: float = 0.08,
     l2_reg: float = 0.01,
 ) -> TwoTowerAttachmentScorer:
-    """Fit `TwoTowerAttachmentScorer` on single-domain natural boundary vs core examples."""
+    """Fit the scorer on position-matched examples using position-free features only.
+
+    Positives: the three residues adjacent to a natural linker.  Negatives: the three
+    residues at the same offset from the opposite edge of the same flank window.  The
+    positional feature slots (`term_prox`, `rel_interior`) receive weight 0.
+    """
     x_rows: list[list[float]] = []
     y_rows: list[int] = []
-
     for rec in training_records:
-        flank = rec.get("flanking_context") or {}
-        left_seq = str(flank.get("left_flank_sequence") or "")
-        right_seq = str(flank.get("right_flank_sequence") or "")
-
-        # Left domain: C-terminal attachment boundary (last 3 residues = positive; interior = negative)
-        if len(left_seq) >= 25:
-            n_l = len(left_seq)
-            for pos in range(max(0, n_l - 3), n_l):
-                x_rows.append(
-                    extract_residue_tolerance_features(
-                        left_seq, pos, attachment_mode="c_terminal"
-                    )
-                )
-                y_rows.append(1)
-            for pos in range(4, n_l - 8, max(1, (n_l - 12) // 4)):
-                x_rows.append(
-                    extract_residue_tolerance_features(
-                        left_seq, pos, attachment_mode="c_terminal"
-                    )
-                )
-                y_rows.append(0)
-
-        # Right domain: N-terminal attachment boundary (first 3 residues = positive; interior = negative)
-        if len(right_seq) >= 25:
-            n_r = len(right_seq)
-            for pos in range(0, min(3, n_r)):
-                x_rows.append(
-                    extract_residue_tolerance_features(
-                        right_seq, pos, attachment_mode="n_terminal"
-                    )
-                )
-                y_rows.append(1)
-            for pos in range(8, n_r - 4, max(1, (n_r - 12) // 4)):
-                x_rows.append(
-                    extract_residue_tolerance_features(
-                        right_seq, pos, attachment_mode="n_terminal"
-                    )
-                )
-                y_rows.append(0)
+        for side, seq in _flank_windows(rec):
+            pos_idx, neg_idx = matched_offset_positions(len(seq), linker_side=side)
+            for idx, y in [(i, 1) for i in pos_idx] + [(i, 0) for i in neg_idx]:
+                feats = extract_residue_tolerance_features(seq, idx, attachment_mode="any")
+                x_rows.append([feats[d] for d in POSITION_FREE_FEATURE_INDICES])
+                y_rows.append(y)
 
     if not x_rows:
-        # Fallback analytical weights if empty training set
         return TwoTowerAttachmentScorer(
-            weights=(0.35, 0.30, 0.25, 0.20, 0.35, 0.20, 0.40, -0.45, 0.15, 0.85, 0.25, -0.35),
+            weights=_FALLBACK_WEIGHTS,
             bias=0.0,
             feature_means=tuple(0.0 for _ in range(12)),
             feature_stds=tuple(1.0 for _ in range(12)),
@@ -372,16 +378,10 @@ def fit_two_tower_attachment_scorer(
     n_samples = float(len(x_rows))
     means = [sum(row[d] for row in x_rows) / n_samples for d in range(dim)]
     stds = [
-        max(
-            1e-4,
-            sqrt(sum((row[d] - means[d]) ** 2 for row in x_rows) / n_samples),
-        )
+        max(1e-4, sqrt(sum((row[d] - means[d]) ** 2 for row in x_rows) / n_samples))
         for d in range(dim)
     ]
-    x_norm = [
-        [(row[d] - means[d]) / stds[d] for d in range(dim)]
-        for row in x_rows
-    ]
+    x_norm = [[(row[d] - means[d]) / stds[d] for d in range(dim)] for row in x_rows]
 
     w = [0.0] * dim
     b = 0.0
@@ -389,14 +389,12 @@ def fit_two_tower_attachment_scorer(
     neg_count = max(1, len(y_rows) - pos_count)
     pos_weight = len(y_rows) / (2.0 * pos_count)
     neg_weight = len(y_rows) / (2.0 * neg_count)
-
     for _ in range(epochs):
         grad_w = [0.0] * dim
         grad_b = 0.0
         for feats, y in zip(x_norm, y_rows):
             pred = _sigmoid(b + sum(wj * xj for wj, xj in zip(w, feats)))
-            sample_w = pos_weight if y == 1 else neg_weight
-            err = (pred - float(y)) * sample_w
+            err = (pred - float(y)) * (pos_weight if y == 1 else neg_weight)
             grad_b += err
             for d in range(dim):
                 grad_w[d] += err * feats[d]
@@ -404,11 +402,18 @@ def fit_two_tower_attachment_scorer(
         for d in range(dim):
             w[d] -= lr * ((grad_w[d] / n_samples) + l2_reg * w[d])
 
+    full_w = [0.0] * 12
+    full_mu = [0.0] * 12
+    full_sd = [1.0] * 12
+    for local, slot in enumerate(POSITION_FREE_FEATURE_INDICES):
+        full_w[slot] = round(w[local], 6)
+        full_mu[slot] = round(means[local], 6)
+        full_sd[slot] = round(stds[local], 6)
     return TwoTowerAttachmentScorer(
-        weights=tuple(round(v, 6) for v in w),
+        weights=tuple(full_w),
         bias=round(b, 6),
-        feature_means=tuple(round(v, 6) for v in means),
-        feature_stds=tuple(round(v, 6) for v in stds),
+        feature_means=tuple(full_mu),
+        feature_stds=tuple(full_sd),
     )
 
 
@@ -670,144 +675,172 @@ def _precision_at_coverage(labels: Sequence[int], scores: Sequence[float], cover
     return sum(y for _, y in paired) / float(k)
 
 
+def _auroc_ranks(labels: Sequence[int], scores: Sequence[float]) -> float:
+    """Tie-aware rank-sum AUROC (ties count 0.5)."""
+    n_pos = sum(1 for y in labels if y == 1)
+    n_neg = len(labels) - n_pos
+    if n_pos == 0 or n_neg == 0:
+        return 0.5
+    order = sorted(range(len(scores)), key=lambda i: scores[i])
+    ranks = [0.0] * len(scores)
+    i = 0
+    while i < len(order):
+        j = i
+        while j + 1 < len(order) and scores[order[j + 1]] == scores[order[i]]:
+            j += 1
+        avg = 0.5 * (i + j) + 1.0
+        for k in range(i, j + 1):
+            ranks[order[k]] = avg
+        i = j + 1
+    rank_sum_pos = sum(r for r, y in zip(ranks, labels) if y == 1)
+    return (rank_sum_pos - n_pos * (n_pos + 1) / 2.0) / (n_pos * n_neg)
+
+
+def _cluster_bootstrap_auroc(
+    cluster_ids: Sequence[str],
+    labels: Sequence[int],
+    scores: Sequence[float],
+    *,
+    reps: int = 300,
+    seed: int = 0,
+) -> list[float]:
+    by_cluster: dict[str, list[int]] = defaultdict(list)
+    for idx, cid in enumerate(cluster_ids):
+        by_cluster[cid].append(idx)
+    ids = sorted(by_cluster)
+    rng = random.Random(seed)
+    stats: list[float] = []
+    for _ in range(reps):
+        picked = [rng.choice(ids) for _ in ids]
+        idxs = [i for cid in picked for i in by_cluster[cid]]
+        stats.append(_auroc_ranks([labels[i] for i in idxs], [scores[i] for i in idxs]))
+    stats.sort()
+    return [round(stats[int(0.025 * reps)], 4), round(stats[int(0.975 * reps) - 1], 4)]
+
+
+def _flexibility_propensity(residue: str) -> float:
+    return 0.55 * BACKBONE_FLEXIBILITY.get(residue, 0.98) + 0.45 * (
+        LOOP_TURN_PROPENSITY.get(residue, 0.8) / 1.56
+    )
+
+
 def evaluate_attachment_scorer_benchmark(
     natural_records: Sequence[dict[str, Any]],
     *,
     n_folds: int = 5,
     seed: int = 17,
+    bootstrap_reps: int = 300,
 ) -> dict[str, Any]:
-    """Evaluate single-domain attachment-site scoring on held-out domain families.
+    """Position-matched, cluster-disjoint evaluation of the sequence-context scorer.
 
-    Tests two labeling tasks across 5 cluster-disjoint (`homology_cluster_id`) folds:
-      1. `full_boundary_with_terminal_context`: True attachment port residues (±2 aa at
-         domain boundary) vs domain-interior candidate positions.
-      2. `non_terminal_biophysical_boundary_only`: Tests the `ARCHITECTURE_HANDOFF.md` §6
-         question of whether linker-flanking residues differ biophysically from domain-interior
-         positions when terminal coordinate distance is ablated (`term_prox = 0`).
+    For every flank window the six candidate residues are the three residues adjacent to the
+    linker (label 1) and the three residues at the same offsets from the opposite edge (label 0).
+    Residue position therefore carries no information; the chance level is AUROC 0.5.
+    No label-derived quantity (accessibility, secondary structure) is passed to any arm.
     """
     from linkerforge.retrieval.baseline import assign_cluster_disjoint_folds
 
     folds = assign_cluster_disjoint_folds(natural_records, n_folds=n_folds, seed=seed)
-
-    arm_labels: dict[str, list[int]] = defaultdict(list)
-    arm_scores: dict[str, list[float]] = defaultdict(list)
-    top1_hits: dict[str, int] = defaultdict(int)
-    top3_hits: dict[str, int] = defaultdict(int)
-    total_domains_evaluated = 0
-
     rng = random.Random(seed)
+
+    arm_names = (
+        "sequence_context_logistic",
+        "single_residue_flexibility_propensity",
+        "random_control",
+    )
+    labels: list[int] = []
+    clusters: list[str] = []
+    scores: dict[str, list[float]] = {a: [] for a in arm_names}
+    window_acc: dict[str, list[float]] = {a: [] for a in arm_names}
+    n_windows = 0
 
     for train_rows, test_rows in folds:
         scorer = fit_two_tower_attachment_scorer(train_rows)
-        # Ablated scorer with terminal proximity weight zeroed out
-        w_ablated = list(scorer.weights)
-        w_ablated[9] = 0.0
-        scorer_no_term = TwoTowerAttachmentScorer(
-            weights=tuple(w_ablated),
-            bias=scorer.bias,
-            feature_means=scorer.feature_means,
-            feature_stds=scorer.feature_stds,
-        )
-
         for row in test_rows:
-            flank = row.get("flanking_context") or {}
-            geom = row.get("geometry") or {}
-            sasa_a = float(geom.get("port_a_accessibility_proxy") or 0.42)
-            sasa_b = float(geom.get("port_b_accessibility_proxy") or 0.42)
-
-            for side, seq_key, mode, port_sasa in (
-                ("left", "left_flank_sequence", "c_terminal", sasa_a),
-                ("right", "right_flank_sequence", "n_terminal", sasa_b),
-            ):
-                seq = str(flank.get(seq_key) or "")
-                if len(seq) < 30:
-                    continue
-                total_domains_evaluated += 1
-                n = len(seq)
-
-                # Candidate positions across the 80-aa domain slice
-                pos_indices = (
-                    list(range(n - 3, n))
-                    if mode == "c_terminal"
-                    else list(range(0, 3))
-                )
-                neg_indices = (
-                    list(range(4, n - 6, 3))
-                    if mode == "c_terminal"
-                    else list(range(6, n - 4, 3))
-                )
-                eval_indices = pos_indices + neg_indices
-                labels = [1] * len(pos_indices) + [0] * len(neg_indices)
-
-                domain_scores: dict[str, list[float]] = defaultdict(list)
-                for idx_pos, y in zip(eval_indices, labels):
-                    sim_sasa = port_sasa if y == 1 else max(0.08, port_sasa * 0.55)
-                    ss_prox = "loop" if y == 1 else "helix_core"
-
-                    sc_two_tower = scorer.score_residue_with_structure(
-                        seq,
-                        idx_pos,
-                        relative_sasa=sim_sasa,
-                        ss_proxy=ss_prox,
-                        attachment_mode=mode,
+            cid = str(row.get("homology_cluster_id") or row.get("record_id"))
+            for side, seq in _flank_windows(row):
+                n_windows += 1
+                pos_idx, neg_idx = matched_offset_positions(len(seq), linker_side=side)
+                idxs = pos_idx + neg_idx
+                ys = [1] * len(pos_idx) + [0] * len(neg_idx)
+                per_arm: dict[str, list[float]] = {a: [] for a in arm_names}
+                for i in idxs:
+                    per_arm["sequence_context_logistic"].append(
+                        scorer.score_sequence_position(seq, i, attachment_mode="any")
                     )
-                    sc_seq_only = scorer.score_sequence_position(
-                        seq, idx_pos, attachment_mode=mode
+                    per_arm["single_residue_flexibility_propensity"].append(
+                        _flexibility_propensity(seq[i])
                     )
-                    sc_biophys_only = scorer_no_term.score_sequence_position(
-                        seq, idx_pos, attachment_mode=mode
-                    )
-                    sc_prodomino_proxy = 0.55 * BACKBONE_FLEXIBILITY.get(
-                        seq[idx_pos], 0.98
-                    ) + 0.45 * (LOOP_TURN_PROPENSITY.get(seq[idx_pos], 0.8) / 1.56)
-                    sc_random = rng.random()
+                    per_arm["random_control"].append(rng.random())
+                labels.extend(ys)
+                clusters.extend([cid] * len(ys))
+                for a in arm_names:
+                    scores[a].extend(per_arm[a])
+                    window_acc[a].append(_auroc_ranks(ys, per_arm[a]))
 
-                    domain_scores["two_tower_structure_plus_sequence"].append(sc_two_tower)
-                    domain_scores["two_tower_sequence_only"].append(sc_seq_only)
-                    domain_scores["biophysical_loop_flexibility_no_terminal_prior"].append(
-                        sc_biophys_only
-                    )
-                    domain_scores["prodomino_flexibility_propensity_baseline"].append(
-                        sc_prodomino_proxy
-                    )
-                    domain_scores["random_control"].append(sc_random)
-
-                for arm_name, sc_list in domain_scores.items():
-                    arm_labels[arm_name].extend(labels)
-                    arm_scores[arm_name].extend(sc_list)
-                    ranked_pairs = sorted(zip(sc_list, labels), key=lambda x: -x[0])
-                    if ranked_pairs[0][1] == 1:
-                        top1_hits[arm_name] += 1
-                    if any(y == 1 for _, y in ranked_pairs[:3]):
-                        top3_hits[arm_name] += 1
-
-    summary_arms: dict[str, Any] = {}
-    for arm_name in arm_scores:
-        auroc, aps = _compute_auroc_and_aps(arm_labels[arm_name], arm_scores[arm_name])
-        p10 = _precision_at_coverage(arm_labels[arm_name], arm_scores[arm_name], 0.10)
-        p20 = _precision_at_coverage(arm_labels[arm_name], arm_scores[arm_name], 0.20)
-        summary_arms[arm_name] = {
-            "evaluated_domains": total_domains_evaluated,
-            "evaluated_residue_candidates": len(arm_labels[arm_name]),
-            "positive_port_residues": sum(arm_labels[arm_name]),
-            "auroc": round(auroc, 4),
-            "average_precision_aps": round(aps, 4),
-            "precision_at_10pct_coverage": round(p10, 4),
-            "precision_at_20pct_coverage": round(p20, 4),
-            "top1_port_recovery_count": top1_hits[arm_name],
-            "top1_port_recovery_rate": round(
-                top1_hits[arm_name] / max(1, total_domains_evaluated), 4
+    arms: dict[str, Any] = {}
+    for a in arm_names:
+        arms[a] = {
+            "auroc_pooled": round(_auroc_ranks(labels, scores[a]), 4),
+            "auroc_cluster_bootstrap_95ci": _cluster_bootstrap_auroc(
+                clusters, labels, scores[a], reps=bootstrap_reps, seed=seed
             ),
-            "top3_port_recovery_count": top3_hits[arm_name],
-            "top3_port_recovery_rate": round(
-                top3_hits[arm_name] / max(1, total_domains_evaluated), 4
-            ),
+            "within_window_auroc_mean": round(sum(window_acc[a]) / max(1, len(window_acc[a])), 4),
         }
-
     return {
+        "task": "position_matched_adjacent_to_linker_vs_opposite_edge_same_window",
+        "chance_auroc": 0.5,
         "n_folds": n_folds,
         "seed": seed,
-        "evaluated_natural_records": len(natural_records),
-        "evaluated_single_domains": total_domains_evaluated,
-        "arms": summary_arms,
+        "n_records": len(natural_records),
+        "n_windows": n_windows,
+        "n_candidate_residues": len(labels),
+        "n_homology_clusters": len(set(clusters)),
+        "label_meaning": "adjacent to a natural inter-domain linker (not an experimental tolerance label)",
+        "arms": arms,
+    }
+
+
+def diagnose_original_task_leakage(natural_records: Sequence[dict[str, Any]]) -> dict[str, Any]:
+    """Reproduce the earlier benchmark design and show position alone solves it.
+
+    Original design: positives = last three (left) / first three (right) residues of the window,
+    negatives = interior residues.  Any score that is a function of residue position alone
+    separates these perfectly, so the earlier near-1.0 AUROC (and its "no terminal prior"
+    ablation, which left the second positional feature in place) carried no information.
+    The earlier structure arm additionally set accessibility and secondary-structure inputs
+    from the label itself; that arm is not reproduced here.
+    """
+    labels: list[int] = []
+    pos_only: list[float] = []
+    rel_interior_only: list[float] = []
+    for row in natural_records:
+        for side, seq in _flank_windows(row):
+            n = len(seq)
+            if side == "c_terminal":
+                pos_idx = list(range(n - 3, n))
+                neg_idx = list(range(4, n - 6, 3))
+            else:
+                pos_idx = list(range(0, 3))
+                neg_idx = list(range(6, n - 4, 3))
+            for idx, y in [(i, 1) for i in pos_idx] + [(i, 0) for i in neg_idx]:
+                labels.append(y)
+                dist_n = idx / float(max(1, n - 1))
+                dist_c = (n - 1 - idx) / float(max(1, n - 1))
+                if side == "c_terminal":
+                    pos_only.append(exp(-float(n - 1 - idx) / 6.0))
+                else:
+                    pos_only.append(exp(-float(idx) / 6.0))
+                rel_interior_only.append(1.0 - 4.0 * dist_n * dist_c)
+    return {
+        "original_design": "last/first 3 residues vs interior residues of the same window",
+        "n_candidate_residues": len(labels),
+        "n_positive_residues": sum(labels),
+        "auroc_position_only_term_prox": round(_auroc_ranks(labels, pos_only), 4),
+        "auroc_position_only_rel_interior": round(_auroc_ranks(labels, rel_interior_only), 4),
+        "interpretation": (
+            "A score that depends only on distance to the window edge separates the original "
+            "labels almost perfectly; the original benchmark therefore did not test sequence "
+            "or structure."
+        ),
     }

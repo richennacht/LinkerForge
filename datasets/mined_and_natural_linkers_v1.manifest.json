@@ -1,0 +1,214 @@
+{
+  "authority_tiers": {
+    "literature_engineered_template": {
+      "description": "Literature-curated engineered flexible, rigid, and cleavable linker templates (5..60 aa) from Chen et al. (2013) Adv. Drug Deliv. Rev. 65:1357-1369.",
+      "eligible_for_part2_geometry_and_retrieval": true,
+      "ground_truth_status": "literature_cited_engineered_template"
+    },
+    "mined_domain_gated_interdomain": {
+      "description": "Benchmark-disjoint hetero-domain and explicit linker spans (5..60 aa) mined across >160,000 full-length proteins (UniProtKB/Swiss-Prot, UniProt Explicit Linker Regions, DLD PDB chains, and DisProt_2026_06) via Stage 1 domain-boundary gating and stratified by Stage 2 frozen Seed-31 CNN scores.",
+      "eligible_for_part2_geometry_and_retrieval": true,
+      "ground_truth_status": "model_mined_candidate_never_promoted_to_ground_truth_training_label"
+    },
+    "natural_cath_pdb_verified": {
+      "description": "Coordinate-verified CATH v4.4.0 two-domain natural inter-domain linkers (5..30 aa) with 3D attachment port C-alpha distances and biophysical annotations.",
+      "eligible_for_part2_geometry_and_retrieval": true,
+      "ground_truth_status": "experimental_structure_domain_boundary"
+    },
+    "natural_disprot_curated_dfl": {
+      "curated_spans_longer_than_60aa_excluded_from_design_window": 8,
+      "description": "Curator-validated DisProt_2026_06 IDPO:0000033 flexible linker spans (5..60 aa) from the benchmark-disjoint B1 V2 train and development splits.",
+      "eligible_for_part2_geometry_and_retrieval": true,
+      "ground_truth_status": "curator_validated_experimental_dfl"
+    }
+  },
+  "classifier_provenance": {
+    "checkpoint_sha256": "c0d356c55ed83807353e66b875501c61b17f0b9b83f2910c0f1147f6409fdf6f",
+    "conformal_two_stage_threshold": 0.6391201615333557,
+    "encoder": "facebook/esm2_t12_35M_UR50D",
+    "frozen_residue_threshold": 0.7351981997489929,
+    "model_architecture": "ThreeLayerDFLCNN",
+    "provisional_span_threshold": 0.5,
+    "seed": 31
+  },
+  "counts_by_tier": {
+    "b3_no_linker_specificity_panel": 40,
+    "literature_engineered_template": 23,
+    "mined_domain_gap_abstained": 0,
+    "mined_high_confidence_dfl_call": 6556,
+    "mined_provisional_dfl_candidate": 21039,
+    "natural_cath_pdb_verified": 91,
+    "natural_disprot_curated_dfl": 57
+  },
+  "dataset_id": "mined_and_natural_linkers_v1",
+  "files": {
+    "all_records_jsonl": {
+      "path": "all_records.jsonl",
+      "records": 27766,
+      "sha256": "536ef05d13cdc215e576a869822bc7b68c48bf08069d0ed1ad0f0c5099095c9b"
+    },
+    "b3_no_linker_specificity_panel_jsonl": {
+      "path": "b3_no_linker_specificity_panel.jsonl",
+      "records": 40,
+      "sha256": "961257a39b1b6f2a5083b76755af076a205fcd4a29c3d6f91e0bda8deee2e7f0"
+    },
+    "mined_candidates_jsonl": {
+      "path": "mined_candidates.jsonl",
+      "records": 27595,
+      "sha256": "829c52042b4892516d65eaf9e2de6860e79157ef316cc4039c65b1e285d57486"
+    },
+    "natural_authorities_jsonl": {
+      "path": "natural_authorities.jsonl",
+      "records": 148,
+      "sha256": "e8108c4d45d9115e8ee056d55a15f25e3b4fe070f55ec062bc2758b13bfb9f40"
+    },
+    "template_authorities_jsonl": {
+      "path": "template_authorities.jsonl",
+      "records": 23,
+      "sha256": "9599130c03dbe8a3495b90b109e103c19aafbf7c30d114597eea33f226d70ad8"
+    }
+  },
+  "limitations": [
+    "Mined candidates (`mined_high_confidence_dfl_call`, `mined_provisional_dfl_candidate`, `mined_domain_gap_abstained`) are model-scored inter-domain spans and are strictly segregated from curated ground-truth authorities (`natural_cath_pdb_verified`, `natural_disprot_curated_dfl`).",
+    "Two-stage domain-gated conformal calibration (B2) guarantees finite-sample risk control on known labels within family-disjoint multi-domain spans, while unannotated DisProt residues (`x`) remain unknown rather than negative.",
+    "CATH v4.4.0 natural linkers (`natural_cath_pdb_verified`) have coordinate-verified domain boundaries and 3D port distances (`inter_port_ca_distance_A`), whereas DisProt curated and proteome-mined spans are sequence-and-domain-resolved without experimental 3D port coordinates."
+  ],
+  "part1_validation_summary": {
+    "b1_family_disjoint_split_passed": true,
+    "b2_conformal_calibration": {
+      "two_stage_domain_gated_development_calibration": {
+        "attained": true,
+        "calibrated_threshold": 0.6391201615333557,
+        "empirical_fdr": 0.010638,
+        "empirical_recall": 0.170018,
+        "false_positives": 1,
+        "stage1_passed_development_proteins": 6,
+        "true_positives": 93,
+        "ucb_fdr_95": 0.049473
+      },
+      "ungated_development_residue_calibration": {
+        "attained": true,
+        "calibrated_threshold": 0.7300417423248291,
+        "empirical_fdr": 0.060914,
+        "empirical_recall": 0.338208,
+        "false_positives": 12,
+        "true_positives": 185,
+        "ucb_fdr_95": 0.096826
+      }
+    },
+    "b3_no_linker_specificity_panel": {
+      "auxiliary_order_proteins": 9,
+      "panel_proteins": 40,
+      "single_or_homo_domain_non_linker_proteins": 31,
+      "two_stage_false_positive_high_confidence_spans": 1,
+      "two_stage_false_positive_provisional_spans": 2,
+      "two_stage_protein_specificity": 0.975
+    }
+  },
+  "proteome_mining_funnel": {
+    "breakdown_by_source_corpus": {
+      "DLD_PDB_Structural_Domain_Linkers": {
+        "mined_domain_gap_abstained": 0,
+        "mined_high_confidence_dfl_call": 122,
+        "mined_provisional_dfl_candidate": 1240
+      },
+      "DisProt_2026_06_Pfam_Gaps": {
+        "mined_domain_gap_abstained": 0,
+        "mined_high_confidence_dfl_call": 88,
+        "mined_provisional_dfl_candidate": 250
+      },
+      "UniProtKB_Explicit_Linker_Regions": {
+        "mined_domain_gap_abstained": 0,
+        "mined_high_confidence_dfl_call": 1708,
+        "mined_provisional_dfl_candidate": 6336
+      },
+      "UniProtKB_SwissProt_Reviewed_MultiDomain": {
+        "mined_domain_gap_abstained": 0,
+        "mined_high_confidence_dfl_call": 4638,
+        "mined_provisional_dfl_candidate": 13213
+      }
+    },
+    "disprot_proteins_scanned": 3337,
+    "disprot_stage1_hetero_pfam_spans_scored": 338,
+    "dld_structural_linker_spans_scored": 1362,
+    "dld_structural_proteins_scanned": 2620,
+    "swissprot_reviewed_proteins_scanned": 135407,
+    "swissprot_stage1_hetero_domain_proteins": 15771,
+    "swissprot_stage1_hetero_domain_spans_scored": 17851,
+    "swissprot_two_or_more_domains": 40948,
+    "top_20_organisms_by_mined_spans": {
+      "Arabidopsis thaliana": 816,
+      "Bacillus subtilis": 170,
+      "Bos taurus": 445,
+      "Caenorhabditis elegans": 314,
+      "Danio rerio": 243,
+      "Dictyostelium discoideum": 221,
+      "Drosophila melanogaster": 293,
+      "Escherichia coli": 329,
+      "Gallus gallus": 265,
+      "Homo sapiens": 1735,
+      "Mus musculus": 1725,
+      "Mycobacterium tuberculosis": 137,
+      "Oryza sativa subsp. japonica": 333,
+      "Pongo abelii": 151,
+      "Rattus norvegicus": 827,
+      "Saccharomyces cerevisiae": 213,
+      "Schizosaccharomyces pombe": 190,
+      "Staphylococcus aureus": 370,
+      "Sus scrofa": 104,
+      "Xenopus laevis": 252
+    },
+    "total_called_dfl_linkers_high_plus_provisional": 27595,
+    "total_full_length_proteins_scanned": 161317,
+    "total_stage2_cnn_scored_candidate_spans": 27595,
+    "total_unreviewed_proteome_domain_gaps_audited": 184554,
+    "uniprot_explicit_linker_proteins_scanned": 19862,
+    "uniprot_explicit_linker_spans_scored": 8044,
+    "unreviewed_reference_proteomes_stage1_audit": {
+      "expanded_arabidopsis_v2": {
+        "stage1_hetero_domain_gaps_5_to_60aa": 2132,
+        "total_domain_gap_observations": 5293
+      },
+      "expanded_cow_v2": {
+        "stage1_hetero_domain_gaps_5_to_60aa": 7591,
+        "total_domain_gap_observations": 20150
+      },
+      "expanded_drosophila_v2": {
+        "stage1_hetero_domain_gaps_5_to_60aa": 3361,
+        "total_domain_gap_observations": 11733
+      },
+      "expanded_human_v2": {
+        "stage1_hetero_domain_gaps_5_to_60aa": 14977,
+        "total_domain_gap_observations": 38409
+      },
+      "expanded_maize_v2": {
+        "stage1_hetero_domain_gaps_5_to_60aa": 6585,
+        "total_domain_gap_observations": 13251
+      },
+      "expanded_mouse_v2": {
+        "stage1_hetero_domain_gaps_5_to_60aa": 5753,
+        "total_domain_gap_observations": 16064
+      },
+      "expanded_wheat_v2": {
+        "stage1_hetero_domain_gaps_5_to_60aa": 13290,
+        "total_domain_gap_observations": 28255
+      },
+      "expanded_zebrafish_v2": {
+        "stage1_hetero_domain_gaps_5_to_60aa": 16514,
+        "total_domain_gap_observations": 51399
+      }
+    }
+  },
+  "schema_version": "1.0.0",
+  "source_pins": {
+    "b1_v2_split_manifest_sha256": "d62136ce699294a0c07f0fa01a5350d3571643796cedadaf37d8399824893452",
+    "caid3_registry_sha256": "4c204ef49ffa12fe166883e6b2cff0012cabee21260b8f32f997081d0e2fa0f8",
+    "cath_full_pilot_sha256": "20deca0e0bff4d1c68b245cc4e15756fc4e6462537c67a7d4508b5f8f58cfd85",
+    "curated_template_library_sha256": "f49e791772ef4ee69bffeb8588a1f0dd3c3c5e16c02675adae6c66e69c25e22e",
+    "disprot_2026_06_sha256": "1fdfce26a3ea9b626e63559f36abd86e023b50b612dc2c8756acbb08edead140",
+    "dp94_registry_sha256": "fe64e7c688cfac48ed0dac73bcf09daae5cb0adfd0e03e9d530824d3d92c0051",
+    "swissprot_all_domains_tsv_gz_sha256": "bffa23d4138264c518fdd1296018b16940193af016056122b89dd01bd83f5703",
+    "uniprot_all_explicit_linkers_tsv_gz_sha256": "f571891725db3edd1de7d68c38b7b56e60ddcfc5c1b653c65af6f7508b5fde4c"
+  },
+  "status": "part1_completed_provenance_stratified_for_part2_design_and_retrieval"
+}

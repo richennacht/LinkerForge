@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0.0",
+  "status": "frozen_before_caid3_b1_v2_retrospective",
+  "claim_status": "post_hoc_retrospective_not_untouched",
+  "frozen_at_utc": "2026-10-25T00:16:55Z",
+  "selection_basis": "b1_v2_development_only",
+  "selection_rule": "fixed seed 31 reproduction; choose epoch with maximum masked development residue APS; no CAID3 or auxiliary data used for selection",
+  "seed": 31,
+  "best_epoch": 4,
+  "best_masked_development_aps": 0.8177586569439534,
+  "all_window_development_aps": 0.8177616153862972,
+  "all_window_development_auroc": 0.7813309522633105,
+  "display_threshold": 0.5,
+  "display_threshold_status": "fixed non-optimized CAID output field; not a certified precision or span-call operating point",
+  "window": 510,
+  "encoder": "facebook/esm2_t12_35M_UR50D",
+  "scoring_policy": "score every residue in consecutive nonoverlapping 510-residue windows, regardless of labels",
+  "checkpoint": "artifacts/dfl-b1-v2-cnn-seed31-retrospective-2026-10-25/best.pt",
+  "checkpoint_sha256": "bc79e37c36cecf4d5b95527ec65d4324372a3a73c64d58cb5b836e1c1f1ceeb3",
+  "run_manifest_sha256": "ab2ef0d0b6bb4cc48bbfddc869e9bf724b6ffa5e0b09d3ff96c2303ebecad815",
+  "config": "configs/dfl_b1_v2_three_layer_cnn_seed31_2026-10-18.json",
+  "config_sha256": "c683afbff11088d902603c1f43bf8874ef1b062b7e1444db7856472da46c44ad",
+  "split_manifest_sha256": "d62136ce699294a0c07f0fa01a5350d3571643796cedadaf37d8399824893452",
+  "development_audit": "artifacts/dfl-b1-v2-cnn-seed31-retrospective-2026-10-25/development_all_windows.json",
+  "development_audit_sha256": "d6c97b38f452b6ff861a6ec4e821e2e1b3827a4d758a161ecf6652caaefea8b1",
+  "scorer_sha256": "83ac97792ea37765b9d8d11d8e1b443af112b05764bf943c597670a95c87c463",
+  "reference_sha256": "8d3931f2778f72e640e841ef05751b78cea951ebd726766a3863de21198fb53e",
+  "official_evaluator_sha256": "0b10c287719451a28b594f7ea79fdbcc50b2043976a44c831b600ee4d2bfda95",
+  "baseline_sha256": {
+    "APOD.caid": "182b2ba253496c6cb91efe1bc9817c7181bd6d7a061293674c2b23ccdc82c06d",
+    "DFLpred.caid": "c12efe88776f436c788ecdf7b58b4a00371bfaa11b74001dcf4db2bb9fcedaa0",
+    "DisoFLAG-DFL.caid": "42c37fcc65463830a404c76d424059527f7cf52cc0246008cfce2d929fff8cb3",
+    "IPA-AF2-Linker.caid": "e286d39115f2832a195c6e4804e3382fc0e1bfdf6288890a131dc8a156d7bf4f",
+    "LINKER-Pred-Lite.caid": "0cf9b9b232f48ebbdc8ad2de852817bea47a59fb108ab1b4a5942acd366d68cd",
+    "LINKER-Pred.caid": "90d3cfd587d89f8f3b36763cfa361175dfe951303f3c6d3795eee96270a12b7a",
+    "LINKER-Pred2.caid": "d8c2ead75258c05f4a38678c7efff3aaee95fd24ec4e40aadca831351025a97b"
+  },
+  "limitations": [
+    "CAID3 is public and prior project scores were viewed; this new scoring is retrospective, not an untouched performance claim.",
+    "A CAID3-excluded split blocks declared overlap, but cannot prove independence from all protein language-model pretraining or unobserved homologs.",
+    "The development labels contain many unknown residues; its high-precision frontier is not a proteome-mining certificate."
+  ]
+}

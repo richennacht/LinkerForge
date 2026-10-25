@@ -16,7 +16,11 @@ __pycache__/
 .mypy_cache/
 .venv/
 .venv-gpu/
-data/raw/
+data/raw/*
+!data/raw/pdb/
+data/raw/pdb/*
+!data/raw/pdb/2B3P.pdb
+!data/raw/pdb/2H5Q.pdb
 data/processed/
 artifacts/
 output/
@@ -24,4 +28,3 @@ tmp/
 tools/
 ProtCompose_100_Paper_Evidence_Catalogue.md
 ProtCompose_12_Week_Workflow.md
-

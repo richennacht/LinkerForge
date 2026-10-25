@@ -1,16 +1,24 @@
-"""Lightweight HTTP JSON API server for the LinkerForge End-to-End Web Application.
+"""Small JSON API for the LinkerForge web interface.
 
-Endpoints:
-  - GET  /api/status : Returns dataset summary (27,766 records), Part 3 & Part 4 metrics.
-  - POST /api/design : Runs live end-to-end LinkerForge ranking & 3D PDB + PyMOL generation
-                       for sfGFP (2B3P) — linker — mCherry (2H5Q) with user tick-box settings.
+Endpoints
+---------
+GET  /api/status   dataset tier counts (from the hash-pinned manifest) and result-file provenance
+GET  /api/demo     the precomputed sfGFP (2B3P) - linker - mCherry (2H5Q) demonstration
+POST /api/score    score one user-supplied linker sequence at the demo junction
+                   body: {"sequence": "...", "rigidity": "flexible"|"rigid", "cleavable": bool}
+
+Nothing is computed from invented inputs: the junction geometry, port accessibilities and flank
+context come from `reports/part4_end_to_end_ranker_and_sfgfp_mcherry_2026-10-19.json`, which is
+produced by `scripts/evaluate_part4_end_to_end_pipeline.py`.  The service never returns a
+fusion-success probability.
 """
 
 from __future__ import annotations
 
 import argparse
-from http.server import BaseHTTPRequestHandler, HTTPServer
+import hashlib
 import json
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 import sys
 from typing import Any
@@ -18,99 +26,104 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from linkerforge.dataset_v1 import (  # noqa: E402
-    DEFAULT_DATASET_DIR,
-    load_dataset_manifest,
-    load_linker_records,
+from linkerforge.pipeline import PairwiseCompatibilityRanker  # noqa: E402
+
+RESULT = ROOT / "reports" / "part4_end_to_end_ranker_and_sfgfp_mcherry_2026-10-19.json"
+MANIFEST = ROOT / "data" / "processed" / "mined_and_natural_linkers_v1" / "manifest.json"
+DISCLAIMER = (
+    "Deterministic geometric / sequence rules and a relative score on one schematic junction. "
+    "Not a prediction of expression, folding or activity."
 )
-from linkerforge.pipeline import (  # noqa: E402
-    AuthoritySequenceIndex,
-    fit_pairwise_compatibility_ranker,
-    run_sfgfp_mcherry_fusion_demo,
-)
+ALLOWED = set("ACDEFGHIKLMNPQRSTVWY")
 
 
-class LinkerForgeServiceContext:
-    def __init__(self, dataset_dir: Path = DEFAULT_DATASET_DIR) -> None:
-        self.dataset_dir = dataset_dir
-        self.manifest = load_dataset_manifest(dataset_dir)
-        natural_records = load_linker_records(
-            dataset_dir,
-            tiers=["natural_cath_pdb_verified", "natural_disprot_curated_dfl"],
+class Service:
+    def __init__(self) -> None:
+        self.result = json.loads(RESULT.read_text(encoding="utf-8"))
+        self.result_sha = hashlib.sha256(RESULT.read_bytes()).hexdigest()
+        self.ranker = PairwiseCompatibilityRanker(
+            feature_names=tuple(self.result["ranker"]["feature_names"]),
+            weights=tuple(self.result["ranker"]["weights"]),
         )
-        mined_hi = load_linker_records(
-            dataset_dir,
-            tiers=["mined_high_confidence_dfl_call"],
+        self.manifest = json.loads(MANIFEST.read_text(encoding="utf-8")) if MANIFEST.exists() else {}
+
+    def status(self) -> dict[str, Any]:
+        return {
+            "dataset_id": self.result.get("dataset_id"),
+            "dataset_manifest_sha256": self.result.get("dataset_manifest_sha256"),
+            "manifest_tier_counts": self.manifest.get("tier_counts") or self.manifest.get("record_counts"),
+            "result_file": RESULT.name,
+            "result_file_sha256": self.result_sha,
+            "disclaimer": DISCLAIMER,
+        }
+
+    def score(self, body: dict[str, Any]) -> tuple[int, dict[str, Any]]:
+        seq = str(body.get("sequence", "")).upper().strip()
+        if len(seq) > 80 or (seq and not set(seq) <= ALLOWED):
+            return 400, {"error": "sequence must be <= 80 residues of the 20 standard amino acids"}
+        rigidity = body.get("rigidity", "flexible")
+        if rigidity not in ("flexible", "rigid"):
+            return 400, {"error": "rigidity must be 'flexible' or 'rigid'"}
+        ctx = self.result["fusion_demo"]["context"]
+        target = int(body.get("target_length") or max(len(seq), 5))
+        score, card, feats = self.ranker.score_candidate(
+            seq,
+            target_length=target,
+            required_path_length_A=ctx["path_A"],
+            requested_rigidity=rigidity,
+            requested_cleavable=bool(body.get("cleavable", False)),
+            left_flank=ctx["left_flank"],
+            right_flank=ctx["right_flank"],
+            port_a_sasa=ctx["rsa_a"],
+            port_b_sasa=ctx["rsa_b"],
         )
-        templates = load_linker_records(
-            dataset_dir,
-            tiers=["literature_engineered_template"],
-        )
-        self.ranker = fit_pairwise_compatibility_ranker(
-            list(natural_records) + list(mined_hi[:1200]) + list(templates),
-            seed=23,
-        )
-        self.authority_index = AuthoritySequenceIndex(
-            list(natural_records) + list(mined_hi) + list(templates)
-        )
+        return 200, {
+            "sequence": seq,
+            "length": len(seq),
+            "junction_path_A": ctx["path_A"],
+            "relative_score": round(score, 4),
+            "scorecard": card.to_dict(),
+            "features": {k: round(v, 4) for k, v in feats.items()},
+            "disclaimer": DISCLAIMER,
+        }
 
 
-def make_handler(ctx: LinkerForgeServiceContext):
+def make_handler(svc: Service):
     class Handler(BaseHTTPRequestHandler):
-        def _send_json(self, status_code: int, payload: dict[str, Any]) -> None:
+        def _send(self, code: int, payload: dict[str, Any]) -> None:
             body = json.dumps(payload).encode("utf-8")
-            self.send_response(status_code)
+            self.send_response(code)
             self.send_header("Content-Type", "application/json; charset=utf-8")
             self.send_header("Content-Length", str(len(body)))
-            self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("Access-Control-Allow-Origin", "http://127.0.0.1:5173")
             self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
             self.send_header("Access-Control-Allow-Headers", "Content-Type")
             self.end_headers()
             self.wfile.write(body)
 
         def do_OPTIONS(self) -> None:  # noqa: N802
-            self._send_json(200, {"ok": True})
+            self._send(200, {"ok": True})
 
         def do_GET(self) -> None:  # noqa: N802
             if self.path.startswith("/api/status"):
-                self._send_json(
-                    200,
-                    {
-                        "service": "LinkerForge Scientific API v1.0",
-                        "dataset_id": ctx.manifest.get("dataset_id"),
-                        "total_records": ctx.manifest.get("total_records", 27766),
-                        "tier_counts": ctx.manifest.get("tier_counts", {}),
-                        "authority_index_size": len(ctx.authority_index.records),
-                    },
-                )
-                return
-            self._send_json(404, {"error": "not_found"})
+                self._send(200, svc.status())
+            elif self.path.startswith("/api/demo"):
+                self._send(200, svc.result["fusion_demo"])
+            else:
+                self._send(404, {"error": "not_found"})
 
         def do_POST(self) -> None:  # noqa: N802
-            if self.path.startswith("/api/design"):
-                length = int(self.headers.get("Content-Length", "0"))
-                raw = self.rfile.read(length).decode("utf-8") if length > 0 else "{}"
-                req = json.loads(raw or "{}")
-                rigidity = str(req.get("rigidity", "flexible"))
-                if rigidity not in ("flexible", "rigid"):
-                    rigidity = "flexible"
-                cleavable = bool(req.get("cleavable", False))
-                protease_family = str(req.get("protease_family", "TEV"))
-                target_length = max(6, min(36, int(req.get("target_length", 15))))
-                required_path_length_A = float(req.get("required_path_length_A", 28.4))
-
-                demo = run_sfgfp_mcherry_fusion_demo(
-                    ctx.ranker,
-                    ctx.authority_index,
-                    requested_rigidity=rigidity,
-                    requested_cleavable=cleavable,
-                    protease_family=protease_family,
-                    target_length=target_length,
-                    required_path_length_A=required_path_length_A,
-                )
-                self._send_json(200, demo)
+            if not self.path.startswith("/api/score"):
+                self._send(404, {"error": "not_found"})
                 return
-            self._send_json(404, {"error": "not_found"})
+            try:
+                length = int(self.headers.get("Content-Length", "0"))
+                body = json.loads(self.rfile.read(length).decode("utf-8") or "{}")
+            except (ValueError, json.JSONDecodeError):
+                self._send(400, {"error": "invalid JSON body"})
+                return
+            code, payload = svc.score(body)
+            self._send(code, payload)
 
         def log_message(self, format: str, *args: Any) -> None:  # noqa: A002
             return
@@ -119,15 +132,13 @@ def make_handler(ctx: LinkerForgeServiceContext):
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--host", default="127.0.0.1")
-    parser.add_argument("--port", type=int, default=8765)
-    parser.add_argument("--dataset-dir", type=Path, default=DEFAULT_DATASET_DIR)
-    args = parser.parse_args()
-    ctx = LinkerForgeServiceContext(args.dataset_dir)
-    server = HTTPServer((args.host, args.port), make_handler(ctx))
-    print(f"LinkerForge API listening on http://{args.host}:{args.port}")
-    server.serve_forever()
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--host", default="127.0.0.1")
+    ap.add_argument("--port", type=int, default=8765)
+    args = ap.parse_args()
+    svc = Service()
+    print(f"LinkerForge API on http://{args.host}:{args.port} (result sha256 {svc.result_sha[:12]}...)")
+    HTTPServer((args.host, args.port), make_handler(svc)).serve_forever()
 
 
 if __name__ == "__main__":
