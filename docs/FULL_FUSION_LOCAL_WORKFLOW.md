@@ -15,3 +15,9 @@ For a selected candidate:
 3. Upload the selected PDB into LinkerForge. The browser checks the whole residue sequence against the selected candidate and colours Domain A green, the actual predicted linker residues magenta, and Domain B red. The view can expand to the viewport. Export the PyMOL colouring script if desktop PyMOL is desired; the in-browser renderer is 3Dmol.js, not PyMOL.
 
 The uploaded file is user-supplied. Sequence matching cannot authenticate its provenance or establish biological function. The interface never fabricates PDB coordinates. A scientifically complete result still requires predictor confidence, interdomain PAE, closure/clash/domain-preservation checks, baselines, and experimental validation as appropriate.
+
+## Individual domain references by PDB accession
+
+The Prediction view accepts a four-character RCSB PDB accession, for example `1UBQ`, for each individual domain. LinkerForge downloads the public PDB coordinate file and searches every protein chain for the exact amino-acid sequence entered for that domain. A unique chain segment is reduced to a single-chain PDB before it is shown in 3Dmol.js or sent to the desktop PyMOL command. This makes the displayed reference depend on both the accession and the entered sequence rather than on a hard-coded example.
+
+If no exact chain or chain segment matches, the app rejects the structure and reports the mismatch. It does not silently align gaps, substitute a predicted structure, or display a different chain. The local-file fallback remains available for private, unpublished, or predicted coordinates and applies the same exact sequence check. RCSB retrieval provides a public coordinate reference; it does not establish that the structure is the correct biological state, assembly, construct, or experimental comparator for a proposed fusion.

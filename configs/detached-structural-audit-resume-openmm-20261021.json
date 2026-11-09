@@ -1,0 +1,57 @@
+{
+  "name": "linkerforge-openmm-and-linked-evidence-resume-20261021",
+  "project_root": "M:\\ChatGPT\\LinkerForge 2",
+  "environment": {},
+  "stages": [
+    {
+      "name": "run-openmm-three-replica-smoke",
+      "executable": "wsl.exe",
+      "arguments": [
+        "--exec",
+        "/home/linkerforge/localcolabfold/.pixi/envs/default/bin/python",
+        "/mnt/m/ChatGPT/LinkerForge 2/scripts/run_openmm_validation.py",
+        "--pdb",
+        "/mnt/m/ChatGPT/LinkerForge 2/runs/folds/acceptance-20261020-ubiquitin-gb1-target10/prediction/LinkerForge_acceptance_1UBQ_GGGGSGGGGS_2GB1_unrelaxed_rank_001_alphafold2_ptm_model_3_seed_000.pdb",
+        "--config",
+        "/mnt/m/ChatGPT/LinkerForge 2/configs/openmm-smoke-v1.json",
+        "--output-dir",
+        "/mnt/m/ChatGPT/LinkerForge 2/runs/openmm/acceptance-1ubq-gs10-2gb1-smoke"
+      ],
+      "working_directory": "M:\\ChatGPT\\LinkerForge 2"
+    },
+    {
+      "name": "link-structure-evidence",
+      "executable": "M:\\ChatGPT\\LinkerForge 2\\.venv\\Scripts\\python.exe",
+      "arguments": [
+        "scripts/audit_fusion_structure_evidence.py",
+        "--fusion-pdb",
+        "runs/folds/acceptance-20261020-ubiquitin-gb1-target10/prediction/LinkerForge_acceptance_1UBQ_GGGGSGGGGS_2GB1_unrelaxed_rank_001_alphafold2_ptm_model_3_seed_000.pdb",
+        "--score-json",
+        "runs/folds/acceptance-20261020-ubiquitin-gb1-target10/prediction/LinkerForge_acceptance_1UBQ_GGGGSGGGGS_2GB1_scores_rank_001_alphafold2_ptm_model_3_seed_000.json",
+        "--domain-a-reference",
+        "runs/folds/acceptance-20261020-ubiquitin-gb1-target10/references/1UBQ.pdb",
+        "--domain-b-reference",
+        "runs/folds/acceptance-20261020-ubiquitin-gb1-target10/references/2GB1.pdb",
+        "--domain-a-length",
+        "76",
+        "--linker-length",
+        "10",
+        "--protected-site-assessment",
+        "runs/folds/acceptance-20261020-ubiquitin-gb1-target10/protected-site-demo-A48.json",
+        "--matched-comparison",
+        "runs/folds/matched-baselines-20261020-1ubq-2gb1/comparison_summary.json",
+        "--openmm-run",
+        "runs/openmm/acceptance-1ubq-gs10-2gb1-smoke/run_manifest.json",
+        "--output",
+        "runs/folds/acceptance-20261020-ubiquitin-gb1-target10/evidence_checklist-linked-20261021.json"
+      ],
+      "working_directory": "M:\\ChatGPT\\LinkerForge 2"
+    },
+    {
+      "name": "validate-json-schema-catalog",
+      "executable": "M:\\ChatGPT\\LinkerForge 2\\.venv\\Scripts\\python.exe",
+      "arguments": ["scripts/validate_json_schemas.py"],
+      "working_directory": "M:\\ChatGPT\\LinkerForge 2"
+    }
+  ]
+}

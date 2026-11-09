@@ -7,7 +7,7 @@ const tauri = vi.hoisted(() => ({
 
 vi.mock('@tauri-apps/api/core', () => tauri)
 
-import { errorMessage, foldStartTimeFromRunDir, formatElapsedTime, inDesktop, openPdbInPymol } from './desktopFold'
+import { errorMessage, foldStartTimeFromRunDir, formatElapsedTime, inDesktop, openPdbInPymol, openReferenceInPymol } from './desktopFold'
 
 describe('desktop folding bridge', () => {
   it('formats elapsed prediction time and recovers the run start timestamp', () => {
@@ -37,5 +37,13 @@ describe('desktop folding bridge', () => {
     await expect(openPdbInPymol(request)).resolves.toBe('opened')
     expect(tauri.invoke).toHaveBeenCalledWith('open_pdb_in_pymol', { request })
     expect(inDesktop()).toBe(true)
+  })
+
+  it('forwards a sequence-checked domain reference to the native PyMOL gate', async () => {
+    tauri.invoke.mockResolvedValue('opened')
+    const request = { pdb: 'ATOM', sequence: 'ACD', label: 'Ubiquitin', color: '#3acf78' }
+
+    await expect(openReferenceInPymol(request)).resolves.toBe('opened')
+    expect(tauri.invoke).toHaveBeenCalledWith('open_reference_in_pymol', { request })
   })
 })
