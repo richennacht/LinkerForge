@@ -1,0 +1,25 @@
+{
+  "name": "linkerforge-final-repository-verification-20261021",
+  "project_root": "M:\\ChatGPT\\LinkerForge 2",
+  "environment": {},
+  "stages": [
+    {
+      "name": "python-test-suite",
+      "executable": "M:\\ChatGPT\\LinkerForge 2\\.venv\\Scripts\\python.exe",
+      "arguments": ["-m", "pytest", "-q"],
+      "working_directory": "M:\\ChatGPT\\LinkerForge 2"
+    },
+    {
+      "name": "json-schema-catalog",
+      "executable": "M:\\ChatGPT\\LinkerForge 2\\.venv\\Scripts\\python.exe",
+      "arguments": ["scripts/validate_json_schemas.py"],
+      "working_directory": "M:\\ChatGPT\\LinkerForge 2"
+    },
+    {
+      "name": "git-diff-whitespace-check",
+      "executable": "git.exe",
+      "arguments": ["diff", "--check"],
+      "working_directory": "M:\\ChatGPT\\LinkerForge 2"
+    }
+  ]
+}

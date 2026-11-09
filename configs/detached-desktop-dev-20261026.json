@@ -1,0 +1,19 @@
+{
+  "name": "linkerforge-desktop-dev-20261026",
+  "project_root": "M:\\ChatGPT\\LinkerForge 2",
+  "environment": {
+    "NO_COLOR": "1",
+    "RUST_BACKTRACE": "1"
+  },
+  "stages": [
+    {
+      "name": "launch-linkerforge-tauri-desktop",
+      "executable": "C:\\Program Files\\nodejs\\npm.cmd",
+      "arguments": [
+        "run",
+        "desktop"
+      ],
+      "working_directory": "M:\\ChatGPT\\LinkerForge 2\\frontend"
+    }
+  ]
+}

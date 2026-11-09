@@ -50,6 +50,87 @@ export interface ColabFoldMetrics {
   meanInterdomainPae: number | null
 }
 
+export interface RcsbReferenceStructure {
+  pdbId: string
+  chainId: string
+  pdb: string
+  sourceUrl: string
+}
+
+export function normalizePdbId(value: string): string {
+  const pdbId = value.trim().toUpperCase()
+  if (!/^[0-9][A-Z0-9]{3}$/.test(pdbId)) {
+    throw new Error('Enter a four-character PDB accession such as 1UBQ.')
+  }
+  return pdbId
+}
+
+function matchingChainFragment(pdb: string, expectedSequence: string, label: string) {
+  const chains = new Map<string, Array<{ key: string; aminoAcid: string }>>()
+  const seen = new Set<string>()
+  for (const line of pdb.split(/\r?\n/)) {
+    if (!line.startsWith('ATOM  ') || line.slice(12, 16).trim() !== 'CA') continue
+    const chain = line.slice(21, 22)
+    const residueNumber = line.slice(22, 27).trim()
+    const key = `${chain}:${residueNumber}`
+    if (seen.has(key)) continue
+    const aminoAcid = THREE_TO_ONE[line.slice(17, 20).trim()]
+    if (!aminoAcid) continue
+    seen.add(key)
+    const records = chains.get(chain) ?? []
+    records.push({ key, aminoAcid })
+    chains.set(chain, records)
+  }
+
+  const matches: Array<{ chain: string; keys: Set<string> }> = []
+  for (const [chain, records] of chains) {
+    const observed = records.map((record) => record.aminoAcid).join('')
+    let start = observed.indexOf(expectedSequence)
+    while (start >= 0) {
+      matches.push({
+        chain,
+        keys: new Set(records.slice(start, start + expectedSequence.length).map((record) => record.key)),
+      })
+      start = observed.indexOf(expectedSequence, start + 1)
+    }
+  }
+  if (!matches.length) {
+    throw new Error(`${label} sequence was not found as an exact chain or chain segment in this PDB entry.`)
+  }
+
+  const match = matches[0]
+  const coordinateLines = pdb.split(/\r?\n/).filter((line) => {
+    if (!line.startsWith('ATOM  ') && !line.startsWith('HETATM')) return false
+    if (line.slice(21, 22) !== match.chain) return false
+    return match.keys.has(`${match.chain}:${line.slice(22, 27).trim()}`)
+  })
+  const chainId = match.chain.trim() || '(blank)'
+  return {
+    chainId,
+    pdb: [`REMARK 950 LINKERFORGE EXACT SEQUENCE-MATCHED CHAIN ${chainId}`, ...coordinateLines, 'TER', 'END', ''].join('\n'),
+  }
+}
+
+export async function fetchRcsbReferenceStructure(
+  value: string,
+  expectedSequence: string,
+  label: string,
+  fetcher: typeof fetch = fetch
+): Promise<RcsbReferenceStructure> {
+  const pdbId = normalizePdbId(value)
+  const sourceUrl = `https://files.rcsb.org/download/${pdbId}.pdb`
+  const response = await fetcher(sourceUrl, { headers: { Accept: 'chemical/x-pdb,text/plain' } })
+  if (!response.ok) {
+    throw new Error(`RCSB could not provide PDB ${pdbId} (HTTP ${response.status}). Check the accession and network connection.`)
+  }
+  const bytes = await response.arrayBuffer()
+  if (bytes.byteLength > 15_000_000) throw new Error('The downloaded PDB exceeds the 15 MB safety limit.')
+  const downloaded = new TextDecoder().decode(bytes)
+  const matched = matchingChainFragment(downloaded, expectedSequence, label)
+  validateDomainReferencePdb(matched.pdb, expectedSequence, label)
+  return { pdbId, chainId: matched.chainId, pdb: matched.pdb, sourceUrl }
+}
+
 export function parseColabFoldScoreJson(
   json: string,
   sequenceLength: number,

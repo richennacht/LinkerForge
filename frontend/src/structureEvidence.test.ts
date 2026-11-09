@@ -1,8 +1,10 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import {
   auditFusionCoordinates,
   assessProtectedSiteClearance,
   calculateDomainPreservation,
+  fetchRcsbReferenceStructure,
+  normalizePdbId,
   parseColabFoldScoreJson,
   parseProtectedSites,
   validateDomainReferencePdb,
@@ -21,6 +23,35 @@ describe('structural evidence calculations', () => {
   it('requires each domain reference to match its entered sequence', () => {
     expect(validateDomainReferencePdb(pdb, 'ACGDE', 'A')).toHaveLength(5)
     expect(() => validateDomainReferencePdb(pdb, 'ACGDF', 'A')).toThrow(/does not exactly match/i)
+  })
+
+  it('normalizes a four-character PDB accession', () => {
+    expect(normalizePdbId(' 1ubq ')).toBe('1UBQ')
+    expect(() => normalizePdbId('ubiquitin')).toThrow(/four-character PDB accession/i)
+  })
+
+  it('downloads an RCSB entry and extracts the exact matching chain', async () => {
+    const multichain = [
+      'ATOM      1  CA  ALA A   1       0.000   0.000   0.000  1.00 90.00           C',
+      'ATOM      2  CA  CYS A   2       3.800   0.000   0.000  1.00 80.00           C',
+      'ATOM      3  CA  GLY B   1       0.000   5.000   0.000  1.00 70.00           C',
+      'ATOM      4  CA  ASP B   2       3.800   5.000   0.000  1.00 60.00           C',
+      'END',
+    ].join('\n')
+    const encoded = new TextEncoder().encode(multichain)
+    const fetcher = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      arrayBuffer: async () => encoded.buffer,
+    } as Response)) as unknown as typeof fetch
+
+    const result = await fetchRcsbReferenceStructure('1abc', 'GD', 'Domain B', fetcher)
+
+    expect(result.pdbId).toBe('1ABC')
+    expect(result.chainId).toBe('B')
+    expect(result.pdb).toContain('GLY B   1')
+    expect(result.pdb).not.toContain('ALA A   1')
+    expect(fetcher).toHaveBeenCalledWith('https://files.rcsb.org/download/1ABC.pdb', expect.any(Object))
   })
 
   it('audits C-alpha continuity and overlaps', () => {
